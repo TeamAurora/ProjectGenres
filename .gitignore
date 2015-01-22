@@ -7,6 +7,8 @@
 *.sln.docstates
 PSVita_Debug/
 PSVita_Release/
+D3D11 Debug/
+D3D11 Release/
 
 # Build results
 
