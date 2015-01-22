@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "abertay_framework", "..\abertay_framework\abertay_framework.vcxproj", "{001D0F7F-2FA7-461E-82BF-808B1BAACF98}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "..\abertay_framework\external\libpng\libpng.vcxproj", "{76A1FC3E-AB2B-46F6-B821-F64BC62FF7E5}"
@@ -24,34 +22,44 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{001D0F7F-2FA7-461E-82BF-808B1BAACF98}.Debug|PSVita.ActiveCfg = Debug|Win32
+		{001D0F7F-2FA7-461E-82BF-808B1BAACF98}.Debug|PSVita.ActiveCfg = Debug|PSVita
+		{001D0F7F-2FA7-461E-82BF-808B1BAACF98}.Debug|PSVita.Build.0 = Debug|PSVita
 		{001D0F7F-2FA7-461E-82BF-808B1BAACF98}.Debug|Win32.ActiveCfg = D3D11 Debug|Win32
 		{001D0F7F-2FA7-461E-82BF-808B1BAACF98}.Debug|Win32.Build.0 = D3D11 Debug|Win32
-		{001D0F7F-2FA7-461E-82BF-808B1BAACF98}.Release|PSVita.ActiveCfg = Release|Win32
+		{001D0F7F-2FA7-461E-82BF-808B1BAACF98}.Release|PSVita.ActiveCfg = Release|PSVita
+		{001D0F7F-2FA7-461E-82BF-808B1BAACF98}.Release|PSVita.Build.0 = Release|PSVita
 		{001D0F7F-2FA7-461E-82BF-808B1BAACF98}.Release|Win32.ActiveCfg = D3D11 Release|Win32
 		{001D0F7F-2FA7-461E-82BF-808B1BAACF98}.Release|Win32.Build.0 = D3D11 Release|Win32
-		{76A1FC3E-AB2B-46F6-B821-F64BC62FF7E5}.Debug|PSVita.ActiveCfg = Debug|Win32
+		{76A1FC3E-AB2B-46F6-B821-F64BC62FF7E5}.Debug|PSVita.ActiveCfg = Debug|PSVita
+		{76A1FC3E-AB2B-46F6-B821-F64BC62FF7E5}.Debug|PSVita.Build.0 = Debug|PSVita
 		{76A1FC3E-AB2B-46F6-B821-F64BC62FF7E5}.Debug|Win32.ActiveCfg = Debug|Win32
 		{76A1FC3E-AB2B-46F6-B821-F64BC62FF7E5}.Debug|Win32.Build.0 = Debug|Win32
-		{76A1FC3E-AB2B-46F6-B821-F64BC62FF7E5}.Release|PSVita.ActiveCfg = Release|Win32
+		{76A1FC3E-AB2B-46F6-B821-F64BC62FF7E5}.Release|PSVita.ActiveCfg = Release|PSVita
+		{76A1FC3E-AB2B-46F6-B821-F64BC62FF7E5}.Release|PSVita.Build.0 = Release|PSVita
 		{76A1FC3E-AB2B-46F6-B821-F64BC62FF7E5}.Release|Win32.ActiveCfg = Release|Win32
 		{76A1FC3E-AB2B-46F6-B821-F64BC62FF7E5}.Release|Win32.Build.0 = Release|Win32
-		{11C7C0E1-0103-46A9-8E41-3CAF058CBE8F}.Debug|PSVita.ActiveCfg = Debug|Win32
+		{11C7C0E1-0103-46A9-8E41-3CAF058CBE8F}.Debug|PSVita.ActiveCfg = Debug|PSVita
+		{11C7C0E1-0103-46A9-8E41-3CAF058CBE8F}.Debug|PSVita.Build.0 = Debug|PSVita
 		{11C7C0E1-0103-46A9-8E41-3CAF058CBE8F}.Debug|Win32.ActiveCfg = Debug|Win32
 		{11C7C0E1-0103-46A9-8E41-3CAF058CBE8F}.Debug|Win32.Build.0 = Debug|Win32
-		{11C7C0E1-0103-46A9-8E41-3CAF058CBE8F}.Release|PSVita.ActiveCfg = Release|Win32
+		{11C7C0E1-0103-46A9-8E41-3CAF058CBE8F}.Release|PSVita.ActiveCfg = Release|PSVita
+		{11C7C0E1-0103-46A9-8E41-3CAF058CBE8F}.Release|PSVita.Build.0 = Release|PSVita
 		{11C7C0E1-0103-46A9-8E41-3CAF058CBE8F}.Release|Win32.ActiveCfg = Release|Win32
 		{11C7C0E1-0103-46A9-8E41-3CAF058CBE8F}.Release|Win32.Build.0 = Release|Win32
-		{92D226BD-D25E-4D14-B809-5BD1BECC30EF}.Debug|PSVita.ActiveCfg = Debug|Win32
+		{92D226BD-D25E-4D14-B809-5BD1BECC30EF}.Debug|PSVita.ActiveCfg = Debug|PSVita
+		{92D226BD-D25E-4D14-B809-5BD1BECC30EF}.Debug|PSVita.Build.0 = Debug|PSVita
 		{92D226BD-D25E-4D14-B809-5BD1BECC30EF}.Debug|Win32.ActiveCfg = Debug|Win32
 		{92D226BD-D25E-4D14-B809-5BD1BECC30EF}.Debug|Win32.Build.0 = Debug|Win32
-		{92D226BD-D25E-4D14-B809-5BD1BECC30EF}.Release|PSVita.ActiveCfg = Release|Win32
+		{92D226BD-D25E-4D14-B809-5BD1BECC30EF}.Release|PSVita.ActiveCfg = Release|PSVita
+		{92D226BD-D25E-4D14-B809-5BD1BECC30EF}.Release|PSVita.Build.0 = Release|PSVita
 		{92D226BD-D25E-4D14-B809-5BD1BECC30EF}.Release|Win32.ActiveCfg = Release|Win32
 		{92D226BD-D25E-4D14-B809-5BD1BECC30EF}.Release|Win32.Build.0 = Release|Win32
-		{53616666-75E8-489B-9B43-EBCB4FFCBF48}.Debug|PSVita.ActiveCfg = Debug|Win32
+		{53616666-75E8-489B-9B43-EBCB4FFCBF48}.Debug|PSVita.ActiveCfg = Debug|PSVita
+		{53616666-75E8-489B-9B43-EBCB4FFCBF48}.Debug|PSVita.Build.0 = Debug|PSVita
 		{53616666-75E8-489B-9B43-EBCB4FFCBF48}.Debug|Win32.ActiveCfg = Debug|Win32
 		{53616666-75E8-489B-9B43-EBCB4FFCBF48}.Debug|Win32.Build.0 = Debug|Win32
-		{53616666-75E8-489B-9B43-EBCB4FFCBF48}.Release|PSVita.ActiveCfg = Release|Win32
+		{53616666-75E8-489B-9B43-EBCB4FFCBF48}.Release|PSVita.ActiveCfg = Release|PSVita
+		{53616666-75E8-489B-9B43-EBCB4FFCBF48}.Release|PSVita.Build.0 = Release|PSVita
 		{53616666-75E8-489B-9B43-EBCB4FFCBF48}.Release|Win32.ActiveCfg = Release|Win32
 		{53616666-75E8-489B-9B43-EBCB4FFCBF48}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection

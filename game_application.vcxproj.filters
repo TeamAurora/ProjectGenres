@@ -11,9 +11,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="sprite_application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main_d3d11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -43,9 +40,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sprite_application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="appstate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
