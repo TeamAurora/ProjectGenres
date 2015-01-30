@@ -31,7 +31,6 @@ protected:
 	float health_;
 	float max_health_;
 	float health_percent_;
-	static const float kMaxHealthPercent = 100.0f;
 };
 
 #endif // _LIVING_OBJECT_H

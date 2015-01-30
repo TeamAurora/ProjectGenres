@@ -46,7 +46,6 @@ private:
 	abfw::Font font_;
 	abfw::SpriteRenderer* sprite_renderer_;
 	abfw::Texture* background_texture_;
-	abfw::Texture* star_texture_;
 	abfw::Texture* loading_texture_;
 	Sprite background_;
 	Sprite loading_;

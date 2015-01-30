@@ -13,7 +13,8 @@ namespace abfw
 class GameObject : public Sprite
 {	// Physics based game object
 public:
-	enum TYPE { PLAYER, PLAYER_PROJECTILE, PLAYER_PHOTON, ENEMY, ENEMY_PROJECTILE, ASTEROID }; // used for specific collision response - objects type
+
+	enum TYPE { PLAYER, PLATFORM, ENEMY, PICKUP, WALL, PLANT, SPIKE, BLADE }; // used for specific collision response - objects type
 
 	GameObject();		// Default constructor for default gameobjects
 	virtual ~GameObject();

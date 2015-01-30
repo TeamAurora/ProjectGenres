@@ -9,66 +9,87 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp</Extensions>
     </Filter>
+    <Filter Include="Header Files\States">
+      <UniqueIdentifier>{13ff07fe-c4d3-44ee-a58b-6a1cc0837478}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Misc">
+      <UniqueIdentifier>{50e50fc5-2ceb-473e-a3dd-22fc410806c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Sprite Hierarchy">
+      <UniqueIdentifier>{4a769a98-317b-4168-8f8d-195b896e8a6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\States">
+      <UniqueIdentifier>{e9bd26cb-57b8-42c4-a915-7acf93e93ad5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sprite Hierarchy">
+      <UniqueIdentifier>{901c6b97-ae0f-492d-987d-087863e468b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="game_application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="main_d3d11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main_vita.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="game_application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="game_object.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Sprite Hierarchy</Filter>
     </ClCompile>
     <ClCompile Include="game_state.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\States</Filter>
     </ClCompile>
     <ClCompile Include="intro_state.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="living_object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sprite.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\States</Filter>
     </ClCompile>
     <ClCompile Include="menu_state.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite.cpp">
+      <Filter>Source Files\Sprite Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="living_object.cpp">
+      <Filter>Source Files\Sprite Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Sprite Hierarchy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="appstate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="box2d_helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="game_application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="game_settings.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="appstate.h">
+      <Filter>Header Files\States</Filter>
     </ClInclude>
     <ClInclude Include="game_state.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\States</Filter>
     </ClInclude>
     <ClInclude Include="intro_state.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="living_object.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\States</Filter>
     </ClInclude>
     <ClInclude Include="menu_state.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="box2d_helpers.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="game_settings.h">
+      <Filter>Header Files\Misc</Filter>
     </ClInclude>
     <ClInclude Include="sprite.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="game_object.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Sprite Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="living_object.h">
+      <Filter>Header Files\Sprite Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Sprite Hierarchy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
