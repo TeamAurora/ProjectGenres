@@ -26,6 +26,7 @@ void GameState::InitializeState()
 	world_ = new b2World(b2Vec2(0.0f, 0.0f));
 
 	// Do any other init here
+	// Init Objects
 }
 
 void GameState::TerminateState()

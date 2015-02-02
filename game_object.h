@@ -15,6 +15,7 @@ class GameObject : public Sprite
 public:
 
 	enum TYPE { PLAYER, PLATFORM, ENEMY, PICKUP, WALL, PLANT, SPIKE, BLADE }; // used for specific collision response - objects type
+	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING };
 
 	GameObject();		// Default constructor for default gameobjects
 	virtual ~GameObject();
@@ -49,6 +50,7 @@ protected:
 	enum PHYSICSENGINE { DEFAULT, BOX2D }; // used to keep same functions being usable independent of physics engine (switch statement in each function handles switching between functionality)
 
 	TYPE type_;
+	OBJECTSTATE state_;
 	PHYSICSENGINE physicsengine_;
 	bool visibility_; // flags object for updates, rendering and occasionally deletion
 	abfw::Vector2 velocity_; // not used for gameobjects with a box2d body (since the world_ provides positions for them)

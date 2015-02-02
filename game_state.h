@@ -30,7 +30,11 @@ private: // PRIVATE STRUCTS
 
 	struct Blade
 	{
-		float 
+		// 2D vector of the displacement to offset from the actor using the blade
+		abfw::Vector2 offset_;
+
+		// the fixture of this blade used for collision detection.
+		b2Fixture* blade_;
 	};
 
 private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
@@ -39,7 +43,7 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	b2World* world_;
 	
 	// SHARED Textures
-	// Store single textures in a game object
+	// Store single-use textures in the game object it's used for
 	abfw::Texture* red_pickup_;
 	abfw::Texture* blue_pickup_;
 	abfw::Texture* platform_texture_;

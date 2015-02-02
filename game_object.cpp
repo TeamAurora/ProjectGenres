@@ -8,7 +8,8 @@ GameObject::GameObject() :
 	velocity_(0.0f, 0.0f),
 	world_(NULL),
 	body_(NULL),
-	physicsengine_(DEFAULT)
+	physicsengine_(DEFAULT),
+	state_(IDLE)
 {
 }
 
