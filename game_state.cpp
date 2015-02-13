@@ -24,11 +24,21 @@ void GameState::InitializeState()
 	// Box2D Init
 	// create new box2d world with zero gravity
 	world_ = new b2World(b2Vec2(0.0f, 0.0f));
+	world_->SetContactListener(&contact_listener_);
 
 	// Do any other init here
 	// Init Objects
 
+	background_.set_height(platform_.height());
+	background_.set_width(platform_.width());
+	background_.set_position(abfw::Vector3(platform_.width()*0.5f, platform_.height()*0.5f, -1.0f));
 
+	player_.set_texture(player_tex);
+
+	// spawn spikes, platforms, etc
+
+	score_ = 0;
+	game_over_ = false;
 }
 
 void GameState::TerminateState()
@@ -46,10 +56,7 @@ GAMESTATE GameState::Update(const float& ticks_, const int& frame_counter_, cons
 	int32 position_iterations = 5;
 	world_->Step(time_step, velocity_iterations, position_iterations);
 
-	// Handles collision detection
-	CollisionDetectionLoop();
-
-	// Deletes non-visible objects (visibility is used to flag for deletion and rendering), updates positions and spawns new objects based on game logic
+	// Do game logic for gameobjects
 	UpdateGameObjects(ticks_, frame_counter_);
 
 	// Do input
@@ -80,15 +87,17 @@ void GameState::LoadTextures()
 	//Load textures using application_->LoadTextureFromPNG("texturename.png")
 
 	// single object texture loaded directly into objects
-	player_.set_texture(application_->LoadTextureFromPNG("Character.png"));
 	background_.set_texture(application_->LoadTextureFromPNG("Level_BG.png"));
 
-	// shared textures 
+	// state-level textures 
+	player_tex = application_->LoadTextureFromPNG("Character.png");
+	rotPlayerTex = application_->LoadTextureFromPNG("Character_rotate.png");
 	redPUTex = application_->LoadTextureFromPNG("Red.png");
 	bluePUTex = application_->LoadTextureFromPNG("Blue.png");
 	platformTex = application_->LoadTextureFromPNG("Platform_Panel.png");
 	plantWallTex = application_->LoadTextureFromPNG("Plant_Wall.png");
 	plantBlockTex = application_->LoadTextureFromPNG("Plant_Block.png");
+	rotPlantBlockTex = application_->LoadTextureFromPNG("Plant_Block_rot.png");
 }
 
 void GameState::LoadSounds()
@@ -99,58 +108,44 @@ void GameState::LoadSounds()
 
 void GameState::InputLoop(const abfw::SonyController* controller)
 {
-	if(controller->buttons_down() & ABFW_SONY_CTRL_UP) // while up button is down
-	{
-	}
-		
-	if(controller->buttons_down() & ABFW_SONY_CTRL_RIGHT) // while right button is down
-	{
-	}
-
-	if(controller->buttons_down() & ABFW_SONY_CTRL_DOWN) // while down button is down
-	{
-	}
-
-	if(controller->buttons_down() & ABFW_SONY_CTRL_LEFT) // while left button is down
-	{
-	}
-
-	if(controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS) // when cross gets pressed
-	{
-	}
-
-	if(controller->buttons_pressed() & ABFW_SONY_CTRL_SQUARE) // when square gets pressed
-	{
-	}
-
-	if(controller->buttons_down() & ABFW_SONY_CTRL_L2) // while left shoulder is down
-	{
-	}
-
-	if(controller->buttons_down() & ABFW_SONY_CTRL_R2) // while right shoulder is down
-	{
-	}
+	player_.Player_Input(controller);
 }
 
 void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 {
 	// Any per-frame or per-tick updating for game objects should be done here
-
+	player_.Update(ticks_, game_over_);
 }
 
-void GameState::CollisionDetectionLoop()
+void GameState::SpawnSpike(b2Vec3 position_, b2Vec2 dimensions_)
 {
-	b2Contact* contact = world_->GetContactList();
-	int contact_count = world_->GetContactCount();
-	for(int contact_num = 0; contact_num < contact_count; contact_num++)
-	{
-		// get pointer to objects that are colliding (must cast void ptr to correct type)
-		GameObject* objectA = (GameObject*)contact->GetFixtureA()->GetBody()->GetUserData();
-		GameObject* objectB = (GameObject*)contact->GetFixtureB()->GetBody()->GetUserData();
-		
-		if(contact->IsTouching())
-		{
-			contact = contact->GetNext();
-		}
-	}
+	float x_pos_ = position_.x;
+	float y_pos_ = position_.y;
+	float width_ = dimensions_.x;
+	float height_ = dimensions_.y;
+
+	GameObject spike_ = GameObject();
+
+	// Define and add box2d body
+	b2BodyDef body_;
+	body_.type = b2_staticBody;
+	body_.position = b2Vec2(GFX_BOX2D_POS_X(x_pos_), GFX_BOX2D_POS_Y(y_pos_));
+	spike_.AddBody(world_, body_); // this also changes this object to use box2d physics in all its functions
+
+	// Define and add box2d fixture
+	b2FixtureDef fixture_;
+	b2PolygonShape shape_;
+	shape_.SetAsBox(GFX_BOX2D_SIZE(dimensions_.x), GFX_BOX2D_SIZE(dimensions_.y));
+	fixture_.shape = &shape_;
+	fixture_.density = 0.0f;
+	spike_.AddFixture(fixture_);
+
+	// Initialize all the gameobject related things for this spike
+	spike_.InitSprite(dimensions_.x, dimensions_.y, abfw::Vector3(x_pos_, y_pos_, 0.0f), spike_texture); // init sprite properties
+	spike_.set_type(GameObject::SPIKE);
+	spike_.set_visibility(true);			// Makes projectile visible
+
+	// adds this spike to the spikes vector
+	spikes_.push_back(spike_);
+
 }

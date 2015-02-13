@@ -15,7 +15,6 @@ public:
 	void Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_);
 	
 private:
-	const static int kDifficultySettings = 5;
 	
 	void LoadTextures();
 

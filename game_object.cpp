@@ -163,12 +163,11 @@ void GameObject::ScaleBy(const float scalefactor)
 	}
 }
 
-void GameObject::AddBody(b2World* world, const b2BodyDef body_def, const b2FixtureDef fixture_def)
+void GameObject::AddBody(b2World* world, const b2BodyDef body_def)
 {
 	world_ = world;					// sets world pointer for box2d
 	physicsengine_ = BOX2D;			// changes to box2d physics for this object
 	body_ = world_->CreateBody(&body_def);
-	body_->CreateFixture(&fixture_def);
 	body_->SetUserData(this);
 }
 

@@ -12,7 +12,7 @@ LivingObject::~LivingObject()
 {
 }
 
-void LivingObject::UpdateHealth(const float deltahealth)
+void LivingObject::updateHealth(const float deltahealth)
 { // updates health by adding deltahealth
 	health_ += deltahealth;
 	if (health_ > max_health_)
@@ -21,14 +21,14 @@ void LivingObject::UpdateHealth(const float deltahealth)
 	}
 }
 
-void LivingObject::UpdateHealthPercent()
+void LivingObject::updateHealthPercent()
 {
 	health_percent_ = (health_/max_health_) * 100;
 }
 
-void LivingObject::DrawHealthBar(abfw::SpriteRenderer* sprite_renderer_, abfw::Font& font_)
+void LivingObject::drawHealthBar(abfw::SpriteRenderer* sprite_renderer_, abfw::Font& font_)
 {
-	UpdateHealthPercent(); // calculates objects health percent
+	updateHealthPercent(); // calculates objects health percent
 	abfw::Sprite health_bar;
 	health_bar.set_width((width()*health_percent()/100)); // width % of object width = % of max health
 	health_bar.set_height(6.0f);

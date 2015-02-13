@@ -56,6 +56,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files\Sprite Hierarchy</Filter>
     </ClCompile>
+    <ClCompile Include="contact_listener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game_application.h">
@@ -90,6 +93,9 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Header Files\Sprite Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="Contact_listener.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

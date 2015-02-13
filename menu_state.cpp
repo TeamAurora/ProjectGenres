@@ -18,7 +18,7 @@ MenuState::~MenuState()
 
 void MenuState::InitializeState()
 {
-	LoadTextures();
+	/*LoadTextures();
 
 	abfw::Vector3 screen_centre(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f);
 	
@@ -65,14 +65,14 @@ void MenuState::InitializeState()
 	cross_ = GameObject();
 	cross_.InitSprite(128.0f, 128.0f, abfw::Vector3(platform_.width() * 0.9f, platform_.height() * 0.8f, 0.0f), cross_texture_);
 
-	selection_ = STARTGAME; // starts selection as startgame button
+	selection_ = STARTGAME; // starts selection as startgame button*/
 
 	// NOTE - Visibility is not set to true for any sprites (it's default initialized to false) as the render function of
 	// this state won't check for visibility before rendering anyway because the whole menu will be rendered every frame.
 }
 void MenuState::TerminateState()
 {
-	delete start_texture_;
+	/*delete start_texture_;
 	start_texture_ = NULL;
 	delete cross_texture_;
 	cross_texture_ = NULL;
@@ -97,11 +97,11 @@ void MenuState::TerminateState()
 	delete purple_polygon_;
 	purple_polygon_ = NULL;
 	delete selector_;
-	selector_ = NULL;
+	selector_ = NULL;*/
 }
 GAMESTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
 {
-	const abfw::SonyController* controller = controller_manager_.GetController(0); // get the platform specific controller from controller_manager
+	/*const abfw::SonyController* controller = controller_manager_.GetController(0); // get the platform specific controller from controller_manager
 	if(controller) // if controller isn't null
 	{
 		switch(selection_) // do input based on what button is currently selected
@@ -245,11 +245,11 @@ GAMESTATE MenuState::Update(const float& ticks_, const int& frame_counter_, cons
 			break;
 		}
 	}
-	return MENU;
+	return MENU;*/
 }
 void MenuState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
-	// Start Button
+	/*// Start Button
 	sprite_renderer_->DrawSprite(start_button_);
 
 	// Sound Buttons
@@ -290,11 +290,11 @@ void MenuState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 	sprite_renderer_->DrawSprite(dpad_);
 	
 	// Cross
-	sprite_renderer_->DrawSprite(cross_);
+	sprite_renderer_->DrawSprite(cross_);*/
 }
 void MenuState::LoadTextures()
 {
-	start_texture_ = application_->LoadTextureFromPNG("transparent_start.png");
+	/*start_texture_ = application_->LoadTextureFromPNG("transparent_start.png");
 	cross_texture_ = application_->LoadTextureFromPNG("transparent_cross.png");
 	music_on_texture_ = application_->LoadTextureFromPNG("transparent_music_on.png");
 	music_off_texture_ = application_->LoadTextureFromPNG("transparent_music_off.png");
@@ -306,5 +306,5 @@ void MenuState::LoadTextures()
 	yellow_diamond_ = application_->LoadTextureFromPNG("element_yellow_diamond.png");
 	red_diamond_ = application_->LoadTextureFromPNG("element_red_diamond.png");
 	purple_polygon_ = application_->LoadTextureFromPNG("element_purple_polygon.png");
-	selector_ = application_->LoadTextureFromPNG("selector.png");
+	selector_ = application_->LoadTextureFromPNG("selector.png");*/
 }

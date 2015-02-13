@@ -15,7 +15,6 @@ class GameObject : public Sprite
 public:
 
 	enum TYPE { PLAYER, PLATFORM, ENEMY, PICKUP, WALL, PLANT, SPIKE, BLADE }; // used for specific collision response - objects type
-	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING };
 
 	GameObject();		// Default constructor for default gameobjects
 	virtual ~GameObject();
@@ -39,7 +38,7 @@ public:
 	void AccelerateBy(const abfw::Vector2& deltavelocity);
 	
 	// Box2D Physics Functions
-	void AddBody(b2World* world, const b2BodyDef body_def, const b2FixtureDef fixture_def); // adds a body to this gameobject and changes physicsengine_ to box2d
+	void AddBody(b2World* world, const b2BodyDef body_def);			// adds a body to this gameobject and changes physicsengine_ to box2d
 	void DestroyBody();												// destroys the box2d body for this gameobject
 	void AddFixture(const b2FixtureDef fixture_def);				// adds a fixture to the box2d body - not used but useful to have in case
 	void Force(const b2Vec2& force, const b2Vec2& point);			// applies a force to the body associated with the gameobject
@@ -50,7 +49,6 @@ protected:
 	enum PHYSICSENGINE { DEFAULT, BOX2D }; // used to keep same functions being usable independent of physics engine (switch statement in each function handles switching between functionality)
 
 	TYPE type_;
-	OBJECTSTATE state_;
 	PHYSICSENGINE physicsengine_;
 	bool visibility_; // flags object for updates, rendering and occasionally deletion
 	abfw::Vector2 velocity_; // not used for gameobjects with a box2d body (since the world_ provides positions for them)

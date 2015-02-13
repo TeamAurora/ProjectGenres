@@ -42,7 +42,7 @@ void GameApplication::Init()
 	audio_manager_ = new abfw::AudioManagerVita;
 	
 	// Seed RNG
-	srand (5189023); // random number until I find out about time(null) include
+	srand (5189023);
 	
 	// Loading Screen Initialization
 	loading_texture_ = LoadTextureFromPNG("Load Screen.png");
@@ -51,7 +51,6 @@ void GameApplication::Init()
 	// Initializes game settings
 	settings_.music_ = true;
 	settings_.sound_effects_ = true;
-	settings_.difficulty_ = GameSettings::MEDIUM;
 	
 	// Initializes state machine to INTRO state (changestate also renders a loading screen)
 	pCurrentState = NULL;

@@ -3,6 +3,7 @@
 #include "game_object.h"
 #include "living_object.h" // lowest in sprite hierarchy - also includes gameobject/animatedsprite/abfw::sprite and Box2D
 #include "Player.h"
+#include "Contact_listener.h"
 #include <vector>
 
 class GameState :
@@ -24,33 +25,31 @@ private: // PRIVATE METHODS (FUNCTIONS)
 	void LoadSounds();
 	void InputLoop(const abfw::SonyController* controller);
 	void UpdateGameObjects(const float& ticks_, const int& frame_counter_); // updates game object - deleting flagged ones, updating positions and spawning new ones
-	void CollisionDetectionLoop();
 
-private: // PRIVATE STRUCTS
-
-	struct Blade
-	{
-		// 2D vector of the displacement to offset from the actor using the blade
-		abfw::Vector2 offset_;
-
-		// the fixture of this blade used for collision detection.
-		b2Fixture* blade_;
-	};
+	// Spawn functions
+	void SpawnSpike(b2Vec3 position, b2Vec2 dimensions); // Takes a position (3D to include depth the sprite gets rendered at) and it's dimensions (GFX scale, not Box2D)
 
 private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	
 	// Box2D world pointer
 	b2World* world_;
+	Contact_Listener contact_listener_;
 	
 	// SHARED Textures
 	// Store single-object textures in the game object it's used for
-	//texture for pickups
+	// player textures
+	abfw::Texture* player_tex;
+	abfw::Texture* rotPlayerTex;
+	// pickup textures
 	abfw::Texture* redPUTex;
 	abfw::Texture* bluePUTex;
 	abfw::Texture* platformTex;
-	//textures for plants
+	// plant textures
 	abfw::Texture* plantWallTex;
 	abfw::Texture* plantBlockTex;
+	abfw::Texture* rotPlantBlockTex;
+	// spike texture
+	abfw::Texture* spike_texture;
 	
 	// STATE-SPECIFIC Sound effects
 	
@@ -64,5 +63,6 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 
 	// STATE-SPECIFIC Variables
 	float score_;
+	bool game_over_;
 };
 

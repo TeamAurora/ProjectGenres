@@ -34,7 +34,7 @@ GAMESTATE IntroState::Update(const float& ticks_, const int& frame_counter_, con
 	{
 		if(controller->buttons_down() & ABFW_SONY_CTRL_START)
 		{
-			return MENU;
+			return GAME;
 		}
 	}
 	return INTRO;
