@@ -11,7 +11,7 @@ public:
 
 	void Create_Player(b2World* world_, float width, float height); // make player body and match it to sprite
 	void Update(const float& ticks_, bool gameOver);						// player update loop - called from UpdateGameObjects in gamestate
-	void Player_Input(const class abfw::SonyController* controller_manager_);	// player input loop - called from InputLoop in gamestate
+	void Player_Input(const class abfw::SonyController* controller_);	// player input loop - called from InputLoop in gamestate
 
 	//////// to knockback player use gameobject Force or ForceToCentre function
 	//////// inherits health and related functions from being a livingobject - no need to implement here
@@ -42,6 +42,5 @@ private:
 	gravityDirection gDir;
 
 	float jumpCutOff, moveCutOff;//how far the sticks have to be pushed to trigger action
-
 };
 

@@ -24,6 +24,9 @@ GameApplication::~GameApplication()
 
 void GameApplication::Init()
 {
+
+/////not working /////////////////////////
+
 	// load the font to draw the on-screen text
 	bool font_loaded = font_.Load("comic_sans", platform_);
 	if(!font_loaded)
@@ -31,6 +34,7 @@ void GameApplication::Init()
 		std::cout << "Font failed to load." << std::endl;
 		exit(-1);
 	}
+
 
 	// Create sprite renderer
 	sprite_renderer_ = platform_.CreateSpriteRenderer();
@@ -44,10 +48,10 @@ void GameApplication::Init()
 	// Seed RNG
 	srand (5189023);
 	
-	// Loading Screen Initialization
-	loading_texture_ = LoadTextureFromPNG("Load Screen.png");
-	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f), loading_texture_);
-	
+	//// Loading Screen Initialization
+	//loading_texture_ = LoadTextureFromPNG("Load Screen.png");
+	//loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f), loading_texture_);
+	//
 	// Initializes game settings
 	settings_.music_ = true;
 	settings_.sound_effects_ = true;
@@ -57,13 +61,14 @@ void GameApplication::Init()
 	ChangeState(INTRO);
 	change_state_ = false;
 	
+/////don't have these assets
 	// Background Initialization
-	background_texture_ = LoadTextureFromPNG("background_black.png");
-	background_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f), background_texture_);
+	//background_texture_ = LoadTextureFromPNG("background_black.png");
+	//background_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f), background_texture_);
 
-	// Load Music
-	audio_manager_->LoadMusic("Electric_Quake.wav", platform_); // http://opengameart.org/content/electric-quake
-	audio_manager_->PlayMusic();
+	//// Load Music
+	//audio_manager_->LoadMusic("Electric_Quake.wav", platform_); // http://opengameart.org/content/electric-quake
+	//audio_manager_->PlayMusic();
 }
 
 void GameApplication::CleanUp()
@@ -148,11 +153,11 @@ void GameApplication::Render()
 	switch(change_state_)
 	{
 	case true:
-		sprite_renderer_->DrawSprite(loading_); // draw load screen if state changes this frame
+		//sprite_renderer_->DrawSprite(loading_); // draw load screen if state changes this frame
 		break;
 	case false:
 		// Background
-		sprite_renderer_->DrawSprite(background_);
+		//sprite_renderer_->DrawSprite(background_);
 		pCurrentState->Render(frame_rate_, font_, sprite_renderer_); // don't need to do state specific rendering if we're going to change state next frame - loading screen gets drawn instead
 		break;
 	}

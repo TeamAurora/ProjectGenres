@@ -113,7 +113,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="blade.cpp" />
+    <ClCompile Include="collectible.cpp" />
     <ClCompile Include="contact_listener.cpp" />
+    <ClCompile Include="enemy.cpp" />
     <ClCompile Include="game_application.cpp" />
     <ClCompile Include="game_object.cpp" />
     <ClCompile Include="game_state.cpp" />
@@ -122,20 +125,25 @@
     <ClCompile Include="main_d3d11.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|PSVita'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="main_vita.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="menu_state.cpp" />
+    <ClCompile Include="plant.cpp" />
+    <ClCompile Include="platforms.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="spike.cpp" />
     <ClCompile Include="sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="appstate.h" />
+    <ClInclude Include="blade.h" />
     <ClInclude Include="box2d_helpers.h" />
+    <ClInclude Include="collectible.h" />
     <ClInclude Include="Contact_listener.h" />
+    <ClInclude Include="enemy.h" />
     <ClInclude Include="game_application.h" />
     <ClInclude Include="game_object.h" />
     <ClInclude Include="game_settings.h" />
@@ -143,7 +151,10 @@
     <ClInclude Include="intro_state.h" />
     <ClInclude Include="living_object.h" />
     <ClInclude Include="menu_state.h" />
+    <ClInclude Include="plant.h" />
+    <ClInclude Include="platforms.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="spike.h" />
     <ClInclude Include="sprite.h" />
   </ItemGroup>
   <Import Condition="'$(ConfigurationType)' == 'Makefile' and Exists('$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets')" Project="$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets" />

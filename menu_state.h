@@ -37,7 +37,7 @@ private:
 	GameObject start_button_;
 	GameObject music_button_;
 	GameObject sound_effects_button_;
-	GameObject difficulty_button[kDifficultySettings];
+	//GameObject difficulty_button[kDifficultySettings];
 	GameObject selection_pointer_;
 	GameObject dpad_;
 	GameObject cross_;

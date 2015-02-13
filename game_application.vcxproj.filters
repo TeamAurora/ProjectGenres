@@ -35,9 +35,6 @@
     <ClCompile Include="main_vita.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="game_object.cpp">
-      <Filter>Source Files\Sprite Hierarchy</Filter>
-    </ClCompile>
     <ClCompile Include="game_state.cpp">
       <Filter>Source Files\States</Filter>
     </ClCompile>
@@ -58,6 +55,27 @@
     </ClCompile>
     <ClCompile Include="contact_listener.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="blade.cpp">
+      <Filter>Source Files\Sprite Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="collectible.cpp">
+      <Filter>Source Files\Sprite Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>Source Files\Sprite Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="platforms.cpp">
+      <Filter>Source Files\Sprite Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="plant.cpp">
+      <Filter>Source Files\Sprite Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="spike.cpp">
+      <Filter>Source Files\Sprite Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="game_object.cpp">
+      <Filter>Source Files\Sprite Hierarchy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -85,9 +103,6 @@
     <ClInclude Include="sprite.h">
       <Filter>Header Files\Sprite Hierarchy</Filter>
     </ClInclude>
-    <ClInclude Include="game_object.h">
-      <Filter>Header Files\Sprite Hierarchy</Filter>
-    </ClInclude>
     <ClInclude Include="living_object.h">
       <Filter>Header Files\Sprite Hierarchy</Filter>
     </ClInclude>
@@ -96,6 +111,27 @@
     </ClInclude>
     <ClInclude Include="Contact_listener.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="blade.h">
+      <Filter>Header Files\Sprite Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="collectible.h">
+      <Filter>Header Files\Sprite Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>Header Files\Sprite Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="plant.h">
+      <Filter>Header Files\Sprite Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="platforms.h">
+      <Filter>Header Files\Sprite Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="spike.h">
+      <Filter>Header Files\Sprite Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="game_object.h">
+      <Filter>Header Files\Sprite Hierarchy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,6 +4,8 @@
 #include "sprite.h"
 #include <maths/vector2.h>
 #include <Box2D/Box2D.h>
+#include <input/vita/sony_controller_input_manager_vita.h>
+#include "box2d_helpers.h"
 
 namespace abfw
 {
@@ -15,6 +17,7 @@ class GameObject : public Sprite
 public:
 
 	enum TYPE { PLAYER, PLATFORM, ENEMY, PICKUP, WALL, PLANT, SPIKE, BLADE }; // used for specific collision response - objects type
+	//TYPE type_;
 
 	GameObject();		// Default constructor for default gameobjects
 	virtual ~GameObject();
@@ -44,7 +47,16 @@ public:
 	void Force(const b2Vec2& force, const b2Vec2& point);			// applies a force to the body associated with the gameobject
 	void ForceToCentre(const b2Vec2& force);						// applies a force to the centre of the body associated with the gameobject
 	void LinearImpulse(const b2Vec2& impulse, const b2Vec2& point);	// applies an impulse to the body associated with the gameobject
-	
+
+/////John //////////////////////////////////////////////////////////////////
+	void Knockback(b2Vec2, b2Vec2);//knock object back when they take damage
+
+	bool dead;//flag for killing 
+	bool destroyed;// to check if object has removed from game
+
+	//look at destroybody() and maybe make private again
+	b2Body* body_; // pointer to a box2d body
+
 protected:
 	enum PHYSICSENGINE { DEFAULT, BOX2D }; // used to keep same functions being usable independent of physics engine (switch statement in each function handles switching between functionality)
 
@@ -53,7 +65,20 @@ protected:
 	bool visibility_; // flags object for updates, rendering and occasionally deletion
 	abfw::Vector2 velocity_; // not used for gameobjects with a box2d body (since the world_ provides positions for them)
 	b2World* world_; // pointer to a box2d world
-	b2Body* body_; // pointer to a box2d body
+
+///John////
+	abfw::Vector2 bodyInitialPosition;
+	float body_half_width;
+	float body_half_height;
+	b2Vec2 force;//force for causing movement
+	float move_v;//speed at which bodies move
+
+	
+	float uv_x,uv_y, uv_width,uv_height;//initial uv values
+
+	b2Vec2 knockbackForce_;//push object back when hit
+	float magnitude_;
+///////
 };
 
 #endif // _GAME_OBJECT_H

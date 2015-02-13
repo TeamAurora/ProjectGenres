@@ -5,6 +5,19 @@
 #include "Player.h"
 #include "Contact_listener.h"
 #include <vector>
+#include "enemy.h"
+#include "collectible.h"
+#include "plant.h"
+#include "spike.h"
+#include "blade.h"
+#include "platforms.h"
+
+
+//total number of each objects used for array size
+#define PLATFORM_NUM 8
+#define PICKUP_NUM 10
+#define PLANT_NUM 5
+#define SPIKE_NUM 4
 
 class GameState :
 	public AppState
@@ -28,7 +41,13 @@ private: // PRIVATE METHODS (FUNCTIONS)
 
 	// Spawn functions
 	void SpawnSpike(b2Vec3 position, b2Vec2 dimensions); // Takes a position (3D to include depth the sprite gets rendered at) and it's dimensions (GFX scale, not Box2D)
+///John///
+	void CreateObjects();
+	void PlantPickUps();
 
+	void Restart();//resets and respawns everything to it's orginal position
+	void Destroy();//will destroy enemy body. TODO expand so other objects can use it
+/////////
 private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	
 	// Box2D world pointer
@@ -38,7 +57,7 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	// SHARED Textures
 	// Store single-object textures in the game object it's used for
 	// player textures
-	abfw::Texture* player_tex;
+	abfw::Texture* playerTex;
 	abfw::Texture* rotPlayerTex;
 	// pickup textures
 	abfw::Texture* redPUTex;
@@ -48,21 +67,30 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* plantWallTex;
 	abfw::Texture* plantBlockTex;
 	abfw::Texture* rotPlantBlockTex;
-	// spike texture
-	abfw::Texture* spike_texture;
+	// spike texture - TODO get spike texture
+	abfw::Texture* spikeTexture;
 	
 	// STATE-SPECIFIC Sound effects
 	
 	// STATE-SPECIFIC Game/Living Objects
-	std::vector<GameObject> platforms_;
+	//TODO : Arrays to replaced with vectors
+	/*std::vector<GameObject> platforms_;
 	std::vector<GameObject> pickups_;
 	std::vector<LivingObject> plants_;
-	std::vector<GameObject> spikes_;
+	std::vector<GameObject> spikes_;*/
+	Blade blade_;
+	Enemy enemy_;
+	PickUp pickUp_[PICKUP_NUM];
+	Plant plant_[PLANT_NUM];
+	Platform platforms_[PLATFORM_NUM];
 	Player player_;
+	Spike spike_[SPIKE_NUM];
 	Sprite background_;
 
 	// STATE-SPECIFIC Variables
-	float score_;
-	bool game_over_;
+	float score_;//points per pickups gathered
+	bool gameOver_;//if true player has died
+	float platformWidth_;
+	float attackTime;//amount of time between when attack can be pressed
 };
 

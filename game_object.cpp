@@ -8,8 +8,7 @@ GameObject::GameObject() :
 	velocity_(0.0f, 0.0f),
 	world_(NULL),
 	body_(NULL),
-	physicsengine_(DEFAULT),
-	state_(IDLE)
+	physicsengine_(DEFAULT)
 {
 }
 
@@ -196,4 +195,28 @@ void GameObject::ForceToCentre(const b2Vec2& force)
 void GameObject::LinearImpulse(const b2Vec2& impulse, const b2Vec2& point)
 {
 	body_->ApplyLinearImpulse(impulse, point);
+}
+
+
+void GameObject::Knockback(b2Vec2 pos1, b2Vec2 pos2)
+{
+	if(pos1.x - pos2.x <= 0)//push to left
+	{	
+		knockbackForce_.Set(magnitude_,0.0f);
+	}
+	else if(pos1.x - pos2.x > 0)//push to right
+	{	
+		knockbackForce_.Set(-magnitude_,0.0f);
+	}
+
+	if(pos1.y - pos2.y <= 0)//push down
+	{
+		knockbackForce_.Set(0.0f,-magnitude_);
+	}
+	else if(pos1.y - pos2.y > 0)//push up
+	{
+		knockbackForce_.Set(0.0f,magnitude_);
+	}
+
+	body_->ApplyForceToCenter(knockbackForce_);
 }
