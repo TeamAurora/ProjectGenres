@@ -43,14 +43,14 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	b2World* world_;
 	
 	// SHARED Textures
-	// Store single-use textures in the game object it's used for
-	abfw::Texture* red_pickup_;
-	abfw::Texture* blue_pickup_;
-	abfw::Texture* platform_texture_;
-	abfw::Texture* plant_block_texture_;
-	abfw::Texture* plant_wall_texture_;
-	abfw::Texture* background_;
-
+	// Store single-object textures in the game object it's used for
+	//texture for pickups
+	abfw::Texture* redPUTex;
+	abfw::Texture* bluePUTex;
+	abfw::Texture* platformTex;
+	//textures for plants
+	abfw::Texture* plantWallTex;
+	abfw::Texture* plantBlockTex;
 	
 	// STATE-SPECIFIC Sound effects
 	
@@ -60,6 +60,7 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	std::vector<LivingObject> plants_;
 	std::vector<GameObject> spikes_;
 	Player player_;
+	Sprite background_;
 
 	// STATE-SPECIFIC Variables
 	float score_;

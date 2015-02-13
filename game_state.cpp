@@ -27,6 +27,8 @@ void GameState::InitializeState()
 
 	// Do any other init here
 	// Init Objects
+
+
 }
 
 void GameState::TerminateState()
@@ -77,6 +79,16 @@ void GameState::LoadTextures()
 {
 	//Load textures using application_->LoadTextureFromPNG("texturename.png")
 
+	// single object texture loaded directly into objects
+	player_.set_texture(application_->LoadTextureFromPNG("Character.png"));
+	background_.set_texture(application_->LoadTextureFromPNG("Level_BG.png"));
+
+	// shared textures 
+	redPUTex = application_->LoadTextureFromPNG("Red.png");
+	bluePUTex = application_->LoadTextureFromPNG("Blue.png");
+	platformTex = application_->LoadTextureFromPNG("Platform_Panel.png");
+	plantWallTex = application_->LoadTextureFromPNG("Plant_Wall.png");
+	plantBlockTex = application_->LoadTextureFromPNG("Plant_Block.png");
 }
 
 void GameState::LoadSounds()
@@ -108,6 +120,10 @@ void GameState::InputLoop(const abfw::SonyController* controller)
 	}
 
 	if(controller->buttons_pressed() & ABFW_SONY_CTRL_SQUARE) // when square gets pressed
+	{
+	}
+
+	if(controller->buttons_down() & ABFW_SONY_CTRL_L2) // while left shoulder is down
 	{
 	}
 
