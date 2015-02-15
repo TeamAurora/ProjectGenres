@@ -131,10 +131,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="menu_state.cpp" />
-    <ClCompile Include="plant.cpp" />
-    <ClCompile Include="platforms.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="spike.cpp" />
     <ClCompile Include="sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -151,10 +148,7 @@
     <ClInclude Include="intro_state.h" />
     <ClInclude Include="living_object.h" />
     <ClInclude Include="menu_state.h" />
-    <ClInclude Include="plant.h" />
-    <ClInclude Include="platforms.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="spike.h" />
     <ClInclude Include="sprite.h" />
   </ItemGroup>
   <Import Condition="'$(ConfigurationType)' == 'Makefile' and Exists('$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets')" Project="$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets" />

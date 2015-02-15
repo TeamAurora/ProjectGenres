@@ -7,10 +7,7 @@
 #include <vector>
 #include "enemy.h"
 #include "collectible.h"
-#include "plant.h"
-#include "spike.h"
 #include "blade.h"
-#include "platforms.h"
 
 
 //total number of each objects used for array size
@@ -42,11 +39,11 @@ private: // PRIVATE METHODS (FUNCTIONS)
 	// Spawn functions
 	void SpawnSpike(b2Vec3 position, b2Vec2 dimensions); // Takes a position (3D to include depth the sprite gets rendered at) and it's dimensions (GFX scale, not Box2D)
 ///John///
-	void CreateObjects();
-	void PlantPickUps();
+	void CreateObjects();//call create functions for all gameobjects
+	void PlantPickUps();//spawn pickups from plants when they are destroyed
 
 	void Restart();//resets and respawns everything to it's orginal position
-	void Destroy();//will destroy enemy body. TODO expand so other objects can use it
+	void Destroy(GameObject &object);//will destroy non-destroyed body thats been passed in
 /////////
 private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	
@@ -73,6 +70,8 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	// STATE-SPECIFIC Sound effects
 	
 	// STATE-SPECIFIC Game/Living Objects
+
+////John////////////////////
 	//TODO : Arrays to replaced with vectors
 	/*std::vector<GameObject> platforms_;
 	std::vector<GameObject> pickups_;
@@ -81,10 +80,10 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	Blade blade_;
 	Enemy enemy_;
 	PickUp pickUp_[PICKUP_NUM];
-	Plant plant_[PLANT_NUM];
-	Platform platforms_[PLATFORM_NUM];
+	GameObject plant_[PLANT_NUM];
+	GameObject platforms_[PLATFORM_NUM];
 	Player player_;
-	Spike spike_[SPIKE_NUM];
+	GameObject spike_[SPIKE_NUM];
 	Sprite background_;
 
 	// STATE-SPECIFIC Variables
@@ -92,5 +91,6 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	bool gameOver_;//if true player has died
 	float platformWidth_;
 	float attackTime;//amount of time between when attack can be pressed
+////////////////////////////////////
 };
 

@@ -65,15 +65,6 @@
     <ClCompile Include="enemy.cpp">
       <Filter>Source Files\Sprite Hierarchy</Filter>
     </ClCompile>
-    <ClCompile Include="platforms.cpp">
-      <Filter>Source Files\Sprite Hierarchy</Filter>
-    </ClCompile>
-    <ClCompile Include="plant.cpp">
-      <Filter>Source Files\Sprite Hierarchy</Filter>
-    </ClCompile>
-    <ClCompile Include="spike.cpp">
-      <Filter>Source Files\Sprite Hierarchy</Filter>
-    </ClCompile>
     <ClCompile Include="game_object.cpp">
       <Filter>Source Files\Sprite Hierarchy</Filter>
     </ClCompile>
@@ -119,15 +110,6 @@
       <Filter>Header Files\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="enemy.h">
-      <Filter>Header Files\Sprite Hierarchy</Filter>
-    </ClInclude>
-    <ClInclude Include="plant.h">
-      <Filter>Header Files\Sprite Hierarchy</Filter>
-    </ClInclude>
-    <ClInclude Include="platforms.h">
-      <Filter>Header Files\Sprite Hierarchy</Filter>
-    </ClInclude>
-    <ClInclude Include="spike.h">
       <Filter>Header Files\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="game_object.h">

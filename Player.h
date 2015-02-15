@@ -13,9 +13,6 @@ public:
 	void Update(const float& ticks_, bool gameOver);						// player update loop - called from UpdateGameObjects in gamestate
 	void Player_Input(const class abfw::SonyController* controller_);	// player input loop - called from InputLoop in gamestate
 
-	//////// to knockback player use gameobject Force or ForceToCentre function
-	//////// inherits health and related functions from being a livingobject - no need to implement here
-
 	b2Vec2 gravity;//personal gravity
 
 	float jump_v;//jump force
@@ -31,7 +28,7 @@ public:
 
 private:
 
-	/////// Enumerated states player can be in - use these to do logic
+	/////// Enumerated states player can be in - use these to do logic & for sprite animation
 	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING };
 	OBJECTSTATE state_;
 

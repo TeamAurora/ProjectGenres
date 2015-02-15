@@ -149,7 +149,7 @@ void GameState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 
 	//text temporaily broken. Not loading in comic_sans font
 	font_.RenderText(sprite_renderer_, abfw::Vector3(10.0f, 5.0f, -0.9f), 1.0f, 0xff00ff00, abfw::TJ_LEFT, "Project Zero");
-	//font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 40.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "health  : %.0f", player_.health);	//display player health
+	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 40.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "health  : %.0f", player_.health());	//display player health
 	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 5.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "Score : %.0f", score_);//display player score
 	font_.RenderText(sprite_renderer_, abfw::Vector3(850.0f, 510.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "FPS: %.1f", frame_rate_);
 
@@ -225,9 +225,7 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 	else if (blade_.destroyed == false && blade_.created == true && attackTime > 20)
 	{
 		//destroy blade
-		world_->DestroyBody(blade_.body_);
-		blade_.body_ = NULL;
-		blade_.destroyed = true;
+		Destroy(blade_);
 		blade_.created = false;
 	}
 	
@@ -244,7 +242,7 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 	}
 	else
 	{
-		Destroy();
+		Destroy(enemy_);//remove enemys
 	}
 
 	//remove from game if collected
@@ -252,10 +250,8 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 	{
 		if(pickUp_[i].dead == true && pickUp_[i].destroyed == false)
 		{
-			//destroy enemy
-			world_->DestroyBody(pickUp_[i].body_);
-			pickUp_[i].body_ = NULL;
-			pickUp_[i].destroyed = true;
+			//destroy Pickup
+			Destroy(pickUp_[i]);
 			//increase score
 			score_+=1;
 		}
@@ -280,9 +276,7 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 	{
 		if(plant_[g].dead == true && plant_[g].destroyed == false)
 		{
-			world_->DestroyBody(plant_[g].body_);
-			plant_[g].body_ = NULL;
-			plant_[g].destroyed = true;
+			Destroy(plant_[g]);
 		}
 	}
 	
@@ -293,11 +287,8 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 	if(score_ == PICKUP_NUM)
 	{
 		gameOver_ = true;
-	}
-
-	
+	}	
 }
-
 
 void GameState::CreateObjects()
 {
@@ -307,19 +298,25 @@ void GameState::CreateObjects()
 
 	//create walls
 	//boundries
-	platforms_[0].Create_platform(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(0),GFX_BOX2D_SIZE(platform_.width()),platformWidth_);//roof
-	platforms_[1].Create_platform(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(platform_.height()),GFX_BOX2D_SIZE(platform_.width()),platformWidth_);//ground
-	platforms_[2].Create_platform(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(platform_.height()),platformWidth_,GFX_BOX2D_SIZE(platform_.height()));//left wall
-	platforms_[3].Create_platform(world_,GFX_BOX2D_POS_X(platform_.width()),GFX_BOX2D_POS_Y(0),platformWidth_,GFX_BOX2D_SIZE(platform_.height()));//right wall
+	platforms_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(0),GFX_BOX2D_SIZE(platform_.width()),platformWidth_);//roof
+	platforms_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(platform_.height()),GFX_BOX2D_SIZE(platform_.width()),platformWidth_);//ground
+	platforms_[2].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(platform_.height()),platformWidth_,GFX_BOX2D_SIZE(platform_.height()));//left wall
+	platforms_[3].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()),GFX_BOX2D_POS_Y(0),platformWidth_,GFX_BOX2D_SIZE(platform_.height()));//right wall
 	//level parts
-	platforms_[4].Create_platform(world_,GFX_BOX2D_POS_X(platform_.width()*0.9f),GFX_BOX2D_POS_Y(platform_.height()*0.9f),
+	platforms_[4].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.9f),GFX_BOX2D_POS_Y(platform_.height()*0.9f),
 		GFX_BOX2D_SIZE(platform_.width()*0.125f),GFX_BOX2D_SIZE(platform_.height()*0.125f));	//bottom right
-	platforms_[5].Create_platform(world_,GFX_BOX2D_POS_X(platform_.width()*0.175f),GFX_BOX2D_POS_Y(platform_.height()*0.95f),
+	platforms_[5].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.175f),GFX_BOX2D_POS_Y(platform_.height()*0.95f),
 		GFX_BOX2D_SIZE(platform_.width()*0.25f),GFX_BOX2D_SIZE(platform_.height()*0.08f));//botttom left
-	platforms_[6].Create_platform(world_,GFX_BOX2D_POS_X(platform_.width()*0.325f),GFX_BOX2D_POS_Y(platform_.height()*0.36f),
+	platforms_[6].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.325f),GFX_BOX2D_POS_Y(platform_.height()*0.36f),
 		GFX_BOX2D_SIZE(platform_.width()*0.025f),GFX_BOX2D_SIZE(platform_.height()*0.35f));//divider
-	platforms_[7].Create_platform(world_,GFX_BOX2D_POS_X(platform_.width()*0.22f),GFX_BOX2D_POS_Y(platform_.height()*0.63f),
+	platforms_[7].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.22f),GFX_BOX2D_POS_Y(platform_.height()*0.63f),
 		GFX_BOX2D_SIZE(platform_.width()*0.1f),GFX_BOX2D_SIZE(platform_.height()*0.08f));//tunnel roof
+
+	//set object type
+	for(int i = 0;i < PLATFORM_NUM;i++)
+	{
+		platforms_[i].setType(GameObject::PLATFORM);
+	}
 	
 	//create pickups on ceiling
 	pickUp_[0].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.75f),GFX_BOX2D_POS_Y(30));
@@ -332,70 +329,69 @@ void GameState::CreateObjects()
 
 	//create plants
 	//tunnel blockers
-	plant_[0].CreatePlant(world_,GFX_BOX2D_POS_X(platform_.width()*0.16f),GFX_BOX2D_POS_Y(platform_.height()*0.82f),GFX_BOX2D_SIZE(20)
+	plant_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.16f),GFX_BOX2D_POS_Y(platform_.height()*0.82f),GFX_BOX2D_SIZE(20)
 		,GFX_BOX2D_SIZE(platform_.height()*0.12f));
-	plant_[1].CreatePlant(world_,GFX_BOX2D_POS_X(platform_.width()*0.29f),GFX_BOX2D_POS_Y(platform_.height()*0.82),GFX_BOX2D_SIZE(20),
+	plant_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.29f),GFX_BOX2D_POS_Y(platform_.height()*0.82),GFX_BOX2D_SIZE(20),
 		GFX_BOX2D_SIZE(platform_.height()*0.12f));
 	//treasure holders
-	plant_[2].CreatePlant(world_,GFX_BOX2D_POS_X(30),GFX_BOX2D_POS_Y(platform_.height()*0.325),GFX_BOX2D_SIZE(20),
+	plant_[2].CreateStaticBody(world_,GFX_BOX2D_POS_X(30),GFX_BOX2D_POS_Y(platform_.height()*0.325),GFX_BOX2D_SIZE(20),
 		GFX_BOX2D_SIZE(20));//left
-	plant_[3].CreatePlant(world_,GFX_BOX2D_POS_X(platform_.width()*0.28f),GFX_BOX2D_POS_Y(platform_.height()*0.325),GFX_BOX2D_SIZE(20),
+	plant_[3].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.28f),GFX_BOX2D_POS_Y(platform_.height()*0.325),GFX_BOX2D_SIZE(20),
 		GFX_BOX2D_SIZE(20));//right
-	plant_[4].CreatePlant(world_,GFX_BOX2D_POS_X(platform_.width()*0.16f),GFX_BOX2D_POS_Y(30),GFX_BOX2D_SIZE(20)
+	plant_[4].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.16f),GFX_BOX2D_POS_Y(30),GFX_BOX2D_SIZE(20)
 		,GFX_BOX2D_SIZE(20));//top
+
+	//set to plant type
+	for(int j = 0; j < PLANT_NUM;j++)
+	{
+		plant_[j].setType(GameObject::PLANT);
+	}
 
 	//create spike
 	//floor
-	spike_[0].CreateSpike(world_,GFX_BOX2D_POS_X(platform_.width()*0.575f),GFX_BOX2D_POS_Y(platform_.height()-15),
+	spike_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.575f),GFX_BOX2D_POS_Y(platform_.height()-15),
 		GFX_BOX2D_SIZE(platform_.width()*0.2f),GFX_BOX2D_SIZE(5));
 	//top left
-	spike_[1].CreateSpike(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(0),
+	spike_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(0),
 		GFX_BOX2D_SIZE(40),GFX_BOX2D_SIZE(40));
 	spike_[1].set_rotation(40);
 	//top right
-	spike_[2].CreateSpike(world_,GFX_BOX2D_POS_X(platform_.width()*0.32f),GFX_BOX2D_POS_Y(5),
+	spike_[2].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.32f),GFX_BOX2D_POS_Y(5),
 		GFX_BOX2D_SIZE(40),GFX_BOX2D_SIZE(40));
 	spike_[2].set_rotation(40);
 	//bottom right
-	spike_[3].CreateSpike(world_,GFX_BOX2D_POS_X(platform_.width()*0.31f),GFX_BOX2D_POS_Y(platform_.height()*0.545f),
+	spike_[3].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.31f),GFX_BOX2D_POS_Y(platform_.height()*0.545f),
 		GFX_BOX2D_SIZE(25),GFX_BOX2D_SIZE(25));
 	spike_[3].set_rotation(40);
+
+	//set to spike type
+	for(int k = 0; k < SPIKE_NUM; k++)
+	{
+		spike_[k].set_colour(0xff0000ff);//set colour to red
+		spike_[k].setType(GameObject::SPIKE);
+	}
 }
 
 void GameState::Restart()
 {
-	//destroy dead player
-	if(player_.destroyed == false)
-	{
-		world_->DestroyBody(player_.body_);
-		player_.body_ = NULL;
-		player_.destroyed = true;
-	}
-
-	Destroy();//enemies
+	//destroy objects
+	Destroy(player_);//player
+	Destroy(enemy_);//enemy
 
 	//destroy pickups
 	for ( int y = 0; y < PICKUP_NUM; y++)
 	{
+		//reset for another play
 		pickUp_[y].dead = true;
-		pickUp_[y].spawned = false;//reset for another play
-		if(pickUp_[y].destroyed == false)
-		{
-			world_->DestroyBody(pickUp_[y].body_);
-			pickUp_[y].body_ = NULL;
-			pickUp_[y].destroyed = true;
-		}
+		pickUp_[y].spawned = false;
+
+		Destroy(pickUp_[y]);
 	}
 
 	for(int s = 0; s < PLANT_NUM; s++)
 	{
 		//destroy plants
-		if(plant_[s].destroyed == false)
-		{
-			world_->DestroyBody(plant_[s].body_);
-			plant_[s].body_ = NULL;
-			plant_[s].destroyed = true;
-		}
+		Destroy(plant_[s]);
 	}
 
 	score_ = 0;
@@ -431,13 +427,13 @@ void GameState::PlantPickUps()
 
 }
 
-void GameState::Destroy()
+void GameState::Destroy(GameObject &object)
 {
-	if(enemy_.destroyed == false)
+	if(object.destroyed == false)
 	{
-		world_->DestroyBody(enemy_.body_);
-		enemy_.body_ = NULL;
-		enemy_.destroyed = true;
+		world_->DestroyBody(object.body_);
+		object.body_ = NULL;
+		object.destroyed = true;
 	}
 }
 

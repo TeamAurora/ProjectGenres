@@ -29,8 +29,8 @@ public:
 	void RotateTo(const float degrees);	// Absolute rotation function
 	void RotateBy(const float degrees); // Relative rotation function
 	void ScaleBy(const float scalefactor); // DOESN'T WORK WITH BOX2D
-	inline const TYPE type() const { return type_; }
-	inline void set_type(const TYPE type) { type_ = type; }
+	inline const TYPE getType() const { return type_; }
+	inline void setType(const TYPE type) { type_ = type; }
 	inline const bool visibility() const { return visibility_; }
 	inline void set_visibility(const bool visibility) { visibility_ = visibility; }
 	
@@ -48,15 +48,15 @@ public:
 	void ForceToCentre(const b2Vec2& force);						// applies a force to the centre of the body associated with the gameobject
 	void LinearImpulse(const b2Vec2& impulse, const b2Vec2& point);	// applies an impulse to the body associated with the gameobject
 
-/////John //////////////////////////////////////////////////////////////////
+/////John// 
+	void CreateStaticBody(b2World* world_, float x , float y, float width, float height);//create Static body at (x,y) with that width & height
 	void Knockback(b2Vec2, b2Vec2);//knock object back when they take damage
 
 	bool dead;//flag for killing 
 	bool destroyed;// to check if object has removed from game
 
-	//look at destroybody() and maybe make private again
 	b2Body* body_; // pointer to a box2d body
-
+//////////
 protected:
 	enum PHYSICSENGINE { DEFAULT, BOX2D }; // used to keep same functions being usable independent of physics engine (switch statement in each function handles switching between functionality)
 
@@ -67,17 +67,19 @@ protected:
 	b2World* world_; // pointer to a box2d world
 
 ///John////
+	//Inital values for making body and sprites
 	abfw::Vector2 bodyInitialPosition;
 	float body_half_width;
 	float body_half_height;
-	b2Vec2 force;//force for causing movement
-	float move_v;//speed at which bodies move
-
-	
 	float uv_x,uv_y, uv_width,uv_height;//initial uv values
 
+	//Movement
+	b2Vec2 force;//force for causing movement
+	float move_v;//speed at which bodies move
+	
+	//Knockback
 	b2Vec2 knockbackForce_;//push object back when hit
-	float magnitude_;
+	float magnitude_;///size of knockback force
 ///////
 };
 

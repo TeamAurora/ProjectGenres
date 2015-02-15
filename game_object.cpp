@@ -8,7 +8,8 @@ GameObject::GameObject() :
 	velocity_(0.0f, 0.0f),
 	world_(NULL),
 	body_(NULL),
-	physicsengine_(DEFAULT)
+	physicsengine_(DEFAULT),
+	magnitude_(150)
 {
 }
 
@@ -174,7 +175,7 @@ void GameObject::DestroyBody()
 {
 	world_->DestroyBody(body_);	// destroys the box2d body of this object
 	physicsengine_ = BOX2D;		// changes back to default physics engine for this object
-	world_ = NULL;				// sets world pointer to null
+	world_ = NULL;			// sets world pointer to null
 }
 
 void GameObject::AddFixture(const b2FixtureDef fixture_def)
@@ -197,6 +198,46 @@ void GameObject::LinearImpulse(const b2Vec2& impulse, const b2Vec2& point)
 	body_->ApplyLinearImpulse(impulse, point);
 }
 
+//John//////////////////////////
+void GameObject::CreateStaticBody(b2World* world_,float x , float y, float width, float height)
+{
+	dead = false;
+	destroyed = false;
+
+	body_half_width = width;
+	body_half_height = height;
+
+	//set position
+	bodyInitialPosition.x = x;
+	bodyInitialPosition.y = y;
+
+	// setup the ground definition
+	b2BodyDef body_def;
+	body_def.position.x = bodyInitialPosition.x;
+	body_def.position.y = bodyInitialPosition.y;
+
+	// create the ground
+	body_ = world_->CreateBody(&body_def);
+
+	// set the shape for the object
+	b2PolygonShape shape;
+	shape.SetAsBox(body_half_width, body_half_height);
+
+	// bind the shape to the body
+	body_ -> CreateFixture(&shape, 0.0f);
+
+	//set ground sprite size
+	set_width(BOX2D_GFX_SIZE(2*body_half_width));
+	set_height(BOX2D_GFX_SIZE(2*body_half_height));
+
+	//set sprite position
+	float spriteX = BOX2D_GFX_POS_X(body_->GetPosition().x);
+	float spriteY = BOX2D_GFX_POS_Y(body_->GetPosition().y);
+
+	body_->SetUserData(this);
+
+	set_position(abfw::Vector3(spriteX,spriteY,1));
+}
 
 void GameObject::Knockback(b2Vec2 pos1, b2Vec2 pos2)
 {

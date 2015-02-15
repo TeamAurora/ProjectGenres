@@ -101,17 +101,17 @@ void Player::Update(const float& ticks, bool gameOver)
 
 	currentPos = b2Vec2(new_x, new_y);
 
-	if (hurting)
+	if(hurting)
 	{
 		updateHealth(-damage);
 	}
 
-	if (health() <= 0)
+	if(health() <= 0)
 	{
 		dead = true;
 	}
 
-	if (gDir == UP || gDir == DOWN)
+	if(gDir == UP || gDir == DOWN)
 	{
 		horizontal = true;
 	}
