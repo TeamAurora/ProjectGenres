@@ -1,5 +1,5 @@
 #pragma once
-#include "system/platform.h"
+#include "system\platform.h"
 
 namespace abfw
 {
@@ -40,5 +40,5 @@ protected:
 
 	class abfw::Platform& platform_;
 	class abfw::AudioManager* audio_manager_;
-	const class GameApplication* application_;
+	const GameApplication* application_;
 };

@@ -244,8 +244,8 @@ GAMESTATE MenuState::Update(const float& ticks_, const int& frame_counter_, cons
 			}
 			break;
 		}
-	}
-	return MENU;*/
+	}*/
+	return MENU;
 }
 void MenuState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
