@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="blade.cpp" />
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="collectible.cpp" />
     <ClCompile Include="contact_listener.cpp" />
     <ClCompile Include="enemy.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="appstate.h" />
     <ClInclude Include="blade.h" />
     <ClInclude Include="box2d_helpers.h" />
+    <ClInclude Include="camera.h" />
     <ClInclude Include="collectible.h" />
     <ClInclude Include="Contact_listener.h" />
     <ClInclude Include="enemy.h" />

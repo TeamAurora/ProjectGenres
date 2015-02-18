@@ -68,6 +68,9 @@
     <ClCompile Include="game_object.cpp">
       <Filter>Source Files\Sprite Hierarchy</Filter>
     </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game_application.h">
@@ -114,6 +117,9 @@
     </ClInclude>
     <ClInclude Include="game_object.h">
       <Filter>Header Files\Sprite Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

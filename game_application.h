@@ -7,6 +7,7 @@
 #include "appstate.h"				// include required for GAMESTATE to be defined
 #include "game_settings.h"
 #include "game_object.h"
+#include "camera.h"
 #include <vector>
 
 namespace abfw
@@ -40,22 +41,29 @@ private:
 
 	void ChangeState(GAMESTATE next_state); // handles changing states, initializing new state and terminating old state - frame counter is reset to 0 on state change
 
-	// Objects
-	abfw::SonyControllerInputManager* controller_manager_;
+	// Engine Objects (External abfw related objects)
+
 	abfw::AudioManager* audio_manager_;
-	abfw::Font font_;
 	abfw::SpriteRenderer* sprite_renderer_;
+	abfw::SonyControllerInputManager* controller_manager_;
+
+	// Resource Objects (Font, Textures, etc)
+
+	abfw::Font font_;
 	abfw::Texture* background_texture_;
 	abfw::Texture* loading_texture_;
+
+	// Application Objects (Objects that are at the application level of the project hierarchy)
+
+	Camera camera_;
 	Sprite background_;
 	Sprite loading_;
-	
+
 	AppState* pCurrentState;	// pointer to current appstate class
 	IntroState* pIntro;			// pointer to each possible state
 	MenuState* pMenu;
 	GameState* pGame;
-	
-	// Variables
+
 	GAMESTATE gamestate_;		// tracks current state
 	GAMESTATE updated_state_;	// tracks state to change to (for comparing with current state)
 	bool change_state_; // used to draw loading screen before changing state
