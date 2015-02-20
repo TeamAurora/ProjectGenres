@@ -197,6 +197,36 @@ void GameState::InputLoop(const abfw::SonyController* controller)
 	{
 		Restart();
 	}
+
+	if (controller->buttons_down() & ABFW_SONY_CTRL_CROSS)
+	{
+		application_->camera_->Scale(abfw::Vector2(0.99f, 0.99f));
+	}
+
+	if (controller->buttons_down() & ABFW_SONY_CTRL_SQUARE)
+	{
+		application_->camera_->Scale(abfw::Vector2(1.01f, 1.01f));
+	}
+
+	if (controller->buttons_down() & ABFW_SONY_CTRL_LEFT)
+	{
+		application_->camera_->MoveBy(abfw::Vector2(-1.0f, 0.0f));
+	}
+
+	if (controller->buttons_down() & ABFW_SONY_CTRL_RIGHT)
+	{
+		application_->camera_->MoveBy(abfw::Vector2(1.0f, 0.0f));
+	}
+
+	if (controller->buttons_down() & ABFW_SONY_CTRL_UP)
+	{
+		application_->camera_->MoveBy(abfw::Vector2(0.0f, -1.0f));
+	}
+
+	if (controller->buttons_down() & ABFW_SONY_CTRL_DOWN)
+	{
+		application_->camera_->MoveBy(abfw::Vector2(0.0f, 1.0f));
+	}
 }
 
 void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_)

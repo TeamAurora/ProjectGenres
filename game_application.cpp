@@ -25,8 +25,6 @@ GameApplication::~GameApplication()
 void GameApplication::Init()
 {
 
-/////not working /////////////////////////
-
 	// load the font to draw the on-screen text
 	bool font_loaded = font_.Load("comic_sans", platform_);
 	if(!font_loaded)
@@ -34,7 +32,6 @@ void GameApplication::Init()
 		std::cout << "Font failed to load." << std::endl;
 		exit(-1);
 	}
-
 
 	// Create sprite renderer
 	sprite_renderer_ = platform_.CreateSpriteRenderer();
@@ -44,6 +41,9 @@ void GameApplication::Init()
 
 	// Create audio manager
 	audio_manager_ = new abfw::AudioManagerVita;
+
+	// Create camera
+	camera_ = new Camera(sprite_renderer_, platform_);
 	
 	// Seed RNG
 	srand (5189023);
@@ -74,21 +74,15 @@ void GameApplication::Init()
 void GameApplication::CleanUp()
 {
 	// Application Cleanup
-	delete controller_manager_;
-	controller_manager_ = NULL;
-
-	delete sprite_renderer_;
-	sprite_renderer_ = NULL;
-
+	DeleteNull(controller_manager_);
+	DeleteNull(sprite_renderer_);
 	audio_manager_->UnloadMusic();
-	delete audio_manager_;
-	audio_manager_ = NULL;
+	DeleteNull(audio_manager_);
+	DeleteNull(camera_);
 	
 	// Textures
-	delete background_texture_;
-	background_texture_ = NULL;
-	delete loading_texture_;
-	loading_texture_ = NULL;
+	DeleteNull(background_texture_);
+	DeleteNull(loading_texture_);
 	
 	// State Machine
 	if(pIntro != NULL)
@@ -141,6 +135,8 @@ bool GameApplication::Update(float ticks)
 			break;
 		}
 	}
+
+	camera_->ApplyCameraTransforms();
 
 	return true;
 }

@@ -36,7 +36,8 @@ public:
 	abfw::Texture* LoadTextureFromPNG(const char* filename) const; // must be const functions to allow "this" pointers access ("this" pointer is const qualified)
 	
 	mutable GameSettings settings_; // easily accessed through GameApplication pointers when public - useful to have settings accessible from anywhere within the application
-	
+	Camera* camera_; // must be pointer as cannot be constructed until renderer is created
+
 private:
 
 	void ChangeState(GAMESTATE next_state); // handles changing states, initializing new state and terminating old state - frame counter is reset to 0 on state change
@@ -55,7 +56,6 @@ private:
 
 	// Application Objects (Objects that are at the application level of the project hierarchy)
 
-	Camera camera_;
 	Sprite background_;
 	Sprite loading_;
 
