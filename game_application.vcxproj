@@ -113,6 +113,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="audio_manager_fmod.cpp" />
     <ClCompile Include="blade.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collectible.cpp" />
@@ -137,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="appstate.h" />
+    <ClInclude Include="audio_manager_fmod.h" />
     <ClInclude Include="blade.h" />
     <ClInclude Include="box2d_helpers.h" />
     <ClInclude Include="camera.h" />

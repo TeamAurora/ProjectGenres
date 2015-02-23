@@ -1,125 +1,129 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;cc;s;asm</Extensions>
+    <Filter Include="Application">
+      <UniqueIdentifier>{a2b16e45-668d-4df9-a4f1-684b0bbeb3ed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp</Extensions>
+    <Filter Include="Application\States">
+      <UniqueIdentifier>{c8a23d10-c697-40fe-a664-d6506265c65b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\States">
-      <UniqueIdentifier>{13ff07fe-c4d3-44ee-a58b-6a1cc0837478}</UniqueIdentifier>
+    <Filter Include="Application\Physics">
+      <UniqueIdentifier>{bef3381a-c1e7-487b-bcc9-5c65f2768ac6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Misc">
-      <UniqueIdentifier>{50e50fc5-2ceb-473e-a3dd-22fc410806c1}</UniqueIdentifier>
+    <Filter Include="Application\Misc">
+      <UniqueIdentifier>{1996df47-19dd-4f27-9f33-9021659cbddf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Sprite Hierarchy">
+    <Filter Include="Application\Graphics">
+      <UniqueIdentifier>{8c095148-1ca0-40bd-910c-6ef29889e25d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\Graphics\Sprite Hierarchy">
       <UniqueIdentifier>{4a769a98-317b-4168-8f8d-195b896e8a6e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\States">
-      <UniqueIdentifier>{e9bd26cb-57b8-42c4-a915-7acf93e93ad5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Sprite Hierarchy">
-      <UniqueIdentifier>{901c6b97-ae0f-492d-987d-087863e468b1}</UniqueIdentifier>
+    <Filter Include="Application\Audio">
+      <UniqueIdentifier>{3ba1a629-80db-4008-a14d-94559f14644e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="game_application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main_d3d11.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main_vita.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="game_state.cpp">
-      <Filter>Source Files\States</Filter>
-    </ClCompile>
-    <ClCompile Include="intro_state.cpp">
-      <Filter>Source Files\States</Filter>
-    </ClCompile>
-    <ClCompile Include="menu_state.cpp">
-      <Filter>Source Files\States</Filter>
-    </ClCompile>
-    <ClCompile Include="sprite.cpp">
-      <Filter>Source Files\Sprite Hierarchy</Filter>
-    </ClCompile>
-    <ClCompile Include="living_object.cpp">
-      <Filter>Source Files\Sprite Hierarchy</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files\Sprite Hierarchy</Filter>
-    </ClCompile>
-    <ClCompile Include="contact_listener.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="audio_manager_fmod.cpp">
+      <Filter>Application\Audio</Filter>
     </ClCompile>
     <ClCompile Include="blade.cpp">
-      <Filter>Source Files\Sprite Hierarchy</Filter>
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClCompile>
     <ClCompile Include="collectible.cpp">
-      <Filter>Source Files\Sprite Hierarchy</Filter>
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClCompile>
     <ClCompile Include="enemy.cpp">
-      <Filter>Source Files\Sprite Hierarchy</Filter>
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClCompile>
     <ClCompile Include="game_object.cpp">
-      <Filter>Source Files\Sprite Hierarchy</Filter>
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="living_object.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Application\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="menu_state.cpp">
+      <Filter>Application\States</Filter>
+    </ClCompile>
+    <ClCompile Include="game_state.cpp">
+      <Filter>Application\States</Filter>
+    </ClCompile>
+    <ClCompile Include="intro_state.cpp">
+      <Filter>Application\States</Filter>
+    </ClCompile>
+    <ClCompile Include="contact_listener.cpp">
+      <Filter>Application\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="main_vita.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="game_application.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="main_d3d11.cpp">
+      <Filter>Application</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="game_application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="appstate.h">
-      <Filter>Header Files\States</Filter>
-    </ClInclude>
-    <ClInclude Include="game_state.h">
-      <Filter>Header Files\States</Filter>
-    </ClInclude>
-    <ClInclude Include="intro_state.h">
-      <Filter>Header Files\States</Filter>
-    </ClInclude>
-    <ClInclude Include="menu_state.h">
-      <Filter>Header Files\States</Filter>
-    </ClInclude>
-    <ClInclude Include="box2d_helpers.h">
-      <Filter>Header Files\Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="game_settings.h">
-      <Filter>Header Files\Misc</Filter>
-    </ClInclude>
     <ClInclude Include="sprite.h">
-      <Filter>Header Files\Sprite Hierarchy</Filter>
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="living_object.h">
-      <Filter>Header Files\Sprite Hierarchy</Filter>
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
-      <Filter>Header Files\Sprite Hierarchy</Filter>
-    </ClInclude>
-    <ClInclude Include="Contact_listener.h">
-      <Filter>Header Files</Filter>
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="blade.h">
-      <Filter>Header Files\Sprite Hierarchy</Filter>
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="collectible.h">
-      <Filter>Header Files\Sprite Hierarchy</Filter>
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="enemy.h">
-      <Filter>Header Files\Sprite Hierarchy</Filter>
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="game_object.h">
-      <Filter>Header Files\Sprite Hierarchy</Filter>
+      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="Contact_listener.h">
+      <Filter>Application\Physics</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
-      <Filter>Header Files</Filter>
+      <Filter>Application\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="appstate.h">
+      <Filter>Application\States</Filter>
+    </ClInclude>
+    <ClInclude Include="game_state.h">
+      <Filter>Application\States</Filter>
+    </ClInclude>
+    <ClInclude Include="intro_state.h">
+      <Filter>Application\States</Filter>
+    </ClInclude>
+    <ClInclude Include="menu_state.h">
+      <Filter>Application\States</Filter>
+    </ClInclude>
+    <ClInclude Include="audio_manager_fmod.h">
+      <Filter>Application\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="box2d_helpers.h">
+      <Filter>Application\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="game_settings.h">
+      <Filter>Application\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="game_application.h">
+      <Filter>Application</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
