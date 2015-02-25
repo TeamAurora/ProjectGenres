@@ -8,6 +8,7 @@
 #include "enemy.h"
 #include "collectible.h"
 #include "blade.h"
+#include "Tile.h"
 
 
 //total number of each objects used for array size
@@ -15,6 +16,7 @@
 #define PICKUP_NUM 10
 #define PLANT_NUM 5
 #define SPIKE_NUM 4
+#define TILE_TOTAL_COUNT 70
 
 class GameState :
 	public AppState
@@ -66,6 +68,8 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* rotPlantBlockTex;
 	// spike texture - TODO get spike texture
 	abfw::Texture* spikeTexture;
+
+	abfw::Texture* Tiles_[TILE_TOTAL_COUNT];
 	
 	// STATE-SPECIFIC Sound effects
 	
@@ -85,6 +89,11 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	Player player_;
 	GameObject spike_[SPIKE_NUM];
 	Sprite background_;
+
+	// Background Grid Vectors
+	std::vector<Sprite> High_Layer_;
+	std::vector<Sprite> Mid_Layer_;
+	std::vector<Sprite> Low_Layer_;
 
 	// STATE-SPECIFIC Variables
 	float score_;//points per pickups gathered

@@ -105,6 +105,9 @@ void GameState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 	// Draw game objects
 	sprite_renderer_->DrawSprite(background_);
 
+	// Draw background layers
+
+
 	if(player_.dead == false)
 	{
 		sprite_renderer_->DrawSprite(player_);
