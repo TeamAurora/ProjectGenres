@@ -87,11 +87,63 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		//check player is touching platform
 		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::PLATFORM)
 		{
+
+			if (game_object->position().y - game_object_b->position().y > 0)
+			{
+				((Player *)game_object)->Player_Gravity(2);
+			}
+			if (game_object->position().y - game_object_b->position().y < 0)
+			{
+				((Player *)game_object)->Player_Gravity(0);
+			}
 			((Player *)game_object)->grounded = true;
 		}
-		else if (game_object->getType() == GameObject::PLATFORM && game_object_b->getType() == GameObject::PLAYER)
+
+			
+		if (game_object->getType() == GameObject::PLATFORM && game_object_b->getType() == GameObject::PLAYER)
 		{
+			if (game_object_b->position().y - game_object->position().y > 0)
+			{
+				((Player *)game_object_b)->Player_Gravity(2);
+			}
+
+			if (game_object_b->position().y - game_object->position().y < 0)
+			{
+				((Player *)game_object_b)->Player_Gravity(0);
+			}
+
 			((Player *)game_object_b)->grounded = true;
+		}
+		
+		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::PLATFORM)
+		{
+			if (game_object->position().x - game_object_b->position().x > 0)
+			{ 
+				((Player *)game_object)->Player_Gravity(3);
+			}
+			if (game_object->position().x - game_object_b->position().x < 0)
+			{
+				((Player *)game_object)->Player_Gravity(1);
+			}
+
+			((Player *)game_object)->grounded = true;
+
+		}
+		
+		if (game_object->getType() == GameObject::PLATFORM && game_object_b->getType() == GameObject::PLAYER)
+		{
+			
+			if (game_object_b->position().x - game_object->position().x > 0)
+			{
+				((Player *)game_object_b)->Player_Gravity(3);
+			}
+
+			if (game_object_b->position().x - game_object->position().x < 0)
+			{
+				((Player *)game_object_b)->Player_Gravity(1);
+			}	
+
+			((Player *)game_object)->grounded = true;
 		}
 	}
 }
@@ -129,4 +181,3 @@ void Contact_Listener::EndContact(b2Contact* contact)
 		}
 	}
 }
-

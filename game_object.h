@@ -3,6 +3,8 @@
 
 #include "sprite.h"
 #include <maths/vector2.h>
+#include <maths/math_utils.h>
+#include "math.h"
 #include <Box2D/Box2D.h>
 #include <input/vita/sony_controller_input_manager_vita.h>
 #include "box2d_helpers.h"

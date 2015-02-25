@@ -31,9 +31,13 @@ Player::Player()
 	horizontal = true;
 	moveUp = true;
 	grounded = true;
+	jumping = false;
 
 	jumpCutOff = 0.8;
 	moveCutOff = 0.6;
+	currentRayAngle = 0; //5.235987756 ;//300 radians
+	rayLength = 1;
+	Player_Gravity(0);
 }
 
 
@@ -172,7 +176,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 	// check we have a valid controller object (one that isn't NULL)
 	if (controller)
 	{
-		// Sets current gravity manipulation via player input
+		/*// Sets current gravity manipulation via player input
 		if (controller->right_stick_y_axis() < -jumpCutOff)//up
 		{
 			gDir = UP;
@@ -192,7 +196,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 		{
 			gDir = DOWN;
 			gravity = b2Vec2(0.0f, -10.0f);
-		}
+		}*/
 
 		// checks what gravity is currently applied and dictates what movement
 		// can be used ie. x axis movement on ground/ceiling, y axis movement on
@@ -241,6 +245,53 @@ void Player::Player_Input(const abfw::SonyController* controller)
 		{
 			attacking = false;
 		}
+
+		
+		// change angle of projected jump
+		float xaxisval = controller->right_stick_x_axis();
+		float yaxisval = controller->right_stick_y_axis();
+		currentRayAngle = atan2(xaxisval, -yaxisval); //* FRAMEWORK_RAD_TO_DEG;
+	
+
+		// jump mechanic
+		if ( controller->buttons_down() & ABFW_SONY_CTRL_R2)
+		{
+			b2Vec2 angle = b2Vec2(sinf(currentRayAngle), cosf(currentRayAngle) );
+
+			b2Vec2 impulse = b2Vec2(rayLength * angle);
+
+			jumping = true;
+			body_->ApplyLinearImpulse(impulse, 
+				body_->GetWorldCenter() ); // apply force to robot using p2 as direction
+		}
+		else
+		{
+			jumping = false;
+		}
+		
 	}
 	body_->ApplyForceToCenter(force);
+}
+
+void Player::Player_Gravity(int n)
+{
+	switch (n) {
+	case 0:
+		gDir = DOWN;
+		gravity = b2Vec2(0.0f, -10.0f);
+		break;
+	case 1:
+		gDir = RIGHT;
+		gravity = b2Vec2(10.0f, 0.0f);
+		break;
+	case 2:
+		gDir = UP;
+		gravity = b2Vec2(0.0f, 10.0f);
+		break;
+	case 3:
+		gDir = LEFT;
+		gravity = b2Vec2(-10.0f, 0.0f);
+		break;
+	}
+
 }
