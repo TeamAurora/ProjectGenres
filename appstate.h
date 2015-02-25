@@ -14,7 +14,7 @@ namespace abfw
 
 class GameApplication;
 
-enum GAMESTATE {INTRO, MENU, GAME}; // possible gamestates (globally scoped so that the application class and every state can utilize the type)
+enum GAMESTATE {INTRO, MENU, GAME, LEVEL_SELECT, SCORE_SCREEN, LEVEL_ONE, LEVEL_TWO, LEVEL_THREE}; // possible gamestates (globally scoped so that the application class and every state can utilize the type)
 
 class AppState
 {
