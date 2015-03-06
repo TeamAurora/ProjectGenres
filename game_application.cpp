@@ -88,15 +88,14 @@ void GameApplication::CleanUp()
 	
 	// State Machine
 	if(pIntro != NULL)
-		delete pIntro;
+		DeleteNull(pIntro);
 	if(pMenu != NULL)
-		delete pMenu;
+		DeleteNull(pMenu);
 	if(pGame != NULL)
-		delete pGame;
+		DeleteNull(pGame);
+	if(pLevel2 != NULL)
+		DeleteNull(pLevel2);
 	pCurrentState = NULL;
-	pIntro = NULL;
-	pMenu = NULL;
-	pGame = NULL;
 }
 
 bool GameApplication::Update(float ticks)

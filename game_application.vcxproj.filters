@@ -19,24 +19,15 @@
     <Filter Include="Application\Graphics\Sprite Hierarchy">
       <UniqueIdentifier>{4a769a98-317b-4168-8f8d-195b896e8a6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\Graphics\Sprite Hierarchy\GameObjects">
+      <UniqueIdentifier>{eed8d3e1-63f9-4286-9c5f-0b768bc7fc1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="blade.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
-    </ClCompile>
-    <ClCompile Include="collectible.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
-    </ClCompile>
     <ClCompile Include="game_object.cpp">
       <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClCompile>
     <ClCompile Include="living_object.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
       <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClCompile>
     <ClCompile Include="sprite.cpp">
@@ -66,24 +57,30 @@
     <ClCompile Include="main_d3d11.cpp">
       <Filter>Application</Filter>
     </ClCompile>
+    <ClCompile Include="level2State.cpp">
+      <Filter>Application\States</Filter>
+    </ClCompile>
+    <ClCompile Include="blade.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="collectible.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="bullet.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sprite.h">
       <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="living_object.h">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
-    </ClInclude>
-    <ClInclude Include="blade.h">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
-    </ClInclude>
-    <ClInclude Include="collectible.h">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy.h">
       <Filter>Application\Graphics\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="game_object.h">
@@ -115,6 +112,24 @@
     </ClInclude>
     <ClInclude Include="game_application.h">
       <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="level2State.h">
+      <Filter>Application\States</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="blade.h">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="collectible.h">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet.h">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
