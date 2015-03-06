@@ -20,6 +20,7 @@ namespace abfw
 class IntroState;
 class GameState;
 class MenuState;
+class Level2State;
 
 class GameApplication : public abfw::Application
 {
@@ -63,7 +64,9 @@ private:
 	IntroState* pIntro;			// pointer to each possible state
 	MenuState* pMenu;
 	GameState* pGame;
-
+	Level2State* pLevel2;
+	
+	// Variables
 	GAMESTATE gamestate_;		// tracks current state
 	GAMESTATE updated_state_;	// tracks state to change to (for comparing with current state)
 	bool change_state_; // used to draw loading screen before changing state

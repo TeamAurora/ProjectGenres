@@ -14,8 +14,8 @@ void PickUp::Create_pickup(b2World* world_, float x, float y)
 	destroyed = false;
 
 	//set size
-	body_half_width = 0.125;
-	body_half_height = 0.125;
+	body_half_width = 0.2;
+	body_half_height = 0.2;
 
 	//set position
 	bodyInitialPosition.x = x;

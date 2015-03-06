@@ -33,6 +33,10 @@ void GameState::InitializeState()
 	background_.set_width(platform_.width());
 	background_.set_position(abfw::Vector3(platform_.width()*0.5f, platform_.height()*0.5f, 1.0f));
 
+	arrow_.set_height(50);
+	arrow_.set_width(5);
+	arrow_.set_uv_height(-1);
+
 	player_.set_texture(playerTex);
 	//alternate pickup textures
 	for(int g = 0; g < PICKUP_NUM;g+=2)
@@ -49,14 +53,6 @@ void GameState::InitializeState()
 
 	//for plant walls
 	plant_[0].set_texture(plantWallTex);
-	plant_[1].set_texture(plantWallTex);
-
-	//for plant blocks
-	plant_[2].set_texture(rotPlantBlockTex);
-	plant_[3].set_texture(rotPlantBlockTex);
-	plant_[3].set_uv_width(-1.0f);
-	plant_[4].set_texture(plantBlockTex);
-	plant_[4].set_uv_height(-1.0f);
 
 	// spawn spikes, platforms, etc
 	platformWidth_ = GFX_BOX2D_SIZE(10);
@@ -65,6 +61,7 @@ void GameState::InitializeState()
 
 	score_ = 0;
 	gameOver_ = false;
+	reloadTime = 0;
 }
 
 void GameState::TerminateState()
@@ -89,9 +86,9 @@ GAMESTATE GameState::Update(const float& ticks_, const int& frame_counter_, cons
 	const abfw::SonyController* controller = controller_manager_.GetController(0);
 	if(controller) // if controller isn't null
 	{
-		if (controller->buttons_down() & ABFW_SONY_CTRL_SELECT)
+		if (controller->buttons_down() & ABFW_SONY_CTRL_START)
 		{
-			//return MENU; // go to menu if start is down. TODO change state
+			return INTRO; // go to intro if select is down. TODO change state
 		}
 		else // do input loop for state if we aren't returning to menustate
 			InputLoop(controller);
@@ -108,6 +105,7 @@ void GameState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 	if(player_.dead == false)
 	{
 		sprite_renderer_->DrawSprite(player_);
+		sprite_renderer_->DrawSprite(arrow_);
 		if(blade_.destroyed == false)
 		{
 			sprite_renderer_->DrawSprite(blade_);
@@ -117,6 +115,11 @@ void GameState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 	if(enemy_.dead == false)
 	{
 		sprite_renderer_->DrawSprite(enemy_);
+	}
+
+	if(bullet_.dead == false)
+	{
+		sprite_renderer_->DrawSprite(bullet_);
 	}
 
 	for(int u = 0; u < PICKUP_NUM; u++)
@@ -147,8 +150,7 @@ void GameState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 		sprite_renderer_->DrawSprite(platforms_[wall_render]);
 	}
 
-	//text temporaily broken. Not loading in comic_sans font
-	font_.RenderText(sprite_renderer_, abfw::Vector3(10.0f, 5.0f, -0.9f), 1.0f, 0xff00ff00, abfw::TJ_LEFT, "Project Zero");
+	font_.RenderText(sprite_renderer_, abfw::Vector3(10.0f, 5.0f, -0.9f), 1.0f, 0xff00ff00, abfw::TJ_LEFT, "Galaxea");
 	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 40.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "health  : %.0f", player_.health());	//display player health
 	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 5.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "Score : %.0f", score_);//display player score
 	font_.RenderText(sprite_renderer_, abfw::Vector3(850.0f, 510.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "FPS: %.1f", frame_rate_);
@@ -170,10 +172,11 @@ void GameState::LoadTextures()
 
 	// single object texture loaded directly into objects
 	background_.set_texture(application_->LoadTextureFromPNG("Level_BG.png"));
+	arrow_.set_texture(application_->LoadTextureFromPNG("Black_Down_Arrow.png"));
 
 	// state-level textures 
-	playerTex = application_->LoadTextureFromPNG("Character.png");
-	rotPlayerTex = application_->LoadTextureFromPNG("Character_rotate.png");
+	playerTex = application_->LoadTextureFromPNG("Robot_animations.png");
+	rotPlayerTex = application_->LoadTextureFromPNG("Robot_animations_rotated.png");
 	redPUTex = application_->LoadTextureFromPNG("Red.png");
 	bluePUTex = application_->LoadTextureFromPNG("Blue.png");
 	platformTex = application_->LoadTextureFromPNG("Platform_Panel.png");
@@ -196,16 +199,6 @@ void GameState::InputLoop(const abfw::SonyController* controller)
 	if (controller->buttons_down() & ABFW_SONY_CTRL_TRIANGLE)
 	{
 		Restart();
-	}
-
-	if (controller->buttons_down() & ABFW_SONY_CTRL_CROSS)
-	{
-		application_->camera_->Scale(abfw::Vector2(0.99f, 0.99f));
-	}
-
-	if (controller->buttons_down() & ABFW_SONY_CTRL_SQUARE)
-	{
-		application_->camera_->Scale(abfw::Vector2(1.01f, 1.01f));
 	}
 
 	if (controller->buttons_down() & ABFW_SONY_CTRL_LEFT)
@@ -236,7 +229,9 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 	//update player if alive
 	if(player_.dead != true)
 	{
-		player_.Update(ticks_, gameOver_);
+		player_.Update(ticks_, gameOver_,false);
+		arrow_.set_position(player_.currentPos.x,player_.currentPos.y,0.0f);	
+		arrow_.set_rotation(player_.currentRayAngle);
 	}
 	else
 	{
@@ -252,9 +247,8 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 			attackTime = 0;
 		}
 	}
-	else if (blade_.destroyed == false && blade_.created == true && attackTime > 20)
+	else if (blade_.destroyed == false && blade_.created == true && attackTime > 20)//destroy blade after a certain time
 	{
-		//destroy blade
 		Destroy(blade_);
 		blade_.created = false;
 	}
@@ -262,17 +256,34 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 	if(blade_.created == true)
 	{
 		blade_.Update(ticks_,player_);
-		attackTime ++;
+		attackTime += (ticks_*20);
 	}
 
 	//update enemy if alive
 	if(enemy_.dead != true)
 	{
-		enemy_.Update_Enemy(ticks_, player_.currentPos);
+		enemy_.Update_Enemy(ticks_, player_.currentPos, true);
+		//reloadTime  += (ticks_*20);
+
+		//if(reloadTime > 50 && bullet_.created == false)//shoot a bullet
+		//{
+		//	bullet_.CreateBullet(world_,enemy_.x,enemy_.y, enemy_.gravity);
+		//	reloadTime = 0;
+		//}
 	}
 	else
 	{
 		Destroy(enemy_);//remove enemys
+	}
+
+	if(bullet_.dead != true && bullet_.created == true)
+	{
+		bullet_.Update(ticks_);
+	}
+	else if (bullet_.dead == true)
+	{
+		Destroy(bullet_);
+		bullet_.created = false;
 	}
 
 	//remove from game if collected
@@ -311,7 +322,7 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 	}
 	
 	//span extra pickup from certain plants
-	PlantPickUps();
+	//PlantPickUps();
 
 	//win condition
 	if(score_ == PICKUP_NUM)
@@ -322,9 +333,9 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 
 void GameState::CreateObjects()
 {
-	player_.Create_Player(world_, platform_.width(), platform_.height());
-	enemy_.Create_Enemy(world_, GFX_BOX2D_POS_X(platform_.width()*0.35f),GFX_BOX2D_POS_Y(platform_.height()*0.3));
-	enemy_.gravity = b2Vec2(-10,0);
+	player_.Create_Player(world_, GFX_BOX2D_POS_X(platform_.width()*0.15),GFX_BOX2D_POS_Y(platform_.height()*0.85));
+	enemy_.Create_Enemy(world_, GFX_BOX2D_POS_X(platform_.width()*0.25f),GFX_BOX2D_POS_Y(platform_.height()*0.2));
+	enemy_.gravity = b2Vec2(0,-10);
 
 	//create walls
 	//boundries
@@ -333,14 +344,15 @@ void GameState::CreateObjects()
 	platforms_[2].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(platform_.height()),platformWidth_,GFX_BOX2D_SIZE(platform_.height()));//left wall
 	platforms_[3].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()),GFX_BOX2D_POS_Y(0),platformWidth_,GFX_BOX2D_SIZE(platform_.height()));//right wall
 	//level parts
-	platforms_[4].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.9f),GFX_BOX2D_POS_Y(platform_.height()*0.9f),
-		GFX_BOX2D_SIZE(platform_.width()*0.125f),GFX_BOX2D_SIZE(platform_.height()*0.125f));	//bottom right
-	platforms_[5].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.175f),GFX_BOX2D_POS_Y(platform_.height()*0.95f),
-		GFX_BOX2D_SIZE(platform_.width()*0.25f),GFX_BOX2D_SIZE(platform_.height()*0.08f));//botttom left
-	platforms_[6].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.325f),GFX_BOX2D_POS_Y(platform_.height()*0.36f),
-		GFX_BOX2D_SIZE(platform_.width()*0.025f),GFX_BOX2D_SIZE(platform_.height()*0.35f));//divider
-	platforms_[7].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.22f),GFX_BOX2D_POS_Y(platform_.height()*0.63f),
-		GFX_BOX2D_SIZE(platform_.width()*0.1f),GFX_BOX2D_SIZE(platform_.height()*0.08f));//tunnel roof
+	platforms_[4].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.45f),GFX_BOX2D_POS_Y(platform_.height()*0.9f),
+		GFX_BOX2D_SIZE(platform_.width()*0.11f),GFX_BOX2D_SIZE(platform_.height()*0.325f));	//centre
+	platforms_[5].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.175f),GFX_BOX2D_POS_Y(platform_.height()*0.32f),
+		GFX_BOX2D_SIZE(platform_.width()*0.175f),GFX_BOX2D_SIZE(platform_.height()*0.06f));//top left
+	platforms_[6].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.82f),GFX_BOX2D_POS_Y(platform_.height()*0.326f),
+		GFX_BOX2D_SIZE(platform_.width()*0.175f),GFX_BOX2D_SIZE(platform_.height()*0.06f));//top right
+	platforms_[7].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.6f),GFX_BOX2D_POS_Y(platform_.height()*0.90f),
+		GFX_BOX2D_SIZE(platform_.width()*0.15f),GFX_BOX2D_SIZE(platform_.height()*0.15f));//slope
+	platforms_[7].set_rotation(0.785398163);//45 degree angle in radians
 
 	//set object type
 	for(int i = 0;i < PLATFORM_NUM;i++)
@@ -348,28 +360,33 @@ void GameState::CreateObjects()
 		platforms_[i].setType(GameObject::PLATFORM);
 	}
 	
-	//create pickups on ceiling
-	pickUp_[0].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.75f),GFX_BOX2D_POS_Y(30));
-	pickUp_[1].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.7f),GFX_BOX2D_POS_Y(30));
-	pickUp_[2].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.65f),GFX_BOX2D_POS_Y(30));
-	pickUp_[3].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.6f),GFX_BOX2D_POS_Y(30));
-	pickUp_[4].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.55f),GFX_BOX2D_POS_Y(30));
-	pickUp_[5].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.5f),GFX_BOX2D_POS_Y(30));
-	pickUp_[9].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.8f),GFX_BOX2D_POS_Y(30));
+	//create pickups 
+	//top right
+	pickUp_[0].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.85f),GFX_BOX2D_POS_Y(platform_.height()*0.15f));
+	pickUp_[1].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.9f),GFX_BOX2D_POS_Y(platform_.height()*0.15f));
+	pickUp_[2].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.95f),GFX_BOX2D_POS_Y(platform_.height()*0.15f));
+
+	//bottom right
+	pickUp_[3].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.95f),GFX_BOX2D_POS_Y(platform_.height()*0.55f));
+	pickUp_[4].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.95f),GFX_BOX2D_POS_Y(platform_.height()*0.65f));
+	pickUp_[5].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.95f),GFX_BOX2D_POS_Y(platform_.height()*0.75f));
+	pickUp_[6].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.95f),GFX_BOX2D_POS_Y(platform_.height()*0.85f));
+	//top left
+	pickUp_[7].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.05f),GFX_BOX2D_POS_Y(platform_.height()*0.05f));
 
 	//create plants
-	//tunnel blockers
-	plant_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.16f),GFX_BOX2D_POS_Y(platform_.height()*0.82f),GFX_BOX2D_SIZE(20)
-		,GFX_BOX2D_SIZE(platform_.height()*0.12f));
-	plant_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.29f),GFX_BOX2D_POS_Y(platform_.height()*0.82),GFX_BOX2D_SIZE(20),
-		GFX_BOX2D_SIZE(platform_.height()*0.12f));
-	//treasure holders
-	plant_[2].CreateStaticBody(world_,GFX_BOX2D_POS_X(30),GFX_BOX2D_POS_Y(platform_.height()*0.325),GFX_BOX2D_SIZE(20),
-		GFX_BOX2D_SIZE(20));//left
-	plant_[3].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.28f),GFX_BOX2D_POS_Y(platform_.height()*0.325),GFX_BOX2D_SIZE(20),
-		GFX_BOX2D_SIZE(20));//right
-	plant_[4].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.16f),GFX_BOX2D_POS_Y(30),GFX_BOX2D_SIZE(20)
-		,GFX_BOX2D_SIZE(20));//top
+	//tunnel blocker
+	plant_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.7f),GFX_BOX2D_POS_Y(platform_.height()*0.145f),GFX_BOX2D_SIZE(20)
+		,GFX_BOX2D_SIZE(platform_.height()*0.13f));
+	//plant_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.29f),GFX_BOX2D_POS_Y(platform_.height()*0.82),GFX_BOX2D_SIZE(20),
+	//	GFX_BOX2D_SIZE(platform_.height()*0.12f));
+	////treasure holders
+	//plant_[2].CreateStaticBody(world_,GFX_BOX2D_POS_X(30),GFX_BOX2D_POS_Y(platform_.height()*0.325),GFX_BOX2D_SIZE(20),
+	//	GFX_BOX2D_SIZE(20));//left
+	//plant_[3].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.28f),GFX_BOX2D_POS_Y(platform_.height()*0.325),GFX_BOX2D_SIZE(20),
+	//	GFX_BOX2D_SIZE(20));//right
+	//plant_[4].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.16f),GFX_BOX2D_POS_Y(30),GFX_BOX2D_SIZE(20)
+	//	,GFX_BOX2D_SIZE(20));//top
 
 	//set to plant type
 	for(int j = 0; j < PLANT_NUM;j++)
@@ -378,21 +395,21 @@ void GameState::CreateObjects()
 	}
 
 	//create spike
-	//floor
-	spike_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.575f),GFX_BOX2D_POS_Y(platform_.height()-15),
-		GFX_BOX2D_SIZE(platform_.width()*0.2f),GFX_BOX2D_SIZE(5));
 	//top left
-	spike_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(0),
-		GFX_BOX2D_SIZE(40),GFX_BOX2D_SIZE(40));
-	spike_[1].set_rotation(40);
-	//top right
-	spike_[2].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.32f),GFX_BOX2D_POS_Y(5),
-		GFX_BOX2D_SIZE(40),GFX_BOX2D_SIZE(40));
-	spike_[2].set_rotation(40);
-	//bottom right
-	spike_[3].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.31f),GFX_BOX2D_POS_Y(platform_.height()*0.545f),
-		GFX_BOX2D_SIZE(25),GFX_BOX2D_SIZE(25));
-	spike_[3].set_rotation(40);
+	spike_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.375f),GFX_BOX2D_POS_Y(platform_.height()*0.32f),
+		GFX_BOX2D_SIZE(25),GFX_BOX2D_SIZE(platform_.height()*0.059f));
+	//slope
+	spike_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.66f),GFX_BOX2D_POS_Y(platform_.height()*0.85),
+		GFX_BOX2D_SIZE(platform_.width()*0.16),GFX_BOX2D_SIZE(30));
+	spike_[1].set_rotation(0.785398163);
+	////top right
+	//spike_[2].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.32f),GFX_BOX2D_POS_Y(5),
+	//	GFX_BOX2D_SIZE(40),GFX_BOX2D_SIZE(40));
+	//spike_[2].set_rotation(40);
+	////bottom right
+	//spike_[3].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.31f),GFX_BOX2D_POS_Y(platform_.height()*0.545f),
+	//	GFX_BOX2D_SIZE(25),GFX_BOX2D_SIZE(25));
+	//spike_[3].set_rotation(40);
 
 	//set to spike type
 	for(int k = 0; k < SPIKE_NUM; k++)
@@ -432,31 +449,6 @@ void GameState::Restart()
 	gameOver_ = false;
 }
 
-void GameState::PlantPickUps()
-{
-	//left plant
-	if(plant_[2].destroyed == true && pickUp_[6].spawned == false)
-	{
-		pickUp_[6].Create_pickup(world_,GFX_BOX2D_POS_X(30),GFX_BOX2D_POS_Y(platform_.height()*0.325));
-		pickUp_[6].spawned = true;
-	}
-
-	//right plant
-	if(plant_[3].destroyed == true && pickUp_[7].spawned == false)
-	{
-		pickUp_[7].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.26f),GFX_BOX2D_POS_Y(platform_.height()*0.325));
-		pickUp_[7].spawned = true;
-	}
-
-	//top plant
-	if(plant_[4].destroyed == true && pickUp_[8].spawned == false)
-	{
-		pickUp_[8].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.16f),GFX_BOX2D_POS_Y(30));
-		pickUp_[8].spawned = true;
-	}
-
-}
-
 void GameState::Destroy(GameObject &object)
 {
 	if(object.destroyed == false)
@@ -466,37 +458,3 @@ void GameState::Destroy(GameObject &object)
 		object.destroyed = true;
 	}
 }
-
-//
-//void GameState::SpawnSpike(b2Vec3 position_, b2Vec2 dimensions_)
-//{
-//	float x_pos_ = position_.x;
-//	float y_pos_ = position_.y;
-//	float width_ = dimensions_.x;
-//	float height_ = dimensions_.y;
-//
-//	GameObject spike_ = GameObject();
-//
-//	// Define and add box2d body
-//	b2BodyDef body_;
-//	body_.type = b2_staticBody;
-//	body_.position = b2Vec2(GFX_BOX2D_POS_X(x_pos_), GFX_BOX2D_POS_Y(y_pos_));
-//	spike_.AddBody(world_, body_); // this also changes this object to use box2d physics in all its functions
-//
-//	// Define and add box2d fixture
-//	b2FixtureDef fixture_;
-//	b2PolygonShape shape_;
-//	shape_.SetAsBox(GFX_BOX2D_SIZE(dimensions_.x), GFX_BOX2D_SIZE(dimensions_.y));
-//	fixture_.shape = &shape_;
-//	fixture_.density = 0.0f;
-//	spike_.AddFixture(fixture_);
-//
-//	// Initialize all the gameobject related things for this spike
-//	spike_.InitSprite(dimensions_.x, dimensions_.y, abfw::Vector3(x_pos_, y_pos_, 0.0f), spike_texture); // init sprite properties
-//	spike_.set_type(GameObject::SPIKE);
-//	spike_.set_visibility(true);			// Makes projectile visible
-//
-//	// adds this spike to the spikes vector
-//	spikes_.push_back(spike_);
-//
-//}

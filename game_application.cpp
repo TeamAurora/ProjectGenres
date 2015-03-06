@@ -9,6 +9,7 @@
 #include "game_state.h"
 #include "intro_state.h"
 #include "menu_state.h"
+#include "level2State.h"
 
 
 GameApplication::GameApplication(abfw::Platform& platform) :
@@ -41,7 +42,7 @@ void GameApplication::Init()
 
 	// Create audio manager
 	audio_manager_ = new abfw::AudioManagerVita;
-
+	
 	// Create camera
 	camera_ = new Camera(sprite_renderer_, platform_);
 	
@@ -77,12 +78,13 @@ void GameApplication::CleanUp()
 	DeleteNull(controller_manager_);
 	DeleteNull(sprite_renderer_);
 	audio_manager_->UnloadMusic();
-	DeleteNull(audio_manager_);
+	audio_manager_ = NULL;
 	DeleteNull(camera_);
 	
 	// Textures
 	DeleteNull(background_texture_);
 	DeleteNull(loading_texture_);
+	loading_texture_ = NULL;
 	
 	// State Machine
 	if(pIntro != NULL)
@@ -196,20 +198,26 @@ void GameApplication::ChangeState(GAMESTATE next_state)
 			case GAME: 	delete pGame;
 						pGame = NULL;
 						break;
+			case LEVEL2: delete pLevel2;
+						pLevel2 = NULL;
+						break;
 		}
 	}
 	
 	switch(next_state)						// construct and allocate memory for new state, sets current state pointer to new state
 	{
-		case INTRO: pIntro = new IntroState(platform_, this, audio_manager_);
-					pCurrentState = pIntro;
-					break;
-		case MENU: 	pMenu = new MenuState(platform_, this, audio_manager_);
-					pCurrentState = pMenu;
-					break;
-		case GAME: 	pGame = new GameState(platform_, this, audio_manager_);
-					pCurrentState = pGame;
-					break;
+		case INTRO:  pIntro = new IntroState(platform_, this, audio_manager_);
+					 pCurrentState = pIntro;
+					 break;
+		case MENU:   pMenu = new MenuState(platform_, this, audio_manager_);
+					 pCurrentState = pMenu;
+					 break;
+		case GAME:   pGame = new GameState(platform_, this, audio_manager_);
+					 pCurrentState = pGame;
+					 break;
+		case LEVEL2: pLevel2 = new Level2State(platform_, this, audio_manager_);
+					 pCurrentState = pLevel2;
+					 break;
 	}
 
 	pCurrentState->InitializeState();		// initialize new state

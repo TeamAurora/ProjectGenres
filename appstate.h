@@ -1,5 +1,5 @@
 #pragma once
-#include "system\platform.h"
+#include "system/platform.h"
 
 namespace abfw
 {

@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="blade.cpp" />
+    <ClCompile Include="bullet.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collectible.cpp" />
     <ClCompile Include="contact_listener.cpp" />
@@ -122,10 +123,12 @@
     <ClCompile Include="game_object.cpp" />
     <ClCompile Include="game_state.cpp" />
     <ClCompile Include="intro_state.cpp" />
+    <ClCompile Include="level2State.cpp" />
     <ClCompile Include="living_object.cpp" />
     <ClCompile Include="main_d3d11.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|PSVita'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="main_vita.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -139,6 +142,7 @@
     <ClInclude Include="appstate.h" />
     <ClInclude Include="blade.h" />
     <ClInclude Include="box2d_helpers.h" />
+    <ClInclude Include="bullet.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collectible.h" />
     <ClInclude Include="Contact_listener.h" />
@@ -148,6 +152,7 @@
     <ClInclude Include="game_settings.h" />
     <ClInclude Include="game_state.h" />
     <ClInclude Include="intro_state.h" />
+    <ClInclude Include="level2State.h" />
     <ClInclude Include="living_object.h" />
     <ClInclude Include="menu_state.h" />
     <ClInclude Include="Player.h" />

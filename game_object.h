@@ -2,7 +2,9 @@
 #define _GAME_OBJECT_H
 
 #include "sprite.h"
+#include "math.h"
 #include <maths/vector2.h>
+#include <maths/math_utils.h>
 #include <Box2D/Box2D.h>
 #include <input/vita/sony_controller_input_manager_vita.h>
 #include "box2d_helpers.h"
@@ -16,8 +18,7 @@ class GameObject : public Sprite
 {	// Physics based game object
 public:
 
-	enum TYPE { PLAYER, PLATFORM, ENEMY, PICKUP, WALL, PLANT, SPIKE, BLADE }; // used for specific collision response - objects type
-	//TYPE type_;
+	enum TYPE { PLAYER, PLATFORM, ENEMY, PICKUP, WALL, PLANT, SPIKE, BLADE, BULLET }; // used for specific collision response - objects type
 
 	GameObject();		// Default constructor for default gameobjects
 	virtual ~GameObject();
@@ -29,6 +30,8 @@ public:
 	void RotateTo(const float degrees);	// Absolute rotation function
 	void RotateBy(const float degrees); // Relative rotation function
 	void ScaleBy(const float scalefactor); // DOESN'T WORK WITH BOX2D
+
+	//getters and setters
 	inline const TYPE getType() const { return type_; }
 	inline void setType(const TYPE type) { type_ = type; }
 	inline const bool visibility() const { return visibility_; }
@@ -67,7 +70,7 @@ protected:
 	b2World* world_; // pointer to a box2d world
 
 ///John////
-	//Inital values for making body and sprites
+	//Initial values for making body and sprites
 	abfw::Vector2 bodyInitialPosition;
 	float body_half_width;
 	float body_half_height;
@@ -76,6 +79,7 @@ protected:
 	//Movement
 	b2Vec2 force;//force for causing movement
 	float move_v;//speed at which bodies move
+	bool move;//movement flag
 	
 	//Knockback
 	b2Vec2 knockbackForce_;//push object back when hit

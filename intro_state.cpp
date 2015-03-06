@@ -32,9 +32,13 @@ GAMESTATE IntroState::Update(const float& ticks_, const int& frame_counter_, con
 	const abfw::SonyController* controller = controller_manager_.GetController(0); // get the platform specific controller from controller_manager
 	if(controller) // if controller isn't null
 	{
-		if(controller->buttons_down() & ABFW_SONY_CTRL_START)
+		if(controller->buttons_down() & ABFW_SONY_CTRL_CROSS)
 		{
 			return GAME;
+		}
+		if(controller->buttons_down() & ABFW_SONY_CTRL_CIRCLE)
+		{
+			return LEVEL2;
 		}
 	}
 	return INTRO;
@@ -43,8 +47,8 @@ void IntroState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 {
 	//sprite_renderer_->DrawSprite(splash_);
 	//instructions
-	font_.RenderText(sprite_renderer_, abfw::Vector3(350.0f,250.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "Press Start");
-	font_.RenderText(sprite_renderer_, abfw::Vector3(350.0f,300.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "to play");
+	font_.RenderText(sprite_renderer_, abfw::Vector3(20.0f,250.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "Press Cross to play level 1");
+	font_.RenderText(sprite_renderer_, abfw::Vector3(20.0f,300.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "Press Circle to play level 2");
 }
 
 void IntroState::LoadTextures()

@@ -12,18 +12,18 @@
 
 
 //total number of each objects used for array size
-#define PLATFORM_NUM 8
-#define PICKUP_NUM 8
-#define PLANT_NUM 5
-#define SPIKE_NUM 2
+#define PLATFORM_NUM2 10
+#define PICKUP_NUM2 8
+#define PLANT_NUM2 5
+#define SPIKE_NUM2 1
 
-class GameState :
+class Level2State :
 	public AppState
 {
 
 public:
-	GameState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager);
-	virtual ~GameState();
+	Level2State(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager);
+	virtual ~Level2State();
 	
 	void InitializeState();
 	void TerminateState();
@@ -37,8 +37,7 @@ private: // PRIVATE METHODS (FUNCTIONS)
 	void InputLoop(const abfw::SonyController* controller);
 	void UpdateGameObjects(const float& ticks_, const int& frame_counter_); // updates game object - deleting flagged ones, updating positions and spawning new ones
 
-	// Spawn functions
-	void SpawnSpike(b2Vec3 position, b2Vec2 dimensions); // Takes a position (3D to include depth the sprite gets rendered at) and it's dimensions (GFX scale, not Box2D)
+	
 ///John///
 	void CreateObjects();//call create functions for all gameobjects
 	void PlantPickUps();//spawn pickups from plants when they are destroyed
@@ -67,7 +66,6 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* rotPlantBlockTex;
 	// spike texture - TODO get spike texture
 	abfw::Texture* spikeTexture;
-	abfw::Texture* arrowTex;
 	
 	// STATE-SPECIFIC Sound effects
 	
@@ -78,16 +76,16 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	std::vector<GameObject> pickups_;
 	std::vector<LivingObject> plants_;
 	std::vector<GameObject> spikes_;*/
-	Blade blade_;
-	Bullet bullet_;
-	Enemy enemy_;
-	PickUp pickUp_[PICKUP_NUM];
-	GameObject plant_[PLANT_NUM];
-	GameObject platforms_[PLATFORM_NUM];
-	Player player_;
-	GameObject spike_[SPIKE_NUM];
+	Blade blade2_;
+	Bullet bullet2_;
+	Enemy enemy2_;
+	PickUp pickUp2_[PICKUP_NUM2];
+	GameObject plant2_[PLANT_NUM2];
+	GameObject platforms2_[PLATFORM_NUM2];
+	Player player2_;
+	GameObject spike2_[SPIKE_NUM2];
 	Sprite background_;
-	Sprite arrow_;//arrow showing where player wants to jump
+
 
 	// STATE-SPECIFIC Variables
 	float score_;//points per pickups gathered
