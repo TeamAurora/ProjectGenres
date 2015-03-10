@@ -267,7 +267,7 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 
 		//if(reloadTime > 50 && bullet_.created == false)//shoot a bullet
 		//{
-		//	bullet_.CreateBullet(world_,enemy_.x,enemy_.y, enemy_.gravity);
+		//	bullet_.CreateBullet(world_,enemy_.x,enemy_.y, enemy_.gravity, player_.currentPos);
 		//	reloadTime = 0;
 		//}
 	}
@@ -276,15 +276,15 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 		Destroy(enemy_);//remove enemys
 	}
 
-	if(bullet_.dead != true && bullet_.created == true)
-	{
-		bullet_.Update(ticks_);
-	}
-	else if (bullet_.dead == true)
-	{
-		Destroy(bullet_);
-		bullet_.created = false;
-	}
+	//if(bullet_.dead != true && bullet_.created == true)
+	//{
+	//	bullet_.Update(ticks_);
+	//}
+	//else if (bullet_.dead == true)
+	//{
+	//	Destroy(bullet_);
+	//	bullet_.created = false;
+	//}
 
 	//remove from game if collected
 	for(int i = 0;i < PICKUP_NUM;i++)

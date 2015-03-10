@@ -63,4 +63,6 @@ void PickUp::Update(float ticks)
 
 	set_position(abfw::Vector3(new_x,new_y,0.f));
 	set_rotation(-body_->GetAngle());
+
+
 }

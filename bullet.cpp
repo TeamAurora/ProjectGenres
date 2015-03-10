@@ -6,15 +6,17 @@ Bullet::Bullet()
 	move_v = 1;
 	created = false;
 	offsetAmount = 30;
+	slowAmount = 100;
 }
 
 
-void Bullet::CreateBullet(b2World* world_, float x, float y, b2Vec2 gravity)
+void Bullet::CreateBullet(b2World* world_, float x, float y, b2Vec2 gravity, b2Vec2 &playerPos)
 {
 	//start bools as false
 	dead = false;
 	destroyed = false;
 
+	//place starting position outside enemy
 	if(gravity.x > 0)
 	{
 		offset.x = -offsetAmount;
@@ -41,6 +43,9 @@ void Bullet::CreateBullet(b2World* world_, float x, float y, b2Vec2 gravity)
 		offset.y = 0;
 	}
 
+	//set player as target
+	target_ = playerPos;
+
 	//starting position
 	bodyInitialPosition.x = GFX_BOX2D_POS_X(x + offset.x);
 	bodyInitialPosition.y = GFX_BOX2D_POS_Y(y + offset.y);
@@ -62,7 +67,7 @@ void Bullet::CreateBullet(b2World* world_, float x, float y, b2Vec2 gravity)
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &box;
-	fixtureDef.density = 1.0f;
+	fixtureDef.density = 0.1f;
 	fixtureDef.friction = 0.5f;
 	fixtureDef.restitution = 0.1f; // bouncieness
 	body_->CreateFixture(&fixtureDef);
@@ -88,27 +93,13 @@ void Bullet::Update(float ticks)
 	set_position(abfw::Vector3(new_x,new_y,0.f));
 	set_rotation(-body_->GetAngle());
 
-	/*if(new_x > 900)
-	{
-		dead = true;
-	}*/
-
-	if(offset.x < 0)
-	{
-		force.Set(-move_v,0);
-	}
-	else if(offset.x > 0)
-	{
-		force.Set(move_v,0);
-	}
-	else if(offset.y < 0)
-	{
-		force.Set(0,move_v);
-	}
-	else if(offset.y > 0)
-	{
-		force.Set(0,-move_v);
-	}
+	//get vector between player's current and bullet start position
+	b2Vec2 aimVector;
+	aimVector.x = (target_.x - new_x)/slowAmount;
+	aimVector.y = -(target_.y - new_y)/slowAmount;//negative due to screen's y-axis
+	
+	//assign as force
+	force = aimVector;
 
 	body_->ApplyForceToCenter(force);
 }

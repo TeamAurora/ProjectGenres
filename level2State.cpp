@@ -297,7 +297,7 @@ void Level2State::UpdateGameObjects(const float& ticks_, const int& frame_counte
 		enemy2_.Update_Enemy(ticks_, player2_.currentPos, false);
 		reloadTime  += (ticks_*20);
 
-		if(reloadTime > 50 && bullet2_.created == false)//shoot a bullet
+		if(reloadTime > 50 && bullet2_.created == false)//shoot a bullet at intervals
 		{
 			bullet2_.CreateBullet(world_,enemy2_.x,enemy2_.y, enemy2_.gravity);
 			reloadTime = 0;
