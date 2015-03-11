@@ -6,7 +6,7 @@ Bullet::Bullet()
 	move_v = 1;
 	created = false;
 	offsetAmount = 30;
-	slowAmount = 100;
+	slowAmount = 2000;
 }
 
 

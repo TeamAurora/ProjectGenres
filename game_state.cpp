@@ -276,6 +276,7 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 		Destroy(enemy_);//remove enemys
 	}
 
+
 	//if(bullet_.dead != true && bullet_.created == true)
 	//{
 	//	bullet_.Update(ticks_);
@@ -399,7 +400,7 @@ void GameState::CreateObjects()
 	spike_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.375f),GFX_BOX2D_POS_Y(platform_.height()*0.32f),
 		GFX_BOX2D_SIZE(25),GFX_BOX2D_SIZE(platform_.height()*0.059f));
 	//slope
-	spike_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.66f),GFX_BOX2D_POS_Y(platform_.height()*0.85),
+	spike_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.66f),GFX_BOX2D_POS_Y(platform_.height()*0.8),
 		GFX_BOX2D_SIZE(platform_.width()*0.16),GFX_BOX2D_SIZE(30));
 	spike_[1].set_rotation(0.785398163);
 	////top right
