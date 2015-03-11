@@ -8,15 +8,18 @@ Enemy::Enemy()
 	
 	//initalise values
 	move_v = 4;
-	threshold = 20;
-	range = 150;
+	threshold_ = 20;
+	range_ = 150;
+	patrolTime_ = 20;
 }
 
 void Enemy::Create_Enemy(b2World* world_,float x , float y)
 {
-	//start bools as false
+	//values that need set each time an enemy is spawned
 	dead = false;
 	destroyed = false;
+	moveTimer_ = 0;
+	move = true;
 
 	//starting position
 	bodyInitialPosition.x = x;
@@ -55,7 +58,7 @@ void Enemy::Create_Enemy(b2World* world_,float x , float y)
 
 }
 
-void Enemy::Update_Enemy(float ticks, b2Vec2 playerPos)
+void Enemy::Update_Enemy(float ticks, b2Vec2 playerPos, bool patrol)
 {
 	//update sprite position to match body
 	float enemy_new_x = BOX2D_GFX_POS_X(body_->GetPosition().x);
@@ -63,6 +66,16 @@ void Enemy::Update_Enemy(float ticks, b2Vec2 playerPos)
 
 	set_position(abfw::Vector3(enemy_new_x,enemy_new_y,0.f));
 	set_rotation(-body_->GetAngle());
+	//gives position - used for spawning bullets
+	x = enemy_new_x;
+	y = enemy_new_y;
+
+	patrol_ = patrol;
+
+	if(patrol == true)
+	{
+		Patrol(ticks);
+	}
 
 	Attack(playerPos, enemy_new_x, enemy_new_y);//move enemy to hurt player
 
@@ -75,9 +88,9 @@ void Enemy::Attack(b2Vec2 playerPos, float enemyX, float enemyY)
 	//check vertically if enemy is on a wall
 	if(gravity.y == 0)
 	{
-		if(playerPos.x > (enemyX - threshold) && playerPos.x < (enemyX + threshold))//enemy  and player close to the same x cooridinate level
+		if(playerPos.x > (enemyX - threshold_) && playerPos.x < (enemyX + threshold_))//enemy  and player close to the same x cooridinate level
 		{
-			if(playerPos.y > (enemyY - range) && playerPos.y < (enemyY + range))//player is in attack range
+			if(playerPos.y > (enemyY - range_) && playerPos.y < (enemyY + range_))//player is in attack range
 			{
 				if(playerPos.y > enemyY)//if below move down
 				{
@@ -95,9 +108,9 @@ void Enemy::Attack(b2Vec2 playerPos, float enemyX, float enemyY)
 	}
 	else if (gravity.x == 0)//check horizontally if enemy is on ground or roof
 	{
-		if(playerPos.y > (enemyY - threshold) && playerPos.y < (enemyY + threshold))//enemy  and player close to the same y cooridinate level
+		if(playerPos.y > (enemyY - threshold_) && playerPos.y < (enemyY + threshold_))//enemy  and player close to the same y cooridinate level
 		{
-			if(playerPos.x > (enemyX - range) && playerPos.x < (enemyX + range))//player is in attack range
+			if(playerPos.x > (enemyX - range_) && playerPos.x < (enemyX + range_))//player is in attack range
 			{
 				if(playerPos.x > enemyX)//if to the right move right
 				{
@@ -113,3 +126,40 @@ void Enemy::Attack(b2Vec2 playerPos, float enemyX, float enemyY)
 		}
 	}
 }
+
+
+void Enemy::Patrol(float ticks)
+{
+	//make enemies move back and forth
+	if(moveTimer_ == 0 && move == true)
+	{
+		force.Set(-move_v,0.0f);
+	}
+
+	 if(moveTimer_ >= patrolTime_)
+	{
+		move = false;
+		force.Set(move_v,0.0f);
+	}
+
+	if(moveTimer_ >= (patrolTime_*2) && move == false)
+	{
+		move = true;
+		force.Set(-move_v,0.0f);
+		moveTimer_ = 0;
+	}
+
+	//set velocity cap
+	if ( force.x > move_v)
+	{
+		force.Set(move_v,0.0f);
+	}
+	else if (force.x < -move_v)
+	{
+		force.Set(-move_v,0.0f);
+	}
+
+	moveTimer_+= (ticks*20);
+	body_->ApplyForceToCenter(force);
+}
+

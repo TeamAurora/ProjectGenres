@@ -9,6 +9,7 @@
 #include "level_1.h"
 #include "intro_state.h"
 #include "menu_state.h"
+#include "level2State.h"
 
 
 GameApplication::GameApplication(abfw::Platform& platform) :

@@ -12,23 +12,22 @@
 
 
 //total number of each objects used for array size
-#define PLATFORM_NUM 8
-#define PICKUP_NUM 8
-#define PLANT_NUM 5
-#define SPIKE_NUM 4
-#define TILE_TOTAL_COUNT 222
+#define PLATFORM_NUM2 10
+#define PICKUP_NUM2 8
+#define PLANT_NUM2 5
+#define SPIKE_NUM2 1
 
-class Level_1 :
+class Level2State :
 	public AppState
 {
 
 public:
-	Level_1(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager);
-	virtual ~Level_1();
+	Level2State(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager);
+	virtual ~Level2State();
 	
 	void InitializeState();
 	void TerminateState();
-	APPSTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_);
+	GAMESTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_);
 	void Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_);
 	
 private: // PRIVATE METHODS (FUNCTIONS)
@@ -38,9 +37,7 @@ private: // PRIVATE METHODS (FUNCTIONS)
 	void InputLoop(const abfw::SonyController* controller);
 	void UpdateGameObjects(const float& ticks_, const int& frame_counter_); // updates game object - deleting flagged ones, updating positions and spawning new ones
 
-	// Spawn functions
-	void ConstructLevel(); // Constructs level background vectors from tiles
-	void SpawnSpike(b2Vec3 position, b2Vec2 dimensions); // Takes a position (3D to include depth the sprite gets rendered at) and it's dimensions (GFX scale, not Box2D)
+	
 ///John///
 	void CreateObjects();//call create functions for all gameobjects
 	void PlantPickUps();//spawn pickups from plants when they are destroyed
@@ -68,13 +65,7 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* plantBlockTex;
 	abfw::Texture* rotPlantBlockTex;
 	// spike texture - TODO get spike texture
-	//abfw::Texture* spikeTexture;
-
-	abfw::Texture* Tiles_[TILE_TOTAL_COUNT];
-=======
 	abfw::Texture* spikeTexture;
-	abfw::Texture* arrowTex;
->>>>>>> origin/John's:game_state.h
 	
 	// STATE-SPECIFIC Sound effects
 	
@@ -85,31 +76,23 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	std::vector<GameObject> pickups_;
 	std::vector<LivingObject> plants_;
 	std::vector<GameObject> spikes_;*/
-	Blade blade_;
-	Bullet bullet_;
-	Enemy enemy_;
-	PickUp pickUp_[PICKUP_NUM];
-	GameObject plant_[PLANT_NUM];
-	GameObject platforms_[PLATFORM_NUM];
-	Player player_;
-	GameObject spike_[SPIKE_NUM];
+	Blade blade2_;
+	Bullet bullet2_;
+	Enemy enemy2_;
+	PickUp pickUp2_[PICKUP_NUM2];
+	GameObject plant2_[PLANT_NUM2];
+	GameObject platforms2_[PLATFORM_NUM2];
+	Player player2_;
+	GameObject spike2_[SPIKE_NUM2];
 	Sprite background_;
-	Sprite arrow_;//arrow showing where player wants to jump
 
-	// Background Layer Vectors (Low > High Render Order)
-	std::vector<Sprite> High_Layer_;
-	std::vector<Sprite> Mid_Layer_;
-	std::vector<Sprite> Low_Layer_;
 
 	// STATE-SPECIFIC Variables
-	float score_;		// Score for this level
-	bool gameOver_;		// Track current level status
+	float score_;//points per pickups gathered
+	bool gameOver_;//if true player has died
 	float platformWidth_;
-	float attackTime;	// Amount of time between when attack can be pressed
-=======
 	float attackTime;//amount of time between when attack can be pressed
 	float reloadTime;//time between shots from the enemy
->>>>>>> origin/John's:game_state.h
 ////////////////////////////////////
 };
 

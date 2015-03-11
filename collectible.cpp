@@ -14,8 +14,8 @@ void PickUp::Create_pickup(b2World* world_, float x, float y)
 	destroyed = false;
 
 	//set size
-	body_half_width = 0.125;
-	body_half_height = 0.125;
+	body_half_width = 0.2;
+	body_half_height = 0.2;
 
 	//set position
 	bodyInitialPosition.x = x;
@@ -63,4 +63,6 @@ void PickUp::Update(float ticks)
 
 	set_position(abfw::Vector3(new_x,new_y,0.f));
 	set_rotation(-body_->GetAngle());
+
+
 }
