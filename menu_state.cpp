@@ -18,27 +18,18 @@ MenuState::~MenuState()
 
 void MenuState::InitializeState()
 {
-	/*LoadTextures();
+	LoadTextures();
 
 	abfw::Vector3 screen_centre(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f);
 	
 	// Start Button
-	start_button_ = GameObject();	// construct start button
-	start_button_.InitSprite(256.0f, 128.0f, screen_centre, start_texture_);
-	
-	// Sound Controls
-	float sound_button_spacing = platform_.width() * 0.2f;
-	music_button_ = GameObject();	// construct music button
-	music_button_.InitSprite(38.0f, 36.0f, screen_centre, music_on_texture_);
-	music_button_.MoveBy(-0.5f * sound_button_spacing, -(platform_.height() * 0.2f)); // moves left by half the button spacing and up by 1/5th the platform height
-	sound_effects_button_ = GameObject();	// construct sound effects button
-	sound_effects_button_.InitSprite(38.0f, 36.0f, music_button_.position(), sound_on_texture_);
-	sound_effects_button_.MoveBy(sound_button_spacing, 0.0f);
+	start_button_ = Button();	// construct start button
+	start_button_.InitSprite(256.0f, 128.0f, screen_centre, start_button_texture_);
 	
 	// Difficulty Buttons
 	// Each buttons position is relative to the last buttons with the exception
 	// of the first which is moved to position relative to the centre of the screen.
-	float diff_button_spacing = (platform_.width() * 0.5f) / (float)kDifficultySettings;
+	/*float diff_button_spacing = (platform_.width() * 0.5f) / (float)kDifficultySettings;
 	difficulty_button[0] = GameObject();	// construct first difficulty button
 	difficulty_button[0].InitSprite(48.0f, 36.0f, screen_centre, green_square_);
 	difficulty_button[0].MoveBy(-((float)kDifficultySettings / 2.5f) * diff_button_spacing, platform_.height() * 0.3f); // moves left by half the number of buttons times spacing and down by 1/5th the platform height
@@ -63,41 +54,13 @@ void MenuState::InitializeState()
 	
 	// Cross
 	cross_ = GameObject();
-	cross_.InitSprite(128.0f, 128.0f, abfw::Vector3(platform_.width() * 0.9f, platform_.height() * 0.8f, 0.0f), cross_texture_);
-
-	selection_ = STARTGAME; // starts selection as startgame button*/
-
-	// NOTE - Visibility is not set to true for any sprites (it's default initialized to false) as the render function of
-	// this state won't check for visibility before rendering anyway because the whole menu will be rendered every frame.
+	cross_.InitSprite(128.0f, 128.0f, abfw::Vector3(platform_.width() * 0.9f, platform_.height() * 0.8f, 0.0f), cross_texture_);*/
 }
 void MenuState::TerminateState()
 {
-	/*delete start_texture_;
-	start_texture_ = NULL;
-	delete cross_texture_;
-	cross_texture_ = NULL;
-	delete music_on_texture_;
-	music_on_texture_ = NULL;
-	delete music_off_texture_;
-	music_off_texture_ = NULL;
-	delete sound_on_texture_;
-	sound_on_texture_ = NULL;
-	delete sound_off_texture_;
-	sound_off_texture_ = NULL;
-	delete dpad_texture_;
-	dpad_texture_ = NULL;
-	delete blue_square_;
-	blue_square_ = NULL;
-	delete green_square_;
-	green_square_ = NULL;
-	delete yellow_diamond_;
-	yellow_diamond_ = NULL;
-	delete red_diamond_;
-	red_diamond_ = NULL;
-	delete purple_polygon_;
-	purple_polygon_ = NULL;
-	delete selector_;
-	selector_ = NULL;*/
+	DeleteNull(start_button_texture_);
+	DeleteNull(help_button_texture_);
+	DeleteNull(options_button_texture_);
 }
 APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
 {

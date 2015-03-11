@@ -1,6 +1,8 @@
 #pragma once
 #include "appstate.h"
-#include "game_object.h"
+#include "sprite.h"
+
+typedef Sprite Button; // TEMPORARY - until button class written
 
 class MenuState :
 	public AppState
@@ -17,29 +19,13 @@ public:
 private:
 	
 	void LoadTextures();
-
-	enum SELECTION { STARTGAME, MUSIC, SOUNDEFFECTS, DIFFICULTY}; // possible menu selections
-	SELECTION selection_;	// current menu selection
 	
-	abfw::Texture* start_texture_;
-	abfw::Texture* cross_texture_;
-	abfw::Texture* music_on_texture_;
-	abfw::Texture* music_off_texture_;
-	abfw::Texture* sound_on_texture_;
-	abfw::Texture* sound_off_texture_;
-	abfw::Texture* dpad_texture_;
-	abfw::Texture* blue_square_;
-	abfw::Texture* green_square_;
-	abfw::Texture* yellow_diamond_;
-	abfw::Texture* red_diamond_;
-	abfw::Texture* purple_polygon_;
-	abfw::Texture* selector_;
-	GameObject start_button_;
-	GameObject music_button_;
-	GameObject sound_effects_button_;
-	//GameObject difficulty_button[kDifficultySettings];
-	GameObject selection_pointer_;
-	GameObject dpad_;
-	GameObject cross_;
+	Sprite background_;
+	abfw::Texture* start_button_texture_;
+	abfw::Texture* help_button_texture_;
+	abfw::Texture* options_button_texture_;
+	Button start_button_;
+	Button help_button_;
+	Button options_button_;
 };
 

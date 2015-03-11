@@ -6,10 +6,10 @@
 #include <graphics/image_data.h>
 #include <graphics/texture.h>
 #include <iostream>
-#include "level_1.h"
 #include "intro_state.h"
 #include "menu_state.h"
-#include "level2State.h"
+#include "level_1.h"
+#include "level_2.h"
 
 
 GameApplication::GameApplication(abfw::Platform& platform) :
@@ -47,11 +47,10 @@ void GameApplication::Init()
 	camera_ = new Camera(sprite_renderer_, platform_);
 	
 	// Seed RNG
-	srand (5189023);
+	srand(5189023);
 	
 	// Loading Screen Initialization
-	loading_texture_ = LoadTextureFromPNG("loading_background.png");
-	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f), loading_texture_);
+	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width() / 2.0f, platform_.height() / 2.0f, 0.0f), LoadTextureFromPNG("loading_background.png"));
 
 	// Initializes game settings
 	settings_.music_ = true;
@@ -75,9 +74,6 @@ void GameApplication::CleanUp()
 	audio_manager_->UnloadMusic();
 	DeleteNull(audio_manager_);
 	DeleteNull(camera_);
-	
-	// Textures
-	DeleteNull(loading_texture_);
 	
 	// State Machine
 	DeleteNull(pIntro);

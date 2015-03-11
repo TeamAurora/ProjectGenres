@@ -55,7 +55,6 @@ private:
 	// Resource Objects (Font, Textures, etc)
 
 	abfw::Font font_;
-	abfw::Texture* loading_texture_;
 
 	// Application Objects (Objects that are at the application level of the project hierarchy)
 
@@ -66,7 +65,7 @@ private:
 	MenuState* pMenu;
 	LevelSelect* pLevelSelect; // NYI
 	Level_1* pLevel_1;
-	Level_2* pLevel_2;	// NYI
+	Level_2* pLevel_2;
 	Level_3* pLevel_3;	// NYI
 	ScoreScreen* pScoreScreen;	// NYI
 

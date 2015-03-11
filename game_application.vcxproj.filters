@@ -19,6 +19,9 @@
     <Filter Include="Application\Graphics\Sprite Hierarchy">
       <UniqueIdentifier>{4a769a98-317b-4168-8f8d-195b896e8a6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\Graphics\Sprite Hierarchy\GameObjects">
+      <UniqueIdentifier>{c95253f4-5db9-4b6a-8843-4facfd6d67d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game_object.cpp">
@@ -52,6 +55,24 @@
       <Filter>Application</Filter>
     </ClCompile>
     <ClCompile Include="level_1.cpp">
+      <Filter>Application\States</Filter>
+    </ClCompile>
+    <ClCompile Include="blade.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="bullet.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="collectible.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="level_2.cpp">
       <Filter>Application\States</Filter>
     </ClCompile>
   </ItemGroup>
@@ -90,6 +111,24 @@
       <Filter>Application</Filter>
     </ClInclude>
     <ClInclude Include="level_1.h">
+      <Filter>Application\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="blade.h">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet.h">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="collectible.h">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="level_2.h">
       <Filter>Application\States</Filter>
     </ClInclude>
   </ItemGroup>

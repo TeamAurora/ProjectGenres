@@ -1,4 +1,4 @@
-#include "level2State.h"
+#include "level_2.h"
 #include <graphics/sprite_renderer.h>
 #include <audio/vita/audio_manager_vita.h>
 #include <graphics/texture.h>
@@ -6,17 +6,17 @@
 #include "game_application.h"
 #include "box2d_helpers.h"
 
-Level2State::Level2State(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
+Level_2::Level_2(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
 	AppState(platform, application, audio_manager)
 {
 }
 
 
-Level2State::~Level2State()
+Level_2::~Level_2()
 {
 }
 
-void Level2State::InitializeState()
+void Level_2::InitializeState()
 {
 	//load assetes
 	LoadTextures();
@@ -69,7 +69,7 @@ void Level2State::InitializeState()
 	reloadTime = 0;
 }
 
-void Level2State::TerminateState()
+void Level_2::TerminateState()
 {
 	//Destroy(player2_);//player
 	//Destroy(enemy2_);//enemy
@@ -108,7 +108,7 @@ void Level2State::TerminateState()
 	world_ = NULL;
 }
 
-GAMESTATE Level2State::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
+APPSTATE Level_2::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
 {
 	// Step box2d world - add if box2d is enabled conditional
 	float time_step = 1.0f / 60.0f;
@@ -125,16 +125,16 @@ GAMESTATE Level2State::Update(const float& ticks_, const int& frame_counter_, co
 	{
 		if (controller->buttons_down() & ABFW_SONY_CTRL_START)
 		{
-			return INTRO; // go to intro if select is down. TODO change state
+			return MENU; // go to menu if start is pressed
 		}
 		else // do input loop for state if we aren't returning to menustate
 			InputLoop(controller);
 	}
 
-	return LEVEL2; // else continue with gamestate
+	return LEVEL_2; // else continue with gamestate
 }
 
-void Level2State::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
+void Level_2::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
 	// Draw game objects
 	sprite_renderer_->DrawSprite(background_);
@@ -202,7 +202,7 @@ void Level2State::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprit
 	sprite_renderer_->End();
 }
 
-void Level2State::LoadTextures()
+void Level_2::LoadTextures()
 {
 	//Load textures using application_->LoadTextureFromPNG("texturename.png")
 	// single object texture loaded directly into objects
@@ -219,13 +219,13 @@ void Level2State::LoadTextures()
 	rotPlantBlockTex = application_->LoadTextureFromPNG("Plant_Block_rot.png");
 }
 
-void Level2State::LoadSounds()
+void Level_2::LoadSounds()
 {
 	// Load audio using audio_manager_->LoadSample("sfxname.wav", platform_)
 
 }
 
-void Level2State::InputLoop(const abfw::SonyController* controller)
+void Level_2::InputLoop(const abfw::SonyController* controller)
 {
 	player2_.Player_Input(controller);
 
@@ -256,7 +256,7 @@ void Level2State::InputLoop(const abfw::SonyController* controller)
 	}
 }
 
-void Level2State::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
+void Level_2::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 {
 	// Any per-frame or per-tick updating for game objects should be done here
 	
@@ -363,7 +363,7 @@ void Level2State::UpdateGameObjects(const float& ticks_, const int& frame_counte
 	}	
 }
 
-void Level2State::CreateObjects()
+void Level_2::CreateObjects()
 {
 	
 	player2_.Create_Player(world_,GFX_BOX2D_POS_X(platform_.width()*0.15),GFX_BOX2D_POS_Y(platform_.height()*0.85));
@@ -451,7 +451,7 @@ void Level2State::CreateObjects()
 	}
 }
 
-void Level2State::Restart()
+void Level_2::Restart()
 {
 	//destroy objects
 	Destroy(player2_);//player
@@ -481,7 +481,7 @@ void Level2State::Restart()
 	gameOver_ = false;
 }
 
-void Level2State::PlantPickUps()
+void Level_2::PlantPickUps()
 {
 	////left plant
 	//if(plant2_[2].destroyed == true && pickUp2_[6].spawned == false)
@@ -506,7 +506,7 @@ void Level2State::PlantPickUps()
 
 }
 
-void Level2State::Destroy(GameObject &object)
+void Level_2::Destroy(GameObject &object)
 {
 	if(object.destroyed == false)
 	{

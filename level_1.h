@@ -40,6 +40,7 @@ private: // PRIVATE METHODS (FUNCTIONS)
 
 	// Spawn functions
 	void ConstructLevel(); // Constructs level background vectors from tiles
+	void PlaceTile(float x, float y, int tile_id, int dimensions, int layer); // x and y position (in 128px grid co-ordinates), tile texture id to use and layer to push to
 	void SpawnSpike(b2Vec3 position, b2Vec2 dimensions); // Takes a position (3D to include depth the sprite gets rendered at) and it's dimensions (GFX scale, not Box2D)
 ///John///
 	void CreateObjects();//call create functions for all gameobjects
@@ -56,14 +57,11 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	
 	// SHARED Textures
 	// Store single-object textures in the game object it's used for
-	// player textures
 	abfw::Texture* playerTex;
 	abfw::Texture* rotPlayerTex;
-	// pickup textures
 	abfw::Texture* redPUTex;
 	abfw::Texture* bluePUTex;
 	abfw::Texture* platformTex;
-	// plant textures
 	abfw::Texture* plantWallTex;
 	abfw::Texture* plantBlockTex;
 	abfw::Texture* rotPlantBlockTex;
@@ -71,10 +69,6 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	//abfw::Texture* spikeTexture;
 
 	abfw::Texture* Tiles_[TILE_TOTAL_COUNT];
-=======
-	abfw::Texture* spikeTexture;
-	abfw::Texture* arrowTex;
->>>>>>> origin/John's:game_state.h
 	
 	// STATE-SPECIFIC Sound effects
 	
@@ -93,7 +87,6 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	GameObject platforms_[PLATFORM_NUM];
 	Player player_;
 	GameObject spike_[SPIKE_NUM];
-	Sprite background_;
 	Sprite arrow_;//arrow showing where player wants to jump
 
 	// Background Layer Vectors (Low > High Render Order)
@@ -106,10 +99,7 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	bool gameOver_;		// Track current level status
 	float platformWidth_;
 	float attackTime;	// Amount of time between when attack can be pressed
-=======
-	float attackTime;//amount of time between when attack can be pressed
 	float reloadTime;//time between shots from the enemy
->>>>>>> origin/John's:game_state.h
 ////////////////////////////////////
 };
 

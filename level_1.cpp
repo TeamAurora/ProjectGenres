@@ -29,28 +29,14 @@ void Level_1::InitializeState()
 	world_->SetContactListener(&contact_listener_);
 
 	// Init Objects
-/////Set textures////
-	background_.set_height(platform_.height());
-	background_.set_width(platform_.width());
-	background_.set_position(abfw::Vector3(platform_.width()*0.5f, platform_.height()*0.5f, 1.0f));
-
-	arrow_.set_height(50);
-	arrow_.set_width(5);
-	arrow_.set_uv_height(-1);
-
 	player_.set_texture(playerTex);
-	//alternate pickup textures
-	for(int g = 0; g < PICKUP_NUM;g+=2)
+	/*for(int g = 0; g < PICKUP_NUM;g+=2)
 	{
 		pickUp_[g].set_texture(redPUTex);
-		pickUp_[g+1].set_texture(bluePUTex);	
-	}
-
-	//for platforms
-	for (int q = 0;q < PLATFORM_NUM; q++)
-	{
-		platforms_[q].set_texture(platformTex);
-	}
+		pickUp_[g+1].set_texture(bluePUTex);		lol.
+	}*/
+	pickUp_[0].set_texture(redPUTex);
+	pickUp_[1].set_texture(bluePUTex);
 
 	//for plant walls
 	plant_[0].set_texture(plantWallTex);
@@ -64,9 +50,10 @@ void Level_1::InitializeState()
 	plant_[4].set_uv_height(-1.0f);
 
 	// spawn spikes, platforms, etc
-	platformWidth_ = GFX_BOX2D_SIZE(10);
+	//platformWidth_ = GFX_BOX2D_SIZE(10);
 
-	CreateObjects();
+	//CreateObjects();
+	ConstructLevel();
 
 	score_ = 0;
 	gameOver_ = false;
@@ -79,7 +66,7 @@ void Level_1::TerminateState()
 	DeleteNull(world_);
 	for (int i = 0; i < TILE_TOTAL_COUNT; i++)
 	{
-		DeleteNull(Tiles_[i]);
+		DeleteArrayNull(Tiles_[i]);
 	}
 }
 
@@ -111,11 +98,15 @@ APPSTATE Level_1::Update(const float& ticks_, const int& frame_counter_, const a
 
 void Level_1::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
-	// Draw game objects
-	sprite_renderer_->DrawSprite(background_);
-
-	// Draw background layers
-
+	// Draw background layers based on layer priority
+	for (auto tile : Low_Layer_)
+	{
+		sprite_renderer_->DrawSprite(tile);
+	}
+	for (auto tile : Mid_Layer_)
+	{
+		sprite_renderer_->DrawSprite(tile);
+	}
 
 	if(player_.dead == false)
 	{
@@ -165,6 +156,13 @@ void Level_1::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRen
 		sprite_renderer_->DrawSprite(platforms_[wall_render]);
 	}
 
+	// Draw high background layer above all gameobjects
+	for (auto tile : High_Layer_)
+	{
+		sprite_renderer_->DrawSprite(tile);
+	}
+
+	// Draw UI above everything else
 	font_.RenderText(sprite_renderer_, abfw::Vector3(10.0f, 5.0f, -0.9f), 1.0f, 0xff00ff00, abfw::TJ_LEFT, "Galaxea");
 	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 40.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "health  : %.0f", player_.health());	//display player health
 	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 5.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "Score : %.0f", score_);//display player score
@@ -186,8 +184,7 @@ void Level_1::LoadTextures()
 	//Load textures using application_->LoadTextureFromPNG("texturename.png")
 
 	// single object texture loaded directly into objects
-	background_.set_texture(application_->LoadTextureFromPNG("Level_BG.png"));
-	arrow_.set_texture(application_->LoadTextureFromPNG("Black_Down_Arrow.png"));
+	arrow_.set_texture(application_->LoadTextureFromPNG("arrow.png"));
 
 	// state-level textures 
 	playerTex = application_->LoadTextureFromPNG("Robot_animations.png");
@@ -252,12 +249,12 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	if(player_.dead != true)
 	{
 		player_.Update(ticks_, gameOver_,false);
-		arrow_.set_position(player_.currentPos.x,player_.currentPos.y,0.0f);	
-		arrow_.set_rotation(player_.currentRayAngle);
+		arrow_.set_position(player_.currentPos.x, player_.currentPos.y, 0.0f);	
+		arrow_.set_rotation(player_.currentRayAngle - abfw::DegToRad(45.0f));
 	}
 	else
 	{
-		Restart();
+		//Restart();
 	}
 	
 	//create and update blade
@@ -295,7 +292,7 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	}
 	else
 	{
-		Destroy(enemy_);//remove enemys
+		Destroy(enemy_); //remove enemys
 	}
 
 
@@ -344,7 +341,7 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 		}
 	}
 	
-	//span extra pickup from certain plants
+	//spawn extra pickup from certain plants
 	//PlantPickUps();
 
 	//win condition
@@ -352,6 +349,41 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	{
 		gameOver_ = true;
 	}	
+}
+
+void Level_1::ConstructLevel()
+{
+
+}
+
+void Level_1::PlaceTile(float x, float y, int tile_id, int dimensions, int layer)
+{
+	Sprite tile = Sprite();
+	switch (dimensions) // width and height determined by dimensions variable - MAKE THIS ENUMERATION
+	{
+	case 0:
+		tile.InitSprite(128, 128, abfw::Vector3(x, y, 0.0f), Tiles_[tile_id]);
+		break;
+	case 1:
+		tile.InitSprite(256, 256, abfw::Vector3(x, y, 0.0f), Tiles_[tile_id]);
+		break;
+	case 2:
+		tile.InitSprite(512, 512, abfw::Vector3(x, y, 0.0f), Tiles_[tile_id]);
+		break;
+	}
+
+	switch (layer)
+	{
+	case 0:
+		Low_Layer_.push_back(tile);
+		break;
+	case 1:
+		Mid_Layer_.push_back(tile);
+		break;
+	case 2:
+		High_Layer_.push_back(tile);
+		break;
+	}
 }
 
 void Level_1::CreateObjects()
@@ -435,11 +467,11 @@ void Level_1::CreateObjects()
 	//spike_[3].set_rotation(40);
 
 	//set to spike type
-	for(int k = 0; k < SPIKE_NUM; k++)
+	/*for(int k = 0; k < SPIKE_NUM; k++)
 	{
 		spike_[k].set_colour(0xff0000ff);//set colour to red
 		spike_[k].setType(GameObject::SPIKE);
-	}
+	}*/
 }
 
 void Level_1::Restart()

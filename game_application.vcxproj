@@ -123,7 +123,7 @@
     <ClCompile Include="game_object.cpp" />
     <ClCompile Include="level_1.cpp" />
     <ClCompile Include="intro_state.cpp" />
-    <ClCompile Include="level2State.cpp" />
+    <ClCompile Include="level_2.cpp" />
     <ClCompile Include="living_object.cpp" />
     <ClCompile Include="main_d3d11.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">true</ExcludedFromBuild>
@@ -151,7 +151,7 @@
     <ClInclude Include="game_settings.h" />
     <ClInclude Include="level_1.h" />
     <ClInclude Include="intro_state.h" />
-    <ClInclude Include="level2State.h" />
+    <ClInclude Include="level_2.h" />
     <ClInclude Include="living_object.h" />
     <ClInclude Include="menu_state.h" />
     <ClInclude Include="Player.h" />

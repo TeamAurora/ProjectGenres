@@ -17,17 +17,17 @@
 #define PLANT_NUM2 5
 #define SPIKE_NUM2 1
 
-class Level2State :
+class Level_2 :
 	public AppState
 {
 
 public:
-	Level2State(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager);
-	virtual ~Level2State();
+	Level_2(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager);
+	virtual ~Level_2();
 	
 	void InitializeState();
 	void TerminateState();
-	GAMESTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_);
+	APPSTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_);
 	void Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_);
 	
 private: // PRIVATE METHODS (FUNCTIONS)
@@ -65,7 +65,7 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* plantBlockTex;
 	abfw::Texture* rotPlantBlockTex;
 	// spike texture - TODO get spike texture
-	abfw::Texture* spikeTexture;
+	//abfw::Texture* spikeTexture;
 	
 	// STATE-SPECIFIC Sound effects
 	
@@ -85,7 +85,6 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	Player player2_;
 	GameObject spike2_[SPIKE_NUM2];
 	Sprite background_;
-
 
 	// STATE-SPECIFIC Variables
 	float score_;//points per pickups gathered
