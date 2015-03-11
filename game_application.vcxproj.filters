@@ -48,9 +48,6 @@
     <ClCompile Include="menu_state.cpp">
       <Filter>Application\States</Filter>
     </ClCompile>
-    <ClCompile Include="game_state.cpp">
-      <Filter>Application\States</Filter>
-    </ClCompile>
     <ClCompile Include="intro_state.cpp">
       <Filter>Application\States</Filter>
     </ClCompile>
@@ -65,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="main_d3d11.cpp">
       <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="level_1.cpp">
+      <Filter>Application\States</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -98,9 +98,6 @@
     <ClInclude Include="appstate.h">
       <Filter>Application\States</Filter>
     </ClInclude>
-    <ClInclude Include="game_state.h">
-      <Filter>Application\States</Filter>
-    </ClInclude>
     <ClInclude Include="intro_state.h">
       <Filter>Application\States</Filter>
     </ClInclude>
@@ -115,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="game_application.h">
       <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="level_1.h">
+      <Filter>Application\States</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

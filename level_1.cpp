@@ -1,22 +1,23 @@
-#include "game_state.h"
+#include "level_1.h"
 #include <graphics/sprite_renderer.h>
 #include <audio/vita/audio_manager_vita.h>
 #include <graphics/texture.h>
 #include <iostream>
 #include "game_application.h"
 #include "box2d_helpers.h"
+#include <string>
 
-GameState::GameState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
+Level_1::Level_1(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
 	AppState(platform, application, audio_manager)
 {
 }
 
 
-GameState::~GameState()
+Level_1::~Level_1()
 {
 }
 
-void GameState::InitializeState()
+void Level_1::InitializeState()
 {
 	//load assetes
 	LoadTextures();
@@ -67,14 +68,17 @@ void GameState::InitializeState()
 	gameOver_ = false;
 }
 
-void GameState::TerminateState()
+void Level_1::TerminateState()
 {
 	// Cleanup resources and pointers
-	delete world_;
-	world_ = NULL;
+	DeleteNull(world_);
+	for (int i = 0; i < TILE_TOTAL_COUNT; i++)
+	{
+		DeleteNull(Tiles_[i]);
+	}
 }
 
-GAMESTATE GameState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
+APPSTATE Level_1::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
 {
 	// Step box2d world - add if box2d is enabled conditional
 	float time_step = 1.0f / 60.0f;
@@ -91,16 +95,16 @@ GAMESTATE GameState::Update(const float& ticks_, const int& frame_counter_, cons
 	{
 		if (controller->buttons_down() & ABFW_SONY_CTRL_SELECT)
 		{
-			//return MENU; // go to menu if start is down. TODO change state
+			return MENU; // go to menu if start is pressed.
 		}
 		else // do input loop for state if we aren't returning to menustate
 			InputLoop(controller);
 	}
 
-	return GAME; // else continue with gamestate
+	return LEVEL_1; // else continue with Level_1
 }
 
-void GameState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
+void Level_1::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
 	// Draw game objects
 	sprite_renderer_->DrawSprite(background_);
@@ -144,7 +148,7 @@ void GameState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 	}
 
 	//draw platfroms
-	for (int wall_render = 0;wall_render < PLATFORM_NUM;wall_render++)
+	for (int wall_render = 0; wall_render < PLATFORM_NUM; wall_render++)
 	{
 		//platform[wall_render].set_texture(platform_tex);//set texture
 		sprite_renderer_->DrawSprite(platforms_[wall_render]);
@@ -167,7 +171,7 @@ void GameState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 	sprite_renderer_->End();
 }
 
-void GameState::LoadTextures()
+void Level_1::LoadTextures()
 {
 	//Load textures using application_->LoadTextureFromPNG("texturename.png")
 
@@ -183,22 +187,29 @@ void GameState::LoadTextures()
 	plantWallTex = application_->LoadTextureFromPNG("Plant_Wall.png");
 	plantBlockTex = application_->LoadTextureFromPNG("Plant_Block.png");
 	rotPlantBlockTex = application_->LoadTextureFromPNG("Plant_Block_rot.png");
+
+	for (int tile_id = 0; tile_id < TILE_TOTAL_COUNT; tile_id++) // Loads in all tiles
+	{
+		std::string tile_name(to_string((long long)tile_id + 1));
+		tile_name = "Level_One_Tiles/" + tile_name;
+		Tiles_[tile_id] = application_->LoadTextureFromPNG(tile_name.c_str());
+	}
 }
 
-void GameState::LoadSounds()
+void Level_1::LoadSounds()
 {
 	// Load audio using audio_manager_->LoadSample("sfxname.wav", platform_)
 
 }
 
-void GameState::InputLoop(const abfw::SonyController* controller)
+void Level_1::InputLoop(const abfw::SonyController* controller)
 {
 	player_.Player_Input(controller);
 
 	//manually restart
 	if (controller->buttons_down() & ABFW_SONY_CTRL_TRIANGLE)
 	{
-		Restart();
+		//Restart();
 	}
 
 	if (controller->buttons_down() & ABFW_SONY_CTRL_CROSS)
@@ -232,7 +243,7 @@ void GameState::InputLoop(const abfw::SonyController* controller)
 	}
 }
 
-void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
+void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 {
 	// Any per-frame or per-tick updating for game objects should be done here
 	
@@ -323,7 +334,7 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 	}	
 }
 
-void GameState::CreateObjects()
+void Level_1::CreateObjects()
 {
 	player_.Create_Player(world_, platform_.width(), platform_.height());
 	enemy_.Create_Enemy(world_, GFX_BOX2D_POS_X(platform_.width()*0.35f),GFX_BOX2D_POS_Y(platform_.height()*0.3));
@@ -405,7 +416,7 @@ void GameState::CreateObjects()
 	}
 }
 
-void GameState::Restart()
+void Level_1::Restart()
 {
 	//destroy objects
 	Destroy(player_);//player
@@ -435,7 +446,7 @@ void GameState::Restart()
 	gameOver_ = false;
 }
 
-void GameState::PlantPickUps()
+void Level_1::PlantPickUps()
 {
 	//left plant
 	if(plant_[2].destroyed == true && pickUp_[6].spawned == false)
@@ -460,7 +471,7 @@ void GameState::PlantPickUps()
 
 }
 
-void GameState::Destroy(GameObject &object)
+void Level_1::Destroy(GameObject &object)
 {
 	if(object.destroyed == false)
 	{
@@ -471,7 +482,7 @@ void GameState::Destroy(GameObject &object)
 }
 
 //
-//void GameState::SpawnSpike(b2Vec3 position_, b2Vec2 dimensions_)
+//void Level_1::SpawnSpike(b2Vec3 position_, b2Vec2 dimensions_)
 //{
 //	float x_pos_ = position_.x;
 //	float y_pos_ = position_.y;

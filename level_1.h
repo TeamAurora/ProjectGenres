@@ -8,7 +8,6 @@
 #include "enemy.h"
 #include "collectible.h"
 #include "blade.h"
-#include "Tile.h"
 
 
 //total number of each objects used for array size
@@ -16,19 +15,19 @@
 #define PICKUP_NUM 10
 #define PLANT_NUM 5
 #define SPIKE_NUM 4
-#define TILE_TOTAL_COUNT 70
+#define TILE_TOTAL_COUNT 222
 
-class GameState :
+class Level_1 :
 	public AppState
 {
 
 public:
-	GameState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager);
-	virtual ~GameState();
+	Level_1(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager);
+	virtual ~Level_1();
 	
 	void InitializeState();
 	void TerminateState();
-	GAMESTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_);
+	APPSTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_);
 	void Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_);
 	
 private: // PRIVATE METHODS (FUNCTIONS)
@@ -39,6 +38,7 @@ private: // PRIVATE METHODS (FUNCTIONS)
 	void UpdateGameObjects(const float& ticks_, const int& frame_counter_); // updates game object - deleting flagged ones, updating positions and spawning new ones
 
 	// Spawn functions
+	void ConstructLevel(); // Constructs level background vectors from tiles
 	void SpawnSpike(b2Vec3 position, b2Vec2 dimensions); // Takes a position (3D to include depth the sprite gets rendered at) and it's dimensions (GFX scale, not Box2D)
 ///John///
 	void CreateObjects();//call create functions for all gameobjects
@@ -67,14 +67,13 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* plantBlockTex;
 	abfw::Texture* rotPlantBlockTex;
 	// spike texture - TODO get spike texture
-	abfw::Texture* spikeTexture;
+	//abfw::Texture* spikeTexture;
 
 	abfw::Texture* Tiles_[TILE_TOTAL_COUNT];
 	
 	// STATE-SPECIFIC Sound effects
 	
 	// STATE-SPECIFIC Game/Living Objects
-
 ////John////////////////////
 	//TODO : Arrays to replaced with vectors
 	/*std::vector<GameObject> platforms_;
@@ -90,16 +89,16 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	GameObject spike_[SPIKE_NUM];
 	Sprite background_;
 
-	// Background Grid Vectors
+	// Background Layer Vectors (Low > High Render Order)
 	std::vector<Sprite> High_Layer_;
 	std::vector<Sprite> Mid_Layer_;
 	std::vector<Sprite> Low_Layer_;
 
 	// STATE-SPECIFIC Variables
-	float score_;//points per pickups gathered
-	bool gameOver_;//if true player has died
+	float score_;		// Score for this level
+	bool gameOver_;		// Track current level status
 	float platformWidth_;
-	float attackTime;//amount of time between when attack can be pressed
+	float attackTime;	// Amount of time between when attack can be pressed
 ////////////////////////////////////
 };
 

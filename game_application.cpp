@@ -6,7 +6,7 @@
 #include <graphics/image_data.h>
 #include <graphics/texture.h>
 #include <iostream>
-#include "game_state.h"
+#include "level_1.h"
 #include "intro_state.h"
 #include "menu_state.h"
 
@@ -48,10 +48,10 @@ void GameApplication::Init()
 	// Seed RNG
 	srand (5189023);
 	
-	//// Loading Screen Initialization
-	//loading_texture_ = LoadTextureFromPNG("Load Screen.png");
-	//loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f), loading_texture_);
-	//
+	// Loading Screen Initialization
+	loading_texture_ = LoadTextureFromPNG("loading_background.png");
+	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f), loading_texture_);
+
 	// Initializes game settings
 	settings_.music_ = true;
 	settings_.sound_effects_ = true;
@@ -60,11 +60,6 @@ void GameApplication::Init()
 	pCurrentState = NULL;
 	ChangeState(INTRO);
 	change_state_ = false;
-	
-/////don't have these assets
-	// Background Initialization
-	//background_texture_ = LoadTextureFromPNG("background_black.png");
-	//background_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f), background_texture_);
 
 	//// Load Music
 	//audio_manager_->LoadMusic("Electric_Quake.wav", platform_); // http://opengameart.org/content/electric-quake
@@ -81,20 +76,17 @@ void GameApplication::CleanUp()
 	DeleteNull(camera_);
 	
 	// Textures
-	DeleteNull(background_texture_);
 	DeleteNull(loading_texture_);
 	
 	// State Machine
-	if(pIntro != NULL)
-		delete pIntro;
-	if(pMenu != NULL)
-		delete pMenu;
-	if(pGame != NULL)
-		delete pGame;
-	pCurrentState = NULL;
-	pIntro = NULL;
-	pMenu = NULL;
-	pGame = NULL;
+	DeleteNull(pIntro);
+	DeleteNull(pMenu);
+	DeleteNull(pLevelSelect);
+	DeleteNull(pLevel_1);
+	DeleteNull(pLevel_2);
+	DeleteNull(pLevel_3);
+	DeleteNull(pScoreScreen);
+	pCurrentState = NULL; // Cannot delete the interface pointer (it is never instantiated)
 }
 
 bool GameApplication::Update(float ticks)
@@ -149,11 +141,10 @@ void GameApplication::Render()
 	switch(change_state_)
 	{
 	case true:
-		//sprite_renderer_->DrawSprite(loading_); // draw load screen if state changes this frame
+		sprite_renderer_->DrawSprite(loading_); // draw load screen if state changes this frame
 		break;
 	case false:
 		// Background
-		//sprite_renderer_->DrawSprite(background_);
 		pCurrentState->Render(frame_rate_, font_, sprite_renderer_); // don't need to do state specific rendering if we're going to change state next frame - loading screen gets drawn instead
 		break;
 	}
@@ -180,26 +171,31 @@ abfw::Texture* GameApplication::LoadTextureFromPNG(const char* filename) const
 	}
 }
 
-void GameApplication::ChangeState(GAMESTATE next_state)
+void GameApplication::ChangeState(APPSTATE next_state)
 {
 	if(pCurrentState != NULL) 				// if pCurrentState points somewhere
 	{
 		pCurrentState->TerminateState(); 	// terminates previous state
 		switch(gamestate_)					// destructs and deallocates memory for previous state, sets pointer of previous state to NULL
 		{
-			case INTRO: delete pIntro;
-						pIntro = NULL;
+			case INTRO: DeleteNull(pIntro);
 						break;
-			case MENU: 	delete pMenu;
-						pMenu = NULL;
+			case MENU: 	DeleteNull(pMenu);
 						break;
-			case GAME: 	delete pGame;
-						pGame = NULL;
-						break;
+			case LEVEL_SELECT: 	DeleteNull(pLevelSelect);
+								break;
+			case LEVEL_1: 	DeleteNull(pLevel_1);
+							break;
+			case LEVEL_2: 	DeleteNull(pLevel_2);
+							break;
+			case LEVEL_3: 	DeleteNull(pLevel_3);
+							break;
+			case SCORE_SCREEN: 	DeleteNull(pScoreScreen);
+								break;
 		}
 	}
 	
-	switch(next_state)						// construct and allocate memory for new state, sets current state pointer to new state
+	switch(next_state)	// construct and allocate memory for new state, sets current state pointer to new state
 	{
 		case INTRO: pIntro = new IntroState(platform_, this, audio_manager_);
 					pCurrentState = pIntro;
@@ -207,9 +203,21 @@ void GameApplication::ChangeState(GAMESTATE next_state)
 		case MENU: 	pMenu = new MenuState(platform_, this, audio_manager_);
 					pCurrentState = pMenu;
 					break;
-		case GAME: 	pGame = new GameState(platform_, this, audio_manager_);
-					pCurrentState = pGame;
-					break;
+		case LEVEL_SELECT: 	//pLevelSelect = new LevelSelect(platform_, this, audio_manager_); NYI
+							//pCurrentState = pLevelSelect;
+							break;
+		case LEVEL_1: 	pLevel_1 = new Level_1(platform_, this, audio_manager_);
+						pCurrentState = pLevel_1;
+						break;
+		case LEVEL_2: 	//pLevel_2 = new Level_2(platform_, this, audio_manager_); NYI
+						//pCurrentState = pLevel_2;
+						break;
+		case LEVEL_3: 	//pLevel_3 = new Level_3(platform_, this, audio_manager_); NYI
+						//pCurrentState = pLevel_3;
+						break;
+		case SCORE_SCREEN: 	//pScoreScreen = new ScoreScreen(platform_, this, audio_manager_); NYI
+							//pCurrentState = pScoreScreen;
+							break;
 	}
 
 	pCurrentState->InitializeState();		// initialize new state

@@ -18,8 +18,12 @@ namespace abfw
 }
 
 class IntroState;
-class GameState;
+class Level_1;
+class Level_2;
+class Level_3;
 class MenuState;
+class LevelSelect;
+class ScoreScreen;
 
 class GameApplication : public abfw::Application
 {
@@ -40,7 +44,7 @@ public:
 
 private:
 
-	void ChangeState(GAMESTATE next_state); // handles changing states, initializing new state and terminating old state - frame counter is reset to 0 on state change
+	void ChangeState(APPSTATE next_state); // handles changing states, initializing new state and terminating old state - frame counter is reset to 0 on state change
 
 	// Engine Objects (External abfw related objects)
 
@@ -51,21 +55,23 @@ private:
 	// Resource Objects (Font, Textures, etc)
 
 	abfw::Font font_;
-	abfw::Texture* background_texture_;
 	abfw::Texture* loading_texture_;
 
 	// Application Objects (Objects that are at the application level of the project hierarchy)
 
-	Sprite background_;
 	Sprite loading_;
 
 	AppState* pCurrentState;	// pointer to current appstate class
 	IntroState* pIntro;			// pointer to each possible state
 	MenuState* pMenu;
-	GameState* pGame;
+	LevelSelect* pLevelSelect; // NYI
+	Level_1* pLevel_1;
+	Level_2* pLevel_2;	// NYI
+	Level_3* pLevel_3;	// NYI
+	ScoreScreen* pScoreScreen;	// NYI
 
-	GAMESTATE gamestate_;		// tracks current state
-	GAMESTATE updated_state_;	// tracks state to change to (for comparing with current state)
+	APPSTATE gamestate_;		// tracks current state
+	APPSTATE updated_state_;	// tracks state to change to (for comparing with current state)
 	bool change_state_; // used to draw loading screen before changing state
 	float frame_rate_;
 	int frame_counter_; // Tracks number of frames since state change - required for exact divisibility for some operations (can't use ticks or frame_rate_)

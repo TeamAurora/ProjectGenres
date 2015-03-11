@@ -99,7 +99,7 @@ void MenuState::TerminateState()
 	delete selector_;
 	selector_ = NULL;*/
 }
-GAMESTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
+APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
 {
 	/*const abfw::SonyController* controller = controller_manager_.GetController(0); // get the platform specific controller from controller_manager
 	if(controller) // if controller isn't null

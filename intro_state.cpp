@@ -24,30 +24,29 @@ void IntroState::InitializeState()
 }
 void IntroState::TerminateState()
 {
-	/*delete splash_texture_;
-	splash_texture_ = NULL;*/
+	DeleteNull(splash_texture_);
 }
-GAMESTATE IntroState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
+APPSTATE IntroState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
 {
 	const abfw::SonyController* controller = controller_manager_.GetController(0); // get the platform specific controller from controller_manager
 	if(controller) // if controller isn't null
 	{
-		if(controller->buttons_down() & ABFW_SONY_CTRL_START)
+		if(controller->buttons_down() & ABFW_SONY_CTRL_TRIANGLE)
 		{
-			return GAME;
+			return MENU;
 		}
 	}
 	return INTRO;
 }
 void IntroState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
-	//sprite_renderer_->DrawSprite(splash_);
-	//instructions
-	font_.RenderText(sprite_renderer_, abfw::Vector3(350.0f,250.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "Press Start");
-	font_.RenderText(sprite_renderer_, abfw::Vector3(350.0f,300.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "to play");
+	sprite_renderer_->DrawSprite(splash_);
+
+	//font_.RenderText(sprite_renderer_, abfw::Vector3(350.0f,250.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "Press Start");
+	//font_.RenderText(sprite_renderer_, abfw::Vector3(350.0f,300.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "to play");
 }
 
 void IntroState::LoadTextures()
 {
-	//splash_texture_ = application_->LoadTextureFromPNG("Splash Screen.png");
+	splash_texture_ = application_->LoadTextureFromPNG("intro_background.png");
 }
