@@ -30,13 +30,20 @@ void Level_1::InitializeState()
 
 	// Init Objects
 	player_.set_texture(playerTex);
-	/*for(int g = 0; g < PICKUP_NUM;g+=2)
+	for(int g = 0; g < PICKUP_NUM; g++)
 	{
-		pickUp_[g].set_texture(redPUTex);
-		pickUp_[g+1].set_texture(bluePUTex);		lol.
-	}*/
-	pickUp_[0].set_texture(redPUTex);
-	pickUp_[1].set_texture(bluePUTex);
+		int i = rand() % 2; // randomize pickup textures
+		switch (i)
+		{
+		case 0:
+			pickUp_[g].set_texture(redPUTex);
+			break;
+
+		case 1:
+			pickUp_[g].set_texture(bluePUTex);
+			break;
+		}
+	}
 
 	//for plant walls
 	plant_[0].set_texture(plantWallTex);
@@ -174,9 +181,6 @@ void Level_1::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRen
 		font_.RenderText(sprite_renderer_, abfw::Vector3(350.0f,250.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "Press Triangle");
 		font_.RenderText(sprite_renderer_, abfw::Vector3(350.0f,300.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "to replay");
 	}
-
-	// tell sprite renderer that all sprites have been drawn
-	sprite_renderer_->End();
 }
 
 void Level_1::LoadTextures()
@@ -353,7 +357,18 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 
 void Level_1::ConstructLevel()
 {
-
+	PlaceTile(25.5f, 4.5f, 79, 3, 2);
+	PlaceTile(28.5f, 3.5f, 79, 3, 2);
+	PlaceTile(32.5f, 3.5f, 79, 3, 2);
+	PlaceTile(36.5f, 3.5f, 79, 3, 2);
+	PlaceTile(40.5f, 3.5f, 79, 3, 2);
+	PlaceTile(44.5f, 2.5f, 79, 3, 2);
+	PlaceTile(48.5f, 3.5f, 79, 3, 2);
+	PlaceTile(52.5f, 2.5f, 79, 3, 2);
+	PlaceTile(56.5f, 4.5f, 79, 3, 2);
+	PlaceTile(60.5f, 3.5f, 79, 3, 2);
+	PlaceTile(64.5f, 2.5f, 79, 3, 2);
+	PlaceTile(68.5f, 2.5f, 79, 3, 2);
 }
 
 void Level_1::PlaceTile(float x, float y, int tile_id, int dimensions, int layer)

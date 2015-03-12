@@ -115,6 +115,7 @@
   <ItemGroup>
     <ClCompile Include="blade.cpp" />
     <ClCompile Include="bullet.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collectible.cpp" />
     <ClCompile Include="contact_listener.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="blade.h" />
     <ClInclude Include="box2d_helpers.h" />
     <ClInclude Include="bullet.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collectible.h" />
     <ClInclude Include="Contact_listener.h" />

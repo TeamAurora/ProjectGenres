@@ -1,8 +1,6 @@
 #pragma once
 #include "appstate.h"
-#include "sprite.h"
-
-typedef Sprite Button; // TEMPORARY - until button class written
+#include "Button.h"
 
 class MenuState :
 	public AppState
@@ -20,10 +18,14 @@ private:
 	
 	void LoadTextures();
 	
-	Sprite background_;
+	abfw::Texture* background_texture_;
 	abfw::Texture* start_button_texture_;
+	abfw::Texture* start_button_highlighted_texture_;
 	abfw::Texture* help_button_texture_;
+	abfw::Texture* help_button_highlighted_texture_;
 	abfw::Texture* options_button_texture_;
+	abfw::Texture* options_button_highlighted_texture_;
+	Sprite background_;
 	Button start_button_;
 	Button help_button_;
 	Button options_button_;
