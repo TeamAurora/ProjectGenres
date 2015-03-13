@@ -314,7 +314,7 @@ void Player::Animation(float ticks)
 				walk = true;
 				
 				//set up animation
-				InitSpriteAnimation(0.0125,32,true,SCROLL_X,16,2);
+				InitSpriteAnimation(0.0125,16,true,SCROLL_X,16,2);
 			}
 			else if (horizontal != true)//vertical animation
 			{
