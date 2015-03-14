@@ -106,14 +106,14 @@ APPSTATE Level_1::Update(const float& ticks_, const int& frame_counter_, const a
 void Level_1::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
 	// Draw background layers based on layer priority
-	for (auto tile : Low_Layer_)
+	/*for (auto tile : Low_Layer_)
 	{
 		sprite_renderer_->DrawSprite(tile);
 	}
 	for (auto tile : Mid_Layer_)
 	{
 		sprite_renderer_->DrawSprite(tile);
-	}
+	}*/
 
 	if(player_.dead == false)
 	{
@@ -164,10 +164,10 @@ void Level_1::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRen
 	}
 
 	// Draw high background layer above all gameobjects
-	for (auto tile : High_Layer_)
+	/*for (auto tile : High_Layer_)
 	{
 		sprite_renderer_->DrawSprite(tile);
-	}
+	}*/
 
 	// Draw UI above everything else
 	font_.RenderText(sprite_renderer_, abfw::Vector3(10.0f, 5.0f, -0.9f), 1.0f, 0xff00ff00, abfw::TJ_LEFT, "Galaxea");
@@ -200,12 +200,12 @@ void Level_1::LoadTextures()
 	plantBlockTex = application_->LoadTextureFromPNG("Plant_Block.png");
 	rotPlantBlockTex = application_->LoadTextureFromPNG("Plant_Block_rot.png");
 
-	for (int tile_id = 0; tile_id < TILE_TOTAL_COUNT; tile_id++) // Loads in all tiles
+	/*for (int tile_id = 0; tile_id < TILE_TOTAL_COUNT; tile_id++) // Loads in all tiles
 	{
-		std::string tile_name(to_string((long long)tile_id + 1));
+		std::string tile_name(std:((long long)tile_id + 1));
 		tile_name = "Level_One_Tiles/" + tile_name;
 		Tiles_[tile_id] = application_->LoadTextureFromPNG(tile_name.c_str());
-	}
+	}*/
 }
 
 void Level_1::LoadSounds()

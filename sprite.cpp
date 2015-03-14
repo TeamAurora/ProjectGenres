@@ -1,6 +1,7 @@
 #include "sprite.h"
 
 Sprite::Sprite() :
+	abfw::Sprite(),
 	frame_duration_(0.0f),
 	frame_count_(0),
 	looping_(false),

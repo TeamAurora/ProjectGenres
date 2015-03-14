@@ -18,5 +18,5 @@ private:
 	void LoadTextures();
 
 	abfw::Texture* splash_texture_;
-	GameObject splash_;
+	Sprite splash_;
 };

@@ -55,6 +55,7 @@ private:
 	// Resource Objects (Font, Textures, etc)
 
 	abfw::Font font_;
+	abfw::Texture* loading_texture_;
 
 	// Application Objects (Objects that are at the application level of the project hierarchy)
 

@@ -26,7 +26,7 @@ public:
 	virtual void Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_) = 0;
 	
 protected:
-	// change to not require audio manager construction
+
 	AppState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
 	platform_(platform),
 	application_(application),

@@ -22,6 +22,7 @@ void MenuState::InitializeState()
 
 	abfw::Vector3 screen_centre(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f);
 	
+	background_ = Sprite();
 	background_.InitSprite(platform_.width(), platform_.height(), screen_centre, background_texture_);
 
 	start_button_ = Button();
@@ -53,15 +54,7 @@ void MenuState::InitializeState()
 	// Selection Pointer
 	// Initialized to screen centre position(irrelevant as it gets changed to correct position in update loop before render)
 	selection_pointer_ = GameObject();
-	selection_pointer_.InitSprite(64.0f, 64.0f, screen_centre, selector_);
-	
-	// Dpad
-	dpad_ = GameObject();
-	dpad_.InitSprite(128.0f, 128.0f, abfw::Vector3(platform_.width() * 0.1f, platform_.height() * 0.8f, 0.0f), dpad_texture_);
-	
-	// Cross
-	cross_ = GameObject();
-	cross_.InitSprite(128.0f, 128.0f, abfw::Vector3(platform_.width() * 0.9f, platform_.height() * 0.8f, 0.0f), cross_texture_);*/
+	selection_pointer_.InitSprite(64.0f, 64.0f, screen_centre, selector_);*/
 }
 void MenuState::TerminateState()
 {

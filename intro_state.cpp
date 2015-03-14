@@ -20,12 +20,15 @@ void IntroState::InitializeState()
 {
 	LoadTextures();
 
+	splash_ = Sprite();
 	splash_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f), splash_texture_);
 }
+
 void IntroState::TerminateState()
 {
 	DeleteNull(splash_texture_);
 }
+
 APPSTATE IntroState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
 {
 	const abfw::SonyController* controller = controller_manager_.GetController(0); // get the platform specific controller from controller_manager

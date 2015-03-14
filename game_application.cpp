@@ -15,8 +15,11 @@
 GameApplication::GameApplication(abfw::Platform& platform) :
 	abfw::Application(platform),
 	sprite_renderer_(NULL),
-	controller_manager_(NULL)
+	controller_manager_(NULL),
+	pCurrentState(NULL),
+	change_state_(false)
 {
+	ChangeState(INTRO);
 }
 
 GameApplication::~GameApplication()
@@ -25,7 +28,6 @@ GameApplication::~GameApplication()
 
 void GameApplication::Init()
 {
-
 	// load the font to draw the on-screen text
 	bool font_loaded = font_.Load("comic_sans", platform_);
 	if(!font_loaded)
@@ -34,48 +36,28 @@ void GameApplication::Init()
 		exit(-1);
 	}
 
-	// Create sprite renderer
+	// Initialize platform-specific systems
 	sprite_renderer_ = platform_.CreateSpriteRenderer();
-
-	// Create controller manager
 	controller_manager_ = platform_.CreateSonyControllerInputManager();
-
-	// Create audio manager
 	audio_manager_ = new abfw::AudioManagerVita;
-
-	// Create camera
 	camera_ = new Camera(sprite_renderer_, platform_);
 	
 	// Seed RNG
-	srand(5189023);
+	srand(time(NULL));
 	
-	// Loading Screen Initialization
-	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width() / 2.0f, platform_.height() / 2.0f, 0.0f), LoadTextureFromPNG("loading_background.png"));
-
-	// Initializes game settings
-	settings_.music_ = true;
-	settings_.sound_effects_ = true;
-	
-	// Initializes state machine to INTRO state (changestate also renders a loading screen)
-	pCurrentState = NULL;
-	ChangeState(INTRO);
-	change_state_ = false;
-
-	//// Load Music
-	//audio_manager_->LoadMusic("Electric_Quake.wav", platform_); // http://opengameart.org/content/electric-quake
-	//audio_manager_->PlayMusic();
+	// Initialize state-shared resources
+	loading_texture_ = LoadTextureFromPNG("loading_background.png");
+	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width() / 2.0f, platform_.height() / 2.0f, 0.0f), loading_texture_);
+	//audio_manager_->LoadMusic("musicname.wav", platform_);
 }
 
 void GameApplication::CleanUp()
 {
-	// Application Cleanup
-	DeleteNull(controller_manager_);
-	DeleteNull(sprite_renderer_);
+	// Resources cleanup
+	DeleteNull(loading_texture_);
 	audio_manager_->UnloadMusic();
-	DeleteNull(audio_manager_);
-	DeleteNull(camera_);
 	
-	// State Machine
+	// State machine cleanup
 	DeleteNull(pIntro);
 	DeleteNull(pMenu);
 	DeleteNull(pLevelSelect);
@@ -84,6 +66,12 @@ void GameApplication::CleanUp()
 	DeleteNull(pLevel_3);
 	DeleteNull(pScoreScreen);
 	pCurrentState = NULL; // Cannot delete the interface pointer (it is never instantiated)
+
+	// Application cleanup
+	DeleteNull(camera_);
+	DeleteNull(controller_manager_);
+	DeleteNull(sprite_renderer_);
+	DeleteNull(audio_manager_);
 }
 
 bool GameApplication::Update(float ticks)
@@ -114,14 +102,13 @@ bool GameApplication::Update(float ticks)
 
 	if(settings_.music_ != music_playing_)	// if last frames music setting isn't equal to this frames
 	{
-		switch(settings_.music_)			// start or stop music appropriately
+		if(settings_.music_)				// then if music has changed to true
 		{
-		case true:
-			audio_manager_->PlayMusic();
-			break;
-		case false:
-			audio_manager_->StopMusic();
-			break;
+			audio_manager_->PlayMusic();	// start playing
+		}
+		else								// else it has changed to not playing
+		{
+			audio_manager_->StopMusic();	// stop playing
 		}
 	}
 
@@ -135,15 +122,13 @@ void GameApplication::Render()
 	// set up sprite renderer for drawing
 	sprite_renderer_->Begin();
 
-	switch(change_state_)
+	if(change_state_)
 	{
-	case true:
-		sprite_renderer_->DrawSprite(loading_); // draw load screen if state changes this frame
-		break;
-	case false:
-		// Background
-		pCurrentState->Render(frame_rate_, font_, sprite_renderer_); // don't need to do state specific rendering if we're going to change state next frame - loading screen gets drawn instead
-		break;
+		sprite_renderer_->DrawSprite(loading_); // draw load screen if state changes next frame
+	}
+	else
+	{
+		pCurrentState->Render(frame_rate_, font_, sprite_renderer_); // else do state-specific rendering
 	}
 
 	// tell sprite renderer that all sprites have been drawn
@@ -206,14 +191,14 @@ void GameApplication::ChangeState(APPSTATE next_state)
 		case LEVEL_1: 	pLevel_1 = new Level_1(platform_, this, audio_manager_);
 						pCurrentState = pLevel_1;
 						break;
-		case LEVEL_2: 	//pLevel_2 = new Level_2(platform_, this, audio_manager_); NYI
-						//pCurrentState = pLevel_2;
+		case LEVEL_2: 	pLevel_2 = new Level_2(platform_, this, audio_manager_); NYI
+						pCurrentState = pLevel_2;
 						break;
-		case LEVEL_3: 	//pLevel_3 = new Level_3(platform_, this, audio_manager_); NYI
-						//pCurrentState = pLevel_3;
+		case LEVEL_3: 	pLevel_3 = new Level_3(platform_, this, audio_manager_); NYI
+						pCurrentState = pLevel_3;
 						break;
-		case SCORE_SCREEN: 	//pScoreScreen = new ScoreScreen(platform_, this, audio_manager_); NYI
-							//pCurrentState = pScoreScreen;
+		case SCORE_SCREEN: 	pScoreScreen = new ScoreScreen(platform_, this, audio_manager_); NYI
+							pCurrentState = pScoreScreen;
 							break;
 	}
 

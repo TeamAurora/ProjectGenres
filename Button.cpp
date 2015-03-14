@@ -15,5 +15,5 @@ Button::~Button()
 void Button::InputLoop(const abfw::SonyController* controller)
 {
 	//DoInput(controller);
-	if
+	//if
 }
