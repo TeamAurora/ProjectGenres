@@ -56,7 +56,9 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	// Store single-object textures in the game object it's used for
 	// player textures
 	abfw::Texture* playerTex;
-	abfw::Texture* rotPlayerTex;
+	abfw::Texture* rotPlayerTex;	
+	abfw::Texture* playerIdle;
+	abfw::Texture* playerDeath;
 	// pickup textures
 	abfw::Texture* redPUTex;
 	abfw::Texture* bluePUTex;
@@ -67,7 +69,9 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* rotPlantBlockTex;
 	// spike texture - TODO get spike texture
 	abfw::Texture* spikeTexture;
+	//arrow texture for jump aim
 	abfw::Texture* arrowTex;
+
 	
 	// STATE-SPECIFIC Sound effects
 	

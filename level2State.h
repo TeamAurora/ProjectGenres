@@ -56,6 +56,7 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	// player textures
 	abfw::Texture* playerTex;
 	abfw::Texture* rotPlayerTex;
+	abfw::Texture* player[3];
 	// pickup textures
 	abfw::Texture* redPUTex;
 	abfw::Texture* bluePUTex;

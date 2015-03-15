@@ -32,6 +32,7 @@ Player::Player()
 	moveUp = true;
 	grounded = true;
 	jumping = false;
+	deadAnim = false;
 
 	//on stick axis
 	jumpCutOff = 0.8;
@@ -107,50 +108,74 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	currentPos = b2Vec2(new_x, new_y);//gives access to current position
 
-	mflying = flying;
+	mflying = flying;//check what animation should be done
 
+	//damage player
 	if(hurting)
 	{
 		updateHealth(-damage);
 	}
 
+	//kill
 	if(health() <= 0)
 	{
 		dead = true;
 	}
 
-	if(mflying == false)
+
+	//change state
+	if(move == true)
 	{
+		state_ = RUNNING;
+	}
+	else if (attacking == true)
+	{
+		state_ = ATTACKING;
+	}
+	else if(dead == true)
+	{
+		state_ = DEAD;
+	}
+	else
+	{
+		state_ = IDLE;
+	}
 
-		if(gDir == UP || gDir == DOWN)
-		{
-			horizontal = true;
-		}
-		else
-		{
-			horizontal = false;
-		}
-	
-		//flip for gravity
-		if (gDir == UP)
-		{
-			set_uv_height(-0.25f);
-		}
-		else if (gDir == DOWN)
-		{
-			set_uv_height(0.25f);
-		}
-		else if (gDir == RIGHT)
-		{
-			set_uv_width(0.25f);
-		}
-		else if (gDir == LEFT)
-		{
-			set_uv_width(-0.25f);
-		}
+	if(gDir == UP || gDir == DOWN)
+	{
+		horizontal = true;
+	}
+	else
+	{
+		horizontal = false;
+	}
 
-		Animation(ticks);
+	//set up sprite sheets
+	switch(state_)
+	{
+		case IDLE:
+				idleAnimation(ticks);
+				break;
+		case RUNNING:
+				runningAnimation(ticks);
+				break;			 
+		case ATTACKING:
 
+			break;
+		case DEAD:
+				
+			break;
+	};
+
+
+	//animation
+	if(horizontal == true)
+	{
+		Animate(ticks, move_right);
+	}
+	else
+	{
+		Animate(ticks, moveUp);
 	}
 
 	//apply gravity
@@ -273,165 +298,204 @@ void Player::Player_Input(const abfw::SonyController* controller)
 	body_->ApplyForceToCenter(force);
 }
 
-void Player::Animation(float ticks)
+void Player::runningAnimation(float ticks)
 {
-	//walk frame settings
-	if (move == true)
-	{
-		if( walk == false)
+	if(mflying == false)
+	{	
+		//flip for gravity
+		if (gDir == UP)
 		{
-			if(horizontal == true)//horizontal animation
-			{
-				if(gDir == DOWN)
-				{
-					if(move_right == true)
-					{
-						set_uv_width(0.0625);
-						set_uv_position(abfw::Vector2(0.0f,0.5f));
-					}
-
-					if(move_right == false)
-					{
-						set_uv_width(-0.0625);
-						set_uv_position(abfw::Vector2(0.0625f,0.5f));
-					}
-				}
-				else if(gDir == UP)
-				{
-					if(move_right == true)
-					{
-						set_uv_width(0.0625);
-						set_uv_position(abfw::Vector2(0.0f,0.75f));
-					}
-
-					if(move_right == false)
-					{
-						set_uv_width(-0.0625);
-						set_uv_position(abfw::Vector2(0.0625f,0.75f));
-					}
-				}
-
-				walk = true;
-				
-				//set up animation
-				InitSpriteAnimation(0.0125,16,true,SCROLL_X,16,2);
-			}
-			else if (horizontal != true)//vertical animation
-			{
-				if(gDir == LEFT)
-				{
-					if(moveUp == true)
-					{
-						set_uv_height(0.0625);	
-						set_uv_position(abfw::Vector2(0.75f,0.9375f));
-					}
-
-					if(moveUp == false)
-					{
-						set_uv_height(-0.0625);	
-						set_uv_position(abfw::Vector2(0.75f,0.9375f));
-					}
-				}
-				else if(gDir == RIGHT)
-				{
-					if(moveUp == true)
-					{
-						set_uv_height(0.0625);		
-						set_uv_position(abfw::Vector2(0.75f,0.9375f));
-					}
-
-					if(moveUp == false)
-					{
-						set_uv_height(-0.0625);	
-						set_uv_position(abfw::Vector2(0.75f,0.9375f));
-					}
-				}
-				walk = true;
-				
-				//set up animation
-				InitSpriteAnimation(0.0125,16,true,SCROLL_Y,16,2);
-			}				
+			set_uv_height(-0.25f);
 		}
-		
-		//animate sprite
-		if(horizontal == true)
+		else if (gDir == DOWN)
 		{
-			Animate(ticks, move_right);
+			set_uv_height(0.25f);
 		}
-		else
+		else if (gDir == RIGHT)
 		{
-			Animate(ticks, moveUp);
+			set_uv_width(0.25f);
 		}
-
+		else if (gDir == LEFT)
+		{
+			set_uv_width(-0.25f);
+		}
 	}
-	
-	
-	//set back to idle 
-	if (move == false)
+
+
+	//walk frame settings
+	if( walk == false)
 	{
-		walk = false;
-		
-		//orientate sprite with direction
-		if (horizontal == true)
+		if(horizontal == true)//horizontal animation
 		{
 			if(gDir == DOWN)
 			{
-				if (move_right == true)
+				if(move_right == true)
 				{
-					set_uv_position(abfw::Vector2 (0.0f,0.0f));
 					set_uv_width(0.0625);
+					set_uv_position(abfw::Vector2(0.0f,0.5f));
 				}
-				else
+
+				if(move_right == false)
 				{
-					set_uv_position(abfw::Vector2 (0.0625f,0.0f));
 					set_uv_width(-0.0625);
+					set_uv_position(abfw::Vector2(0.0625f,0.5f));
 				}
 			}
-			else if (gDir == UP)
+			else if(gDir == UP)
 			{
-				if (move_right == true)
+				if(move_right == true)
 				{
-					set_uv_position(abfw::Vector2 (0.0f,0.25f));
 					set_uv_width(0.0625);
+					set_uv_position(abfw::Vector2(0.0f,0.75f));
 				}
-				else
+
+				if(move_right == false)
 				{
-					set_uv_position(abfw::Vector2 (0.0625f,0.25f));
 					set_uv_width(-0.0625);
+					set_uv_position(abfw::Vector2(0.0625f,0.75f));
 				}
 			}
+
+			walk = true;
+				
+			//set up animation
+			InitSpriteAnimation(0.0125,16,true,SCROLL_X,16,2);
 		}
-		else
+		else if (horizontal != true)//vertical animation
 		{
 			if(gDir == LEFT)
 			{
-				if (moveUp == true)
+				if(moveUp == true)
 				{
-					set_uv_position(abfw::Vector2(0.25f,0.9375f));
-					set_uv_height(0.0625);
+					set_uv_height(0.0625);	
+					set_uv_position(abfw::Vector2(0.75f,0.9375f));
 				}
-				else
+
+				if(moveUp == false)
 				{
-					set_uv_position(abfw::Vector2(0.25f,1.0f));
-					set_uv_height(-0.0625);
+					set_uv_height(-0.0625);	
+					set_uv_position(abfw::Vector2(0.75f,0.9375f));
 				}
 			}
-			else if (gDir == RIGHT)
+			else if(gDir == RIGHT)
 			{
-				if (moveUp == true)
+				if(moveUp == true)
 				{
-					set_uv_position(abfw::Vector2(0.25f,0.9375f));
-					set_uv_height(0.0625);
+					set_uv_height(0.0625);		
+					set_uv_position(abfw::Vector2(0.75f,0.9375f));
 				}
-				else
+
+				if(moveUp == false)
 				{
-					set_uv_position(abfw::Vector2(0.25f,1.0f));
-					set_uv_height(-0.0625);
+					set_uv_height(-0.0625);	
+					set_uv_position(abfw::Vector2(0.75f,0.9375f));
 				}
 			}
-		}
+			walk = true;
+				
+			//set up animation
+			InitSpriteAnimation(0.0125,16,true,SCROLL_Y,16,2);
+		}				
+	}
+		
+	//animate sprite
+	/*if(horizontal == true)
+	{
+		Animate(ticks, move_right);
+	}
+	else
+	{
+		Animate(ticks, moveUp);
+	}*/
+}
+
+void Player::idleAnimation(float ticks)
+{
+	if (gDir == UP)
+	{
+		set_uv_height(-0.5f);
+	}
+	else if (gDir == DOWN)
+	{
+		set_uv_height(0.5f);
+	}
+	else if (gDir == RIGHT)
+	{
+		set_uv_width(0.5f);
+	}
+	else if (gDir == LEFT)
+	{
+		set_uv_width(-0.5f);
 	}
 
+	//set back to idle 
+	walk = false;
+		
+	//orientate sprite with direction
+	if (horizontal == true)
+	{
+		if(gDir == DOWN)
+		{
+			if (move_right == true)
+			{
+				set_uv_width(0.03125f);
+				set_uv_position(abfw::Vector2 (0.0f,0.0f));
+			}
+			else
+			{
+				set_uv_width(-0.03125f);
+				set_uv_position(abfw::Vector2 (0.03125f,0.0f));
+			}
+		}
+		else if (gDir == UP)
+		{
+			if (move_right == true)
+			{
+				set_uv_width(0.03125f);
+				set_uv_position(abfw::Vector2 (0.0f,0.5f));
+			}
+			else
+			{
+				set_uv_width(-0.03125f);
+				set_uv_position(abfw::Vector2 (0.03125f,0.5f));
+			}
+		}
+
+		//set up animation
+		InitSpriteAnimation(0.01,32,true,SCROLL_X,32,2);
+
+		//Animate(ticks, false);
+		
+	}
+	/*else
+	{
+		if(gDir == LEFT)
+		{
+			if (moveUp == true)
+			{
+				set_uv_height(0.03125);
+				set_uv_position(abfw::Vector2(0.25f,0.9375f));
+			}
+			else
+			{
+				set_uv_height(-0.0625);
+				set_uv_position(abfw::Vector2(0.25f,1.0f));
+			}
+		}
+		else if (gDir == RIGHT)
+		{
+			if (moveUp == true)
+			{
+				set_uv_height(0.0625);
+				set_uv_position(abfw::Vector2(0.25f,0.9375f));
+			}
+			else
+			{
+				set_uv_height(-0.0625);
+				set_uv_position(abfw::Vector2(0.25f,1.0f));
+			}
+		}
+	}*/
 }
 
 void Player::setGravity(int n)

@@ -177,6 +177,8 @@ void GameState::LoadTextures()
 	// state-level textures 
 	playerTex = application_->LoadTextureFromPNG("Robot_animations.png");
 	rotPlayerTex = application_->LoadTextureFromPNG("Robot_animations_rotated.png");
+	playerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle.png");
+	playerDeath = application_->LoadTextureFromPNG("Robot_Animation_death1.png");
 	redPUTex = application_->LoadTextureFromPNG("Red.png");
 	bluePUTex = application_->LoadTextureFromPNG("Blue.png");
 	platformTex = application_->LoadTextureFromPNG("Platform_Panel.png");
@@ -304,14 +306,31 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 	}
 
 	//change sprite for horizontal or vertical movement
-	if (player_.horizontal == false)
+	/*if (player_.horizontal == false)
 	{
 		player_.set_texture(rotPlayerTex);
 	}
 	else
 	{
 		player_.set_texture(playerTex);
-	}
+	}*/
+
+	//change textures
+	switch(player_.state_)
+	{
+		case Player::IDLE:
+				player_.set_texture(playerIdle);
+				break;
+		case Player::RUNNING:
+				player_.set_texture(playerTex);
+				break;			 
+		case Player::ATTACKING:
+
+			break;
+		case Player::DEAD:
+			player_.set_texture(playerDeath);
+			break;
+	};
 
 	//check for destroyed plants
 	for(int g = 0; g < PLANT_NUM;g++)
