@@ -1,11 +1,5 @@
 #include "level_1.h"
-#include <graphics/sprite_renderer.h>
-#include <audio/vita/audio_manager_vita.h>
-#include <graphics/texture.h>
-#include <iostream>
 #include "game_application.h"
-#include "box2d_helpers.h"
-#include <string>
 
 Level_1::Level_1(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
 	AppState(platform, application, audio_manager)
@@ -353,52 +347,6 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	{
 		gameOver_ = true;
 	}	
-}
-
-void Level_1::ConstructLevel()
-{
-	PlaceTile(25.5f, 4.5f, 79, 3, 2);
-	PlaceTile(28.5f, 3.5f, 79, 3, 2);
-	PlaceTile(32.5f, 3.5f, 79, 3, 2);
-	PlaceTile(36.5f, 3.5f, 79, 3, 2);
-	PlaceTile(40.5f, 3.5f, 79, 3, 2);
-	PlaceTile(44.5f, 2.5f, 79, 3, 2);
-	PlaceTile(48.5f, 3.5f, 79, 3, 2);
-	PlaceTile(52.5f, 2.5f, 79, 3, 2);
-	PlaceTile(56.5f, 4.5f, 79, 3, 2);
-	PlaceTile(60.5f, 3.5f, 79, 3, 2);
-	PlaceTile(64.5f, 2.5f, 79, 3, 2);
-	PlaceTile(68.5f, 2.5f, 79, 3, 2);
-}
-
-void Level_1::PlaceTile(float x, float y, int tile_id, int dimensions, int layer)
-{
-	Sprite tile = Sprite();
-	switch (dimensions) // width and height determined by dimensions variable - MAKE THIS ENUMERATION
-	{
-	case 0:
-		tile.InitSprite(128, 128, abfw::Vector3(x, y, 0.0f), Tiles_[tile_id]);
-		break;
-	case 1:
-		tile.InitSprite(256, 256, abfw::Vector3(x, y, 0.0f), Tiles_[tile_id]);
-		break;
-	case 2:
-		tile.InitSprite(512, 512, abfw::Vector3(x, y, 0.0f), Tiles_[tile_id]);
-		break;
-	}
-
-	switch (layer)
-	{
-	case 0:
-		Low_Layer_.push_back(tile);
-		break;
-	case 1:
-		Mid_Layer_.push_back(tile);
-		break;
-	case 2:
-		High_Layer_.push_back(tile);
-		break;
-	}
 }
 
 void Level_1::CreateObjects()
