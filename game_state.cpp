@@ -102,7 +102,7 @@ void GameState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 	// Draw game objects
 	sprite_renderer_->DrawSprite(background_);
 
-	if(player_.dead == false)
+	if(player_.deadAnim == false)
 	{
 		sprite_renderer_->DrawSprite(player_);
 		sprite_renderer_->DrawSprite(arrow_);
@@ -177,8 +177,9 @@ void GameState::LoadTextures()
 	// state-level textures 
 	playerTex = application_->LoadTextureFromPNG("Robot_animations.png");
 	rotPlayerTex = application_->LoadTextureFromPNG("Robot_animations_rotated.png");
-	playerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle.png");
-	playerDeath = application_->LoadTextureFromPNG("Robot_Animation_death1.png");
+	playerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle.png");	
+	rotPlayerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle_rot.png");
+	playerDeath = application_->LoadTextureFromPNG("Robot_Animation_death.png");
 	redPUTex = application_->LoadTextureFromPNG("Red.png");
 	bluePUTex = application_->LoadTextureFromPNG("Blue.png");
 	platformTex = application_->LoadTextureFromPNG("Platform_Panel.png");
@@ -195,7 +196,11 @@ void GameState::LoadSounds()
 
 void GameState::InputLoop(const abfw::SonyController* controller)
 {
-	player_.Player_Input(controller);
+	//so player can't move when dead
+	if(player_.dead != true)
+	{
+		player_.Player_Input(controller);
+	}
 
 	//manually restart
 	if (controller->buttons_down() & ABFW_SONY_CTRL_TRIANGLE)
@@ -203,6 +208,7 @@ void GameState::InputLoop(const abfw::SonyController* controller)
 		Restart();
 	}
 
+	//camera controls
 	if (controller->buttons_down() & ABFW_SONY_CTRL_LEFT)
 	{
 		application_->camera_->MoveBy(abfw::Vector2(-1.0f, 0.0f));
@@ -235,10 +241,18 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 		arrow_.set_position(player_.currentPos.x,player_.currentPos.y,0.0f);	
 		arrow_.set_rotation(player_.currentRayAngle);
 	}
+	else if (player_.deadAnim == false)
+	{
+		player_.Update(ticks_, gameOver_,false);
+	}
 	else
 	{
 		Restart();
 	}
+
+	
+	arrow_.set_position(player_.currentPos.x,player_.currentPos.y,0.0f);	
+	arrow_.set_rotation(player_.currentRayAngle);
 	
 	//create and update blade
 	if(player_.attacking == true)
@@ -306,31 +320,44 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 	}
 
 	//change sprite for horizontal or vertical movement
-	/*if (player_.horizontal == false)
+	if (player_.horizontal == false)
 	{
-		player_.set_texture(rotPlayerTex);
+		//change textures
+		switch(player_.state_)
+		{
+			case Player::IDLE:
+					player_.set_texture(rotPlayerIdle);
+					break;
+			case Player::RUNNING:
+					player_.set_texture(rotPlayerTex);
+					break;			 
+			case Player::ATTACKING:
+
+				break;
+			case Player::DEAD:
+				player_.set_texture(playerDeath);
+				break;
+		};
 	}
 	else
 	{
-		player_.set_texture(playerTex);
-	}*/
+		//change textures
+		switch(player_.state_)
+		{
+			case Player::IDLE:
+					player_.set_texture(playerIdle);
+					break;
+			case Player::RUNNING:
+					player_.set_texture(playerTex);
+					break;			 
+			case Player::ATTACKING:
 
-	//change textures
-	switch(player_.state_)
-	{
-		case Player::IDLE:
-				player_.set_texture(playerIdle);
 				break;
-		case Player::RUNNING:
-				player_.set_texture(playerTex);
-				break;			 
-		case Player::ATTACKING:
-
-			break;
-		case Player::DEAD:
-			player_.set_texture(playerDeath);
-			break;
-	};
+			case Player::DEAD:
+				player_.set_texture(playerDeath);
+				break;
+		};
+	}
 
 	//check for destroyed plants
 	for(int g = 0; g < PLANT_NUM;g++)

@@ -120,6 +120,7 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 			}
 
 			((Player *)game_object)->grounded = true;
+			((Player *)game_object)->state_ = Player::GROUNDED;
 		}
 
 			
@@ -154,6 +155,7 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 			}
 
 			((Player *)game_object_b)->grounded = true;
+			((Player *)game_object_b)->state_ = Player::GROUNDED;
 		}
 	
 //////////Bullets///////////////////////
@@ -227,11 +229,11 @@ void Contact_Listener::EndContact(b2Contact* contact)
 		//touching platform
 		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::PLATFORM)
 		{
-			((Player *)game_object)->grounded = false;
+			((Player *)game_object)->state_ = Player::INAIR;
 		}
 		else if (game_object->getType() == GameObject::PLATFORM && game_object_b->getType() == GameObject::PLAYER)
 		{
-			((Player *)game_object_b)->grounded = false;
+			((Player *)game_object_b)->state_ = Player::INAIR;
 		}
 	}
 }

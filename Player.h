@@ -13,8 +13,6 @@ public:
 	void Create_Player(b2World* world_, float x, float y); // make player body and match it to sprite
 	void Update(const float& ticks_, bool gameOver, bool flying);// player update loop - called from UpdateGameObjects in gamestate
 	void Player_Input(const class abfw::SonyController* controller_);	// player input loop - called from InputLoop in gamestate
-	void runningAnimation(float ticks);//set up uv coords for animations
-	void idleAnimation(float ticks);
 	void setGravity(int);
 
 	b2Vec2 gravity;//personal gravity
@@ -36,15 +34,16 @@ public:
 	bool jumping;
 	float currentRayAngle; // angle of raycast line displayed on screen
 
-	bool deadAnim;
-	
 	/////// Enumerated states player can be in - use these to do logic & for sprite animation
 	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING, DEAD };
 	OBJECTSTATE state_;
-
+	
+	bool deadAnim;
 private:
-
-
+	//set up uv coords for animations
+	void runningAnimation(float ticks);
+	void idleAnimation(float ticks);
+	void deadAnimation(float ticks);
 
 	float damage;//amount of damage taken
 	b2Vec2 knockbackForce;//push player back when hit
