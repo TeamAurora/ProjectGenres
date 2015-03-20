@@ -61,7 +61,7 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		}
 		else if (game_object->getType() == GameObject::SPIKE && game_object_b->getType() == GameObject::PLAYER)
 		{
-			((Player* )game_object_b)->dead = true;
+			((Player* )game_object_b)->dead = true;			
 		}
 
 //////////Pick Ups/////////////////////////
@@ -119,8 +119,8 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 				}
 			}
 
-			((Player *)game_object)->grounded = true;
 			((Player *)game_object)->state_ = Player::GROUNDED;
+			((Player *)game_object)->body_->SetLinearVelocity(b2Vec2(0,0));//stop bouncing
 		}
 
 			
@@ -154,8 +154,8 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 				}	
 			}
 
-			((Player *)game_object_b)->grounded = true;
 			((Player *)game_object_b)->state_ = Player::GROUNDED;
+			((Player *)game_object_b)->body_->SetLinearVelocity(b2Vec2(0,0));//stop bouncing
 		}
 	
 //////////Bullets///////////////////////

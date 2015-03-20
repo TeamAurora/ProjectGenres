@@ -2,7 +2,7 @@
 #include <input/sony_controller_input_manager.h>
 #include "box2d_helpers.h"
 
-
+/////John//////
 Player::Player()
 {
 	// set gameobject type
@@ -13,8 +13,6 @@ Player::Player()
 
 	//set values for variables
 	move_v = 6;
-	jump_v = 160.0f;
-	jump_gap = 35;
 	damage = 1.25;
 	knockbackForce.Set(150, 0.0f);//check if this doing anything
 
@@ -30,10 +28,8 @@ Player::Player()
 	move_right = false;
 	horizontal = true;
 	moveUp = true;
-	grounded = true;
-	jumping = false;
 
-	deadAnim = false;
+	deadAnim = false;//has death animation played
 
 	//on stick axis
 	jumpCutOff = 0.8;
@@ -41,7 +37,7 @@ Player::Player()
 
 	//jump angle in radians
 	currentRayAngle = 0; //5.235987756 ;//300 radians
-	rayLength = 1.5f;
+	rayLength = 5.0f;
 	setGravity(0);//down
 
 }
@@ -85,7 +81,7 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	fixtureDef.shape = &dynamicBox;
 	fixtureDef.density = 2.0f;//set mass
 	body_->ResetMassData();//it only sets new value after this is called
-	fixtureDef.friction = 0.5f;
+	fixtureDef.friction = 0.95f;
 	fixtureDef.restitution = 0.1f; // not bouncy
 	body_->CreateFixture(&fixtureDef);
 
@@ -103,6 +99,8 @@ void Player::Create_Player(b2World* world_, float x, float y)
 
 void Player::Update(const float& ticks, bool gameOver, bool flying)
 {
+	bool result;
+
 	//update sprite position to match body
 	float new_x = BOX2D_GFX_POS_X(body_->GetPosition().x);
 	float new_y = BOX2D_GFX_POS_Y(body_->GetPosition().y);
@@ -117,7 +115,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 	OBJECTSTATE prevState = state_;
 
 	//damage player
-	if(hurting)
+	if(hurting && health() > 0)
 	{
 		updateHealth(-damage);
 	}
@@ -130,23 +128,25 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 
 	//change state
-	if(move == true)
+	if(move == true && dead == false && state_ != INAIR)
 	{
 		state_ = RUNNING;
 	}
-	else if (attacking == true)
+	else if (attacking == true && state_ != INAIR)
 	{
 		state_ = ATTACKING;
 	}
 	else if(dead == true)
 	{
 		state_ = DEAD;
+		body_->SetLinearVelocity(b2Vec2(0,0));
 	}
-	else
+	else if (state_ != INAIR)
 	{
 		state_ = IDLE;
 	}
-
+	
+	//set axis
 	if(gDir == UP || gDir == DOWN)
 	{
 		horizontal = true;
@@ -156,49 +156,43 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 		horizontal = false;
 	}
 
-	
-	//set up sprite sheets for each state
-	if(state_ != prevState)
+	if(mflying == false)
 	{
-		switch(state_)
+		//set up animations for each state
+		if(state_ != prevState)
 		{
-			case IDLE:
-					idleAnimation(ticks);
+			switch(state_)
+			{
+				case IDLE:
+						idleAnimation();
+						break;
+				case RUNNING:
+						runningAnimation();
+						break;			 
+				case ATTACKING:
+
 					break;
-			case RUNNING:
-					runningAnimation(ticks);
-					break;			 
-			case ATTACKING:
-
-				break;
-			case DEAD:
-					deadAnimation(ticks);
-				break;
-		};
-	}
+				case DEAD:
+						deadAnimation();
+					break;
+			};
+		}
 
 
-	//animation
-	if(state_ != DEAD)
-	{
+		// play the animation
 		if(horizontal == true)
 		{
-			Animate(ticks, move_right);
+			result = Animate(ticks, move_right);
 		}
 		else
 		{
-			Animate(ticks, moveUp);
+			result = Animate(ticks, moveUp);
 		}
-	}
-	else
-	{
-		if(horizontal == true)
-		{	
-			deadAnim = Animate(ticks, move_right);
-		}
-		else
+
+		//check for animations that play once
+		if(state_ == DEAD)
 		{
-			deadAnim = Animate(ticks, move_right);
+			deadAnim = result;
 		}
 	}
 	
@@ -248,18 +242,14 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			currentRayAngle = atan2(xaxisval, -yaxisval); //* FRAMEWORK_RAD_TO_DEG;
 
 			// jump mechanic
-			if ( controller->buttons_down() & ABFW_SONY_CTRL_R2)
+			if ( controller->buttons_down() & ABFW_SONY_CTRL_R2 && state_ != INAIR)
 			{
+				//state_ = INAIR;
 				b2Vec2 angle = b2Vec2(sinf(currentRayAngle), cosf(currentRayAngle));
 
 				b2Vec2 impulse = b2Vec2(rayLength * angle);
 
-				jumping = true;
 				body_->ApplyLinearImpulse(impulse,body_->GetWorldCenter());
-			}
-			else
-			{
-				jumping = false;
 			}
 		}
 
@@ -284,6 +274,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			{
 				move = false;
 				force.SetZero();
+			//	body_->SetLinearVelocity(b2Vec2(0,0));
 			}
 		}
 		else if (gDir == RIGHT || gDir == LEFT)
@@ -304,6 +295,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			{
 				move = false;
 				force.SetZero();
+				//body_->SetLinearVelocity(b2Vec2(0,0));
 			}
 		}
 
@@ -317,124 +309,102 @@ void Player::Player_Input(const abfw::SonyController* controller)
 		{
 			attacking = false;
 		}
-
-//////////////////////////////
 	}
 	body_->ApplyForceToCenter(force);
 }
 
-void Player::runningAnimation(float ticks)
+void Player::runningAnimation()
 {
-	if(mflying == false)
-	{	
-		//flip for gravity
-		if (gDir == UP)
-		{
-			set_uv_height(-0.25f);
-		}
-		else if (gDir == DOWN)
-		{
-			set_uv_height(0.25f);
-		}
-		else if (gDir == RIGHT)
-		{
-			set_uv_width(0.25f);
-		}
-		else if (gDir == LEFT)
-		{
-			set_uv_width(-0.25f);
-		}
-	}
-
-
-	//walk frame settings
-	if( walk == false)
+	//flip for gravity
+	if (gDir == UP)
 	{
-		if(horizontal == true)//horizontal animation
+		set_uv_height(-0.25f);
+	}
+	else if (gDir == DOWN)
+	{
+		set_uv_height(0.25f);
+	}
+	else if (gDir == RIGHT)
+	{
+		set_uv_width(0.25f);
+	}
+	else if (gDir == LEFT)
+	{
+		set_uv_width(-0.25f);
+	}
+	
+	if(horizontal == true)//horizontal animation
+	{
+		if(gDir == DOWN)
 		{
-			if(gDir == DOWN)
+			if(move_right == true)
 			{
-				if(move_right == true)
-				{
-					set_uv_width(0.0625);
-					set_uv_position(abfw::Vector2(0.0f,0.5f));
-				}
-
-				if(move_right == false)
-				{
-					set_uv_width(-0.0625);
-					set_uv_position(abfw::Vector2(0.0625f,0.5f));
-				}
-			}
-			else if(gDir == UP)
-			{
-				if(move_right == true)
-				{
-					set_uv_width(0.0625);
-					set_uv_position(abfw::Vector2(0.0f,0.75f));
-				}
-
-				if(move_right == false)
-				{
-					set_uv_width(-0.0625);
-					set_uv_position(abfw::Vector2(0.0625f,0.75f));
-				}
+				set_uv_width(0.0625);
+				set_uv_position(abfw::Vector2(0.0f,0.5f));
 			}
 
-			walk = true;
+			if(move_right == false)
+			{
+				set_uv_width(-0.0625);
+				set_uv_position(abfw::Vector2(0.0625f,0.5f));
+			}
+		}
+		else if(gDir == UP)
+		{
+			if(move_right == true)
+			{
+				set_uv_width(0.0625);
+				set_uv_position(abfw::Vector2(0.0f,0.75f));
+			}
+
+			if(move_right == false)
+			{
+				set_uv_width(-0.0625);
+				set_uv_position(abfw::Vector2(0.0625f,0.75f));
+			}
+		}
+
 				
-			//set up animation
-			InitSpriteAnimation(0.0125,32,true,SCROLL_X,16,2);
-		}
-		else if (horizontal != true)//vertical animation
+		//set up animation
+		InitSpriteAnimation(0.0125,16,true,SCROLL_X,16,2);
+	}
+	else if (horizontal != true)//vertical animation
+	{
+		if(gDir == LEFT)
 		{
-			if(gDir == LEFT)
+			if(moveUp == true)
 			{
-				if(moveUp == true)
-				{
-					set_uv_height(0.0625);	
-					set_uv_position(abfw::Vector2(0.75f,0.9375f));
-				}
-
-				if(moveUp == false)
-				{
-					set_uv_height(-0.0625);	
-					set_uv_position(abfw::Vector2(0.75f,0.9375f));
-				}
+				set_uv_height(0.0625);	
+				set_uv_position(abfw::Vector2(0.75f,0.9375f));
 			}
-			else if(gDir == RIGHT)
+
+			if(moveUp == false)
 			{
-				if(moveUp == true)
-				{
-					set_uv_height(0.0625);		
-					set_uv_position(abfw::Vector2(0.75f,0.9375f));
-				}
-
-				if(moveUp == false)
-				{
-					set_uv_height(-0.0625);	
-					set_uv_position(abfw::Vector2(0.75f,0.9375f));
-				}
+				set_uv_height(-0.0625);	
+				set_uv_position(abfw::Vector2(0.75f,0.9375f));
 			}
-			walk = true;
+		}
+		else if(gDir == RIGHT)
+		{
+			if(moveUp == true)
+			{
+				set_uv_height(0.0625);		
+				set_uv_position(abfw::Vector2(0.5f,0.9375f));
+			}
+
+			if(moveUp == false)
+			{
+				set_uv_height(-0.0625);	
+				set_uv_position(abfw::Vector2(0.5f,0.9375f));
+			}
+		}
 				
-			//set up animation
-			InitSpriteAnimation(0.0125,16,true,SCROLL_Y,16,2);
-		}				
-	}
-		
-	//animate sprite
-	/*if(horizontal == true)
-	{
-		Animate(ticks, move_right);
-	}
-	else
-	{
-		Animate(ticks, moveUp);
-	}*/
+		//set up animation
+		InitSpriteAnimation(0.0125,16,true,SCROLL_Y,16,2);
+	}	
 }
 
-void Player::idleAnimation(float ticks)
+void Player::idleAnimation()
 {
 	//flip for gravity
 	if (gDir == UP)
@@ -454,9 +424,6 @@ void Player::idleAnimation(float ticks)
 		set_uv_width(-0.5f);
 	}
 
-	//set back to idle 
-	walk = false;
-		
 	//orientate sprite with direction
 	if (horizontal == true)
 	{
@@ -488,7 +455,7 @@ void Player::idleAnimation(float ticks)
 		}
 
 		//set up animation
-		InitSpriteAnimation(0.01,64,true,SCROLL_XY,32,2);
+		InitSpriteAnimation(0.02,64,true,SCROLL_XY,32,2);
 				
 	}
 	else
@@ -521,11 +488,12 @@ void Player::idleAnimation(float ticks)
 		}
 
 		//set up animation
-		InitSpriteAnimation(0.01,64,true,SCROLL_YX,2,32);
+		InitSpriteAnimation(0.02,64,true,SCROLL_YX,2,32);
 	}
 }
 
-void Player::deadAnimation(float ticks)
+
+void Player::deadAnimation()
 {
 	//flip for gravity
 	if (gDir == UP)
@@ -571,12 +539,12 @@ void Player::deadAnimation(float ticks)
 			else
 			{
 				set_uv_width(-0.0625);
-				set_uv_position(abfw::Vector2 (0.0625,0.5f));
+				set_uv_position(abfw::Vector2 (0.0625,1));
 			}
 		}
 
 		//set up animation
-		InitSpriteAnimation(0.05,16,false,SCROLL_X,0,0);
+		InitSpriteAnimation(0.07,16,false,SCROLL_X,0,0);
 				
 	}
 	else
@@ -609,10 +577,11 @@ void Player::deadAnimation(float ticks)
 		}
 
 		//set up animation
-		InitSpriteAnimation(0.05,16,false,SCROLL_Y,0,0);
+		InitSpriteAnimation(0.07,16,false,SCROLL_Y,0,0);
 	}
 }
 
+////Rebecca
 void Player::setGravity(int n)
 {
 	switch (n)

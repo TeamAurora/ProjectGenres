@@ -16,22 +16,16 @@ public:
 	void setGravity(int);
 
 	b2Vec2 gravity;//personal gravity
-
-	float jump_v;//jump force
-	float jump_gap;//time between being able to jump
-
+	
 	bool attacking;//attacking
 	bool hurting;//is player taking damage
 	bool gameOver;//has game stopped
 
 	bool horizontal;
 	bool move_right, moveUp;//flag for telling player direction used to change animation/place blade
-	bool walk;//flag for walk animation
 
-	bool grounded;//player is touching a platform
+	//current varaibles of player
 	b2Vec2 currentPos;
-
-	bool jumping;
 	float currentRayAngle; // angle of raycast line displayed on screen
 
 	/////// Enumerated states player can be in - use these to do logic & for sprite animation
@@ -41,9 +35,10 @@ public:
 	bool deadAnim;
 private:
 	//set up uv coords for animations
-	void runningAnimation(float ticks);
-	void idleAnimation(float ticks);
-	void deadAnimation(float ticks);
+	void setUVCoordinates(float width, float height);//take the height and width of single frame of the sprite
+	void runningAnimation();
+	void idleAnimation();
+	void deadAnimation();
 
 	float damage;//amount of damage taken
 	b2Vec2 knockbackForce;//push player back when hit

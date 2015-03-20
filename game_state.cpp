@@ -180,6 +180,9 @@ void GameState::LoadTextures()
 	playerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle.png");	
 	rotPlayerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle_rot.png");
 	playerDeath = application_->LoadTextureFromPNG("Robot_Animation_death.png");
+	rotPlayerDeath = application_->LoadTextureFromPNG("Robot_Animation_death_rot.png");
+	playerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP.png");
+
 	redPUTex = application_->LoadTextureFromPNG("Red.png");
 	bluePUTex = application_->LoadTextureFromPNG("Blue.png");
 	platformTex = application_->LoadTextureFromPNG("Platform_Panel.png");
@@ -335,7 +338,7 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 
 				break;
 			case Player::DEAD:
-				player_.set_texture(playerDeath);
+				player_.set_texture(rotPlayerDeath);
 				break;
 		};
 	}
@@ -385,22 +388,24 @@ void GameState::CreateObjects()
 	enemy_.gravity = b2Vec2(0,-10);
 
 	//create walls
-	//boundries
-	platforms_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(0),GFX_BOX2D_SIZE(platform_.width()),platformWidth_);//roof
-	platforms_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(platform_.height()),GFX_BOX2D_SIZE(platform_.width()),platformWidth_);//ground
-	platforms_[2].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(platform_.height()),platformWidth_,GFX_BOX2D_SIZE(platform_.height()));//left wall
-	platforms_[3].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()),GFX_BOX2D_POS_Y(0),platformWidth_,GFX_BOX2D_SIZE(platform_.height()));//right wall
-	//level parts
-	platforms_[4].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.45f),GFX_BOX2D_POS_Y(platform_.height()*0.9f),
-		GFX_BOX2D_SIZE(platform_.width()*0.11f),GFX_BOX2D_SIZE(platform_.height()*0.325f));	//centre
-	platforms_[5].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.175f),GFX_BOX2D_POS_Y(platform_.height()*0.32f),
-		GFX_BOX2D_SIZE(platform_.width()*0.175f),GFX_BOX2D_SIZE(platform_.height()*0.06f));//top left
-	platforms_[6].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.82f),GFX_BOX2D_POS_Y(platform_.height()*0.326f),
-		GFX_BOX2D_SIZE(platform_.width()*0.175f),GFX_BOX2D_SIZE(platform_.height()*0.06f));//top right
-	platforms_[7].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.6f),GFX_BOX2D_POS_Y(platform_.height()*0.90f),
-		GFX_BOX2D_SIZE(platform_.width()*0.15f),GFX_BOX2D_SIZE(platform_.height()*0.15f));//slope
-	platforms_[7].set_rotation(0.785398163);//45 degree angle in radians
-
+	if(platforms_[0].dead == true)//check if platforms has been created only needs to check one as they are all done at the same time
+	{
+		//boundries
+		platforms_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(0),GFX_BOX2D_SIZE(platform_.width()),platformWidth_);//roof
+		platforms_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(platform_.height()),GFX_BOX2D_SIZE(platform_.width()),platformWidth_);//ground
+		platforms_[2].CreateStaticBody(world_,GFX_BOX2D_POS_X(0),GFX_BOX2D_POS_Y(platform_.height()),platformWidth_,GFX_BOX2D_SIZE(platform_.height()));//left wall
+		platforms_[3].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()),GFX_BOX2D_POS_Y(0),platformWidth_,GFX_BOX2D_SIZE(platform_.height()));//right wall
+		//level parts
+		platforms_[4].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.45f),GFX_BOX2D_POS_Y(platform_.height()*0.9f),
+			GFX_BOX2D_SIZE(platform_.width()*0.11f),GFX_BOX2D_SIZE(platform_.height()*0.325f));	//centre
+		platforms_[5].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.175f),GFX_BOX2D_POS_Y(platform_.height()*0.32f),
+			GFX_BOX2D_SIZE(platform_.width()*0.175f),GFX_BOX2D_SIZE(platform_.height()*0.06f));//top left
+		platforms_[6].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.82f),GFX_BOX2D_POS_Y(platform_.height()*0.326f),
+			GFX_BOX2D_SIZE(platform_.width()*0.175f),GFX_BOX2D_SIZE(platform_.height()*0.06f));//top right
+		platforms_[7].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.6f),GFX_BOX2D_POS_Y(platform_.height()*0.90f),
+			GFX_BOX2D_SIZE(platform_.width()*0.15f),GFX_BOX2D_SIZE(platform_.height()*0.15f));//slope
+		platforms_[7].set_rotation(0.785398163);//45 degree angle in radians
+	}
 	//set object type
 	for(int i = 0;i < PLATFORM_NUM;i++)
 	{
@@ -443,8 +448,8 @@ void GameState::CreateObjects()
 
 	//create spike
 	//top left
-	spike_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.375f),GFX_BOX2D_POS_Y(platform_.height()*0.32f),
-		GFX_BOX2D_SIZE(25),GFX_BOX2D_SIZE(platform_.height()*0.059f));
+	spike_[0].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.38f),GFX_BOX2D_POS_Y(platform_.height()*0.32f),
+		GFX_BOX2D_SIZE(25),GFX_BOX2D_SIZE(platform_.height()*0.05f));
 	//slope
 	spike_[1].CreateStaticBody(world_,GFX_BOX2D_POS_X(platform_.width()*0.66f),GFX_BOX2D_POS_Y(platform_.height()*0.8),
 		GFX_BOX2D_SIZE(platform_.width()*0.16),GFX_BOX2D_SIZE(30));

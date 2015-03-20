@@ -9,7 +9,8 @@ GameObject::GameObject() :
 	world_(NULL),
 	body_(NULL),
 	physicsengine_(DEFAULT),
-	magnitude_(150)
+	magnitude_(150), 
+	dead(true)
 {
 }
 
@@ -223,9 +224,9 @@ void GameObject::CreateStaticBody(b2World* world_,float x , float y, float width
 	b2PolygonShape shape;
 	shape.SetAsBox(body_half_width, body_half_height);
 
-	/*b2FixtureDef fixtureDef;
+	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &shape;
-	fixtureDef.friction = 0.5f;*/
+	fixtureDef.friction = 0.1f;
 	// bind the shape to the body
 	body_ -> CreateFixture(&shape, 0.0f);
 
