@@ -16,6 +16,9 @@ public:
 	Camera(abfw::SpriteRenderer* renderer, abfw::Platform& platform);
 	~Camera(void);
 
+	// Camera tends towards the target location by the velocity amount each frame
+	void TendTowards(abfw::Vector2 target, float velocity);
+
 	// Move function that assumes the movement is relative to current position (relative transform)
 	void MoveBy(abfw::Vector2 translation);
 	// Move function that assumes the movement disregards current position (absolute transform)
@@ -28,10 +31,18 @@ public:
 	// Rotation currently does not work correctly
 	//void Rotate(float deg);
 
-	void ApplyCameraTransforms();
+	// Intensity of screen shake and duration (in seconds)
+	void ScreenShake(int intensity, float duration);
+
+	void ApplyCameraTransforms(const float& ticks);
 	void ResetCamera();
 
 private:
+
+	int shaking_intensity_;
+	float shaking_remaining_time_;
+	abfw::Vector2 target_;
+	float velocity_;
 
 	bool changed_; // Tracks if camera has been changed to stop unnecessary updates
 	abfw::SpriteRenderer* renderer_; // pointer to sprite renderer for updating its projection matrix

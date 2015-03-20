@@ -112,7 +112,7 @@ bool GameApplication::Update(float ticks)
 		}
 	}
 
-	camera_->ApplyCameraTransforms();
+	camera_->ApplyCameraTransforms(ticks);
 
 	return true;
 }
