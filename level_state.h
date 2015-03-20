@@ -17,7 +17,7 @@
 class LevelState : public AppState
 {
 public:
-	LevelState();
+	LevelState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager);
 	virtual ~LevelState();
 
 	void InitializeState();
@@ -30,13 +30,12 @@ private:
 	void LoadAssets();
 	void ConstructBackgroundVectorsFromMap();
 	void ConstructPhysicsBodiesFromMap();
-	void RenderGameObjects();
-	void RenderBackgroundVectors();
 
 	// override these in derived level classes
 	virtual void LoadTextures() = 0;	// force textures
 	virtual void LoadSounds();			// do not force sound
 	virtual void LoadMap() = 0;			// force a map
+	virtual void UpdateGameObjects(const float& ticks_, const int& frame_counter_);
 	virtual APPSTATE InputLoop(const abfw::SonyController* controller) = 0; // force an inputloop that returns a state for next frame
 
 	///John///
@@ -52,6 +51,13 @@ private:
 	b2World* world_;
 	Contact_Listener contact_listener_;
 	NLTmxMap* map_;
+
+	// Background Layer Vectors (Low > High Render Order)
+	std::vector<Sprite> High_Layer_;
+	std::vector<Sprite> Mid_Layer_;
+	std::vector<Sprite> Low_Layer_;
+
+	bool paused_;
 
 protected:
 
@@ -84,10 +90,4 @@ protected:
 	bool gameOver_;		// Track current level status
 	float attackTime;	// Amount of time between when attack can be pressed
 	float reloadTime;	//time between shots from the enemy
-
-	// Background Layer Vectors (Low > High Render Order)
-	std::vector<Sprite> High_Layer_;
-	std::vector<Sprite> Mid_Layer_;
-	std::vector<Sprite> Low_Layer_;
-
 };

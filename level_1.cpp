@@ -2,7 +2,7 @@
 #include "game_application.h"
 
 Level_1::Level_1(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
-	AppState(platform, application, audio_manager)
+	LevelState(platform, application, audio_manager)
 {
 }
 
