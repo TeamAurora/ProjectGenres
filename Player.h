@@ -1,6 +1,7 @@
 ///////////John & Rebecca//////////
 #pragma once
 #include "living_object.h"
+
 class Player :
 	public LivingObject
 {
@@ -38,8 +39,8 @@ public:
 private:
 
 	/////// Enumerated states player can be in - use these to do logic & for sprite animation
-	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING };
-	OBJECTSTATE state_;
+	enum PLAYERSTATE { DEAD, IDLE, INAIR, RUNNING, ATTACKING };
+	PLAYERSTATE state_;
 
 	float damage;//amount of damage taken
 	b2Vec2 knockbackForce;//push player back when hit

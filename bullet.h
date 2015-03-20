@@ -14,6 +14,7 @@ class Bullet : public GameObject
 		void Update(float ticks);
 
 		bool created;
+
 	private:
 		b2Vec2 offset;
 		float offsetAmount;

@@ -208,7 +208,7 @@ void Level_1::LoadSounds()
 
 }
 
-void Level_1::InputLoop(const abfw::SonyController* controller)
+APPSTATE Level_1::InputLoop(const abfw::SonyController* controller)
 {
 	player_.Player_Input(controller);
 
@@ -237,6 +237,8 @@ void Level_1::InputLoop(const abfw::SonyController* controller)
 	{
 		application_->camera_->MoveBy(abfw::Vector2(0.0f, 1.0f));
 	}
+
+	return LEVEL_1;
 }
 
 void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)

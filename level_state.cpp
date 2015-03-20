@@ -15,6 +15,35 @@ LevelState::~LevelState()
 {
 }
 
+void LevelState::InitializeState()
+{
+	LoadAssets();
+
+
+}
+
+void LevelState::TerminateState()
+{
+
+}
+
+APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
+{
+
+}
+
+void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
+{
+
+}
+
+void LevelState::LoadAssets()
+{
+	LoadTextures();
+	LoadSounds();
+	LoadMap();
+}
+
 void* LevelState::loadFile(const char * filename, bool appendNull) {
 
 	FILE* f = fopen(filename, "r");

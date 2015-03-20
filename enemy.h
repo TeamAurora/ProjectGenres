@@ -10,7 +10,7 @@ using namespace std;
 class Enemy : public GameObject
 {
 	public:
-		Enemy();//constructor
+		Enemy();
 		void Create_Enemy(b2World* world_, float x, float y);// create enemy at inputted position
 		void Update_Enemy(float ticks, b2Vec2 playerPos, bool patrol);//update enemy
 		void Attack(b2Vec2 playerPos,float enemyX,float enemyY);//check player position and if within range move to attack

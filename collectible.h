@@ -6,9 +6,9 @@
 class PickUp : public GameObject
 {
 	public:
-		//functions
-		PickUp();//constructor
-		void Create_pickup(b2World* world_, float, float);// create at x/y coordiantes
+
+		PickUp();
+		void Create_pickup(b2World* world_, float, float);
 		void Update(float);
 
 		bool spawned;

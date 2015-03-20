@@ -13,7 +13,8 @@ private: // PRIVATE METHODS (FUNCTIONS)
 
 	void LoadTextures();
 	void LoadSounds();
-	void InputLoop(const abfw::SonyController* controller);
+	void LoadMap();
+	APPSTATE InputLoop(const abfw::SonyController* controller);
 	void UpdateGameObjects(const float& ticks_, const int& frame_counter_); // updates game object - deleting flagged ones, updating positions and spawning new ones
 
 	// Spawn functions
