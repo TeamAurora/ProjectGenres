@@ -52,10 +52,14 @@ private:
 	Contact_Listener contact_listener_;
 	NLTmxMap* map_;
 
-	// Background Layer Vectors (Low > High Render Order)
-	std::vector<Sprite> High_Layer_;
-	std::vector<Sprite> Mid_Layer_;
-	std::vector<Sprite> Low_Layer_;
+	// Background layers
+	struct Background
+	{
+		std::vector<Sprite> High;
+		std::vector<Sprite> Mid;
+		std::vector<Sprite> Low;
+	};
+	Background background_;
 
 	bool paused_;
 

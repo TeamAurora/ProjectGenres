@@ -36,9 +36,11 @@ private:
 	abfw::Texture* help_button_highlighted_texture_;
 	abfw::Texture* options_button_texture_;
 	abfw::Texture* options_button_highlighted_texture_;
+	abfw::Texture* level_buttons_texture[6]; // 6 textures for 3 buttons (alternating between non-highlighted and highlighted textures)
 	Sprite background_;
 	Button start_button_;
 	Button help_button_;
 	Button options_button_;
+	Button level_buttons[3];
 };
 

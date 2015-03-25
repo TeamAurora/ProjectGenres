@@ -29,13 +29,21 @@ void MenuState::InitializeState()
 	background_.InitSprite(platform_.width(), platform_.height(), screen_centre, main_menu_background_texture_);
 
 	start_button_ = Button();
-	start_button_.InitSprite(201.0f, 66.0f, abfw::Vector3(750.0f, 190.0f, 0.0f), start_button_highlighted_texture_);
+	start_button_.InitSprite(256.0f, 64.0f, abfw::Vector3(750.0f, 190.0f, 0.0f), start_button_highlighted_texture_);
 
 	help_button_ = Button();
-	help_button_.InitSprite(166.0f, 57.0f, abfw::Vector3(783.0f, 290.0f, 0.0f), help_button_texture_);
+	help_button_.InitSprite(256.0f, 64.0f, abfw::Vector3(783.0f, 290.0f, 0.0f), help_button_texture_);
 
 	options_button_ = Button();
-	options_button_.InitSprite(246.0f, 57.0f, abfw::Vector3(717.0f, 400.0f, 0.0f), options_button_texture_);
+	options_button_.InitSprite(256.0f, 64.0f, abfw::Vector3(717.0f, 400.0f, 0.0f), options_button_texture_);
+
+	for (int i = 0; i < 3; i++)
+	{
+		level_buttons[i] = Button();
+	}
+	level_buttons[0].InitSprite(256.0f, 64.0f, abfw::Vector3(0.0f, 0.0f, 0.0f), level_buttons_texture[0]);
+	level_buttons[1].InitSprite(256.0f, 64.0f, abfw::Vector3(0.0f, 0.0f, 0.0f), level_buttons_texture[2]);
+	level_buttons[2].InitSprite(256.0f, 64.0f, abfw::Vector3(0.0f, 0.0f, 0.0f), level_buttons_texture[4]);
 }
 
 void MenuState::TerminateState()
