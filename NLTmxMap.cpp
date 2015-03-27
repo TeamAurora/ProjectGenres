@@ -7,7 +7,7 @@
 using namespace rapidxml;
 
 
-NLTmxMap* NLLoadTmxMap( char *xml )
+NLTmxMap* NLLoadTmxMap(char* xml )
 {
     xml_document<> doc;
     doc.parse<0>( xml );
@@ -20,6 +20,7 @@ NLTmxMap* NLLoadTmxMap( char *xml )
     map->height = atoi( mapnode->first_attribute( "height" )->value() );
     map->tileWidth = atoi( mapnode->first_attribute( "tilewidth" )->value() );
     map->tileHeight = atoi( mapnode->first_attribute( "tileheight" )->value() );
+	map->totalTileCount = 0;
     
     xml_node<> *tilesetnode = mapnode->first_node( "tileset" );
     
@@ -30,7 +31,25 @@ NLTmxMap* NLLoadTmxMap( char *xml )
         tileset->name = tilesetnode->first_attribute( "name" )->value();
         tileset->tileWidth =  atoi( tilesetnode->first_attribute( "tilewidth" )->value() );
         tileset->tileHeight = atoi( tilesetnode->first_attribute( "tileheight" )->value() );
-        tileset->filename = tilesetnode->first_node( "image" )->first_attribute( "source" )->value();
+
+		xml_node<> *tilenode = tilesetnode->first_node( "tile" );
+
+		while (tilenode) {
+			NLTmxMapTile* tile = new NLTmxMapTile();
+
+			tile->id = atoi(tilenode->first_attribute( "id" )->value());
+			
+			xml_node<> *image = tilenode->first_node( "image" );
+
+			tile->width = atoi(image->first_attribute( "width" )->value());
+			tile->height = atoi(image->first_attribute( "height" )->value());
+			tile->filename = image->first_attribute( "source" )->value();
+
+			tileset->tiles.push_back(tile);
+			map->totalTileCount++;
+
+			tilenode = tilenode->next_sibling( "tile" );
+		}
         
         //cout << "Tileset " << tileset->name << " filename " << tileset->filename << endl;
         
@@ -54,7 +73,7 @@ NLTmxMap* NLLoadTmxMap( char *xml )
         
         const char* data = layernode->first_node( "data" )->value();
         
-        layer->data = new int[ layer->width * layer->height ];
+        layer->data.resize( layer->width * layer->height );
         
         char* copy = (char*) malloc( strlen( data ) + 1 );
         strcpy( copy, data );

@@ -5,15 +5,21 @@
 
 using namespace std;
 
-
+class NLTmxMapTile {
+public:
+	string id;
+	int width;
+	int height;
+	string filename;
+};
 
 class NLTmxMapTileset {
 public:
-    int firstGid;
-    string name;
-    int tileWidth;
-    int tileHeight;
-    string filename;
+	int firstGid;
+	string name;
+	int tileWidth;
+	int tileHeight;
+	vector<NLTmxMapTile*> tiles;
 };
 
 
@@ -22,10 +28,9 @@ public:
     string name;
     int width;
     int height;
-    int* data;
+    vector<int> data;
     
     ~NLTmxMapLayer() {
-        delete [] data;
     }
 };
 
@@ -80,6 +85,7 @@ public:
     int height;
     int tileWidth;
     int tileHeight;
+	int totalTileCount;
     
     vector<NLTmxMapTileset*> tilesets;
     vector<NLTmxMapLayer*> layers;
@@ -103,5 +109,5 @@ public:
 };
 
 
-NLTmxMap* NLLoadTmxMap( char *xml );
+NLTmxMap* NLLoadTmxMap(const char *xml );
 

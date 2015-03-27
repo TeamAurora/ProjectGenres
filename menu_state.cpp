@@ -10,8 +10,22 @@
 MenuState::MenuState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
 	AppState(platform, application, audio_manager),
 	selection_(START),
-	render_(MAIN_MENU)
+	render_(MAIN_MENU),
+	start_button_(application_->LoadTextureFromPNG("start_button.png"), application_->LoadTextureFromPNG("start_button_highlighted.png")),
+	help_button_(application_->LoadTextureFromPNG("help_button.png"), application_->LoadTextureFromPNG("help_button_highlighted.png")),
+	options_button_(application_->LoadTextureFromPNG("options_button.png"), application_->LoadTextureFromPNG("options_button_highlighted.png"))
 {
+	start_button_.set_position(abfw::Vector3(750.0f, 190.0f, 0.0f));
+	help_button_.set_position(abfw::Vector3(783.0f, 290.0f, 0.0f));
+	options_button_.set_position(abfw::Vector3(717.0f, 400.0f, 0.0f));
+
+	for (int i = 0; i < 3; i++)
+	{
+		std::stringstream default_texture, highlighted_texture;
+		default_texture << "level_" << i << "_button.png";
+		highlighted_texture << "level_" << i << "_button_highlighted.png";
+		level_buttons[i] = Button(application_->LoadTextureFromPNG(default_texture.str().c_str()), application_->LoadTextureFromPNG(highlighted_texture.str().c_str()));
+	}
 }
 
 
@@ -26,32 +40,18 @@ void MenuState::InitializeState()
 	abfw::Vector3 screen_centre(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f);
 	
 	background_ = Sprite();
-	background_.InitSprite(platform_.width(), platform_.height(), screen_centre, main_menu_background_texture_);
+	background_.InitSprite(platform_.width(), platform_.height(), screen_centre, application_->LoadTextureFromPNG("menu_background.png"));
 
-	start_button_ = Button(application_->LoadTextureFromPNG("start_button.png"), application_->LoadTextureFromPNG("start_button_highlighted.png"));
-	start_button_.set_position(abfw::Vector3(750.0f, 190.0f, 0.0f));
-
-	help_button_ = Button(application_->LoadTextureFromPNG("help_button.png"), application_->LoadTextureFromPNG("help_button_highlighted.png"));
-	help_button_.set_position(abfw::Vector3(783.0f, 290.0f, 0.0f));
-
-	options_button_ = Button(application_->LoadTextureFromPNG("options_button.png"), application_->LoadTextureFromPNG("options_button_highlighted.png"));
-	options_button_.set_position(abfw::Vector3(717.0f, 400.0f, 0.0f));
-
-	for (int i = 0; i < 3; i++)
-	{
-		std::stringstream default_texture, highlighted_texture;
-		default_texture << "level_" << i << "_button.png";
-		highlighted_texture << "level_" << i << "_button_highlighted.png";
-		level_buttons[i] = Button(application_->LoadTextureFromPNG(default_texture.str().c_str()), application_->LoadTextureFromPNG(highlighted_texture.str().c_str()));
-	}
+	background_overlay_ = Sprite();
+	background_overlay_.InitSprite(platform_.width(), platform_.height(), screen_centre, main_menu_texture_);
 }
 
 void MenuState::TerminateState()
 {
-	DeleteNull(main_menu_background_texture_);
-	DeleteNull(help_screen_background_texture_);
-	DeleteNull(options_screen_background_texture_);
-	DeleteNull(level_select_background_texture_);
+	DeleteNull(main_menu_texture_);
+	DeleteNull(help_screen_texture_);
+	DeleteNull(options_screen_texture_);
+	DeleteNull(level_select_texture_);
 }
 
 APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
@@ -68,7 +68,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
 					render_ = LEVEL_SELECT;
-					background_.set_texture(level_select_background_texture_);
+					background_.set_texture(level_select_texture_);
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 				{
@@ -87,7 +87,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
 					render_ = HELP_SCREEN;
-					background_.set_texture(help_screen_background_texture_);
+					background_.set_texture(help_screen_texture_);
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 				{
@@ -106,7 +106,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
 					render_ = OPTIONS_SCREEN;
-					background_.set_texture(options_screen_background_texture_);
+					background_.set_texture(options_screen_texture_);
 				}
 				break;
 			}
@@ -115,14 +115,14 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
 			{
 				render_ = MAIN_MENU;
-				background_.set_texture(main_menu_background_texture_);
+				background_.set_texture(main_menu_texture_);
 			}
 			break;
 		case OPTIONS_SCREEN:
 			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
 			{
 				render_ = MAIN_MENU;
-				background_.set_texture(main_menu_background_texture_);
+				background_.set_texture(main_menu_texture_);
 			}
 			break;
 		case LEVEL_SELECT:
@@ -165,7 +165,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
 			{
 				render_ = MAIN_MENU;
-				background_.set_texture(main_menu_background_texture_);
+				background_.set_texture(main_menu_texture_);
 			}
 			break;
 		}
@@ -194,8 +194,8 @@ void MenuState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 
 void MenuState::LoadTextures()
 {
-	main_menu_background_texture_ = application_->LoadTextureFromPNG("main_menu_background.png");
-	help_screen_background_texture_ = application_->LoadTextureFromPNG("help_menu_background.png");
-	options_screen_background_texture_ = application_->LoadTextureFromPNG("options_menu_background.png");
-	level_select_background_texture_ = application_->LoadTextureFromPNG("level_select_background.png");
+	main_menu_texture_ = application_->LoadTextureFromPNG("main_menu_background.png");
+	help_screen_texture_ = application_->LoadTextureFromPNG("help_menu_background.png");
+	options_screen_texture_ = application_->LoadTextureFromPNG("options_menu_background.png");
+	level_select_texture_ = application_->LoadTextureFromPNG("level_select_background.png");
 }

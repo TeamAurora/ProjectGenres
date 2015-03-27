@@ -80,13 +80,13 @@ bool GameObject::CollisionTest(const GameObject& Object)
 	}
 }
 
-void GameObject::VerifyPosition(const abfw::Platform& platform_)
+/*void GameObject::VerifyPosition(const abfw::Platform& platform_)
 {
 	if((position().x > platform_.width()) || (position().x < 0) || (position().y > platform_.height()) || (position().y < 0)) // If out of screen bounds
 	{
 		set_visibility(false); // sets object to not visible, essentially removing it from scene
 	}
-}
+}*/
 
 void GameObject::AccelerateTo(const abfw::Vector2& velocity)
 {

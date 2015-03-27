@@ -1,6 +1,7 @@
 #pragma once
 #include "appstate.h"
-#include "Button.h"
+#include "Button.h" // Includes sprite and abfw::texture
+#include <array>
 
 class MenuState :
 	public AppState
@@ -26,14 +27,15 @@ private:
 	
 	void LoadTextures();
 	
-	abfw::Texture* main_menu_background_texture_;
-	abfw::Texture* help_screen_background_texture_;
-	abfw::Texture* options_screen_background_texture_;
-	abfw::Texture* level_select_background_texture_;
+	abfw::Texture* main_menu_texture_;
+	abfw::Texture* help_screen_texture_;
+	abfw::Texture* options_screen_texture_;
+	abfw::Texture* level_select_texture_;
 	Sprite background_;
+	Sprite background_overlay_;
 	Button start_button_;
 	Button help_button_;
 	Button options_button_;
-	Button level_buttons[3];
+	std::array<Button, 3> level_buttons
 };
 

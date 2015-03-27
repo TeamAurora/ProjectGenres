@@ -25,7 +25,7 @@ public:
 
 	// Common Functions - these work fine with and without box2d
 	void UpdatePosition(); // updates position_ with velocity_ or with box2d body_ position
-	void VerifyPosition(const abfw::Platform& platform_); // Used to make sure the object is within the bounds of the screen region
+	//void VerifyPosition(const abfw::Platform& platform_); // Used to make sure the object is within the bounds of the screen region
 	bool CollisionTest(const GameObject& Object); // AABB bounding box collision detection between this object (one which called the function) and parameter object
 	void RotateTo(const float degrees);	// Absolute rotation function
 	void RotateBy(const float degrees); // Relative rotation function

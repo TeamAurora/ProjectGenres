@@ -1,4 +1,5 @@
 #include "Button.h"
+#include <cstddef> // For NULL definition
 
 
 Button::Button(abfw::Texture* default_texture, abfw::Texture* highlighted_texture) :
@@ -12,8 +13,8 @@ selected_(false)
 
 Button::~Button()
 {
-	delete textures[0];
-	delete textures[1];
+	DeleteNull(textures[0]);
+	DeleteNull(textures[1]);
 }
 
 void Button::Select(bool state)

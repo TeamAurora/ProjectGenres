@@ -6,6 +6,7 @@
 #include <graphics/image_data.h>
 #include <graphics/texture.h>
 #include <iostream>
+#include <ctime>
 #include "intro_state.h"
 #include "menu_state.h"
 #include "level_1.h"
