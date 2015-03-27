@@ -39,7 +39,6 @@ Player::Player()
 	currentRayAngle = 0; //5.235987756 ;//300 radians
 	rayLength = 5.0f;
 	setGravity(0);//down
-
 }
 
 Player::~Player()
@@ -141,12 +140,12 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 		state_ = DEAD;
 		body_->SetLinearVelocity(b2Vec2(0,0));
 	}
-	else if (state_ != INAIR)
+	else if (state_ != INAIR && state_ != JUMPING)
 	{
 		state_ = IDLE;
 	}
 	
-	//set axis
+	//set player's axis
 	if(gDir == UP || gDir == DOWN)
 	{
 		horizontal = true;
@@ -175,10 +174,13 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 				case DEAD:
 						deadAnimation();
 					break;
+				case JUMPING:	
+						//jumpAnimation();
+					break;
 			};
 		}
 
-
+		
 		// play the animation
 		if(horizontal == true)
 		{
@@ -194,11 +196,18 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 		{
 			deadAnim = result;
 		}
+
+		if(state_ == JUMPING && result == true)
+		{
+			state_ = INAIR;
+		}
 	}
 	
-	
-	//apply gravity
-	body_->ApplyForceToCenter(gravity);
+	if(state_ != JUMPING && state_ != INAIR)
+	{
+		//apply gravity
+		body_->ApplyForceToCenter(gravity);
+	}
 }
 
 void Player::Player_Input(const abfw::SonyController* controller)
@@ -242,8 +251,12 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			currentRayAngle = atan2(xaxisval, -yaxisval); //* FRAMEWORK_RAD_TO_DEG;
 
 			// jump mechanic
-			if ( controller->buttons_down() & ABFW_SONY_CTRL_R2 && state_ != INAIR)
+			if (controller->buttons_pressed() & ABFW_SONY_CTRL_R2 && state_ != INAIR)
 			{
+				//calls to set up animtaion for the jump
+				state_ = JUMPING;
+				jumpAnimation(xaxisval, yaxisval);
+
 				//state_ = INAIR;
 				b2Vec2 angle = b2Vec2(sinf(currentRayAngle), cosf(currentRayAngle));
 
@@ -301,7 +314,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 
 ///////John///////////////////
 		//attack
-		if (controller->buttons_down() & ABFW_SONY_CTRL_L2 && attacking == false)
+		if (controller->buttons_pressed() & ABFW_SONY_CTRL_L2 && attacking == false)
 		{
 			attacking = true;
 		}
@@ -492,7 +505,6 @@ void Player::idleAnimation()
 	}
 }
 
-
 void Player::deadAnimation()
 {
 	//flip for gravity
@@ -578,6 +590,114 @@ void Player::deadAnimation()
 
 		//set up animation
 		InitSpriteAnimation(0.07,16,false,SCROLL_Y,0,0);
+	}
+}
+
+void Player::jumpAnimation(float xAxis, float yAxis)
+{
+	//flip for gravity
+	if (gDir == UP)
+	{
+		set_uv_height(-1);
+	}
+	else if (gDir == DOWN)
+	{
+		set_uv_height(1);
+	}
+	else if (gDir == RIGHT)
+	{
+		set_uv_width(1);
+	}
+	else if (gDir == LEFT)
+	{
+		set_uv_width(-1);
+	}
+		
+	//orientate sprite with direction
+	if (horizontal == true)
+	{
+		//needs to be set from stick 	
+		if(xAxis > 0)
+		{
+			move_right = true;
+		}
+		else if(xAxis < 0)
+		{
+			move_right = false;
+		}
+
+		if(gDir == DOWN)
+		{
+			if (move_right == true)
+			{
+				set_uv_width(0.0625);
+				set_uv_position(abfw::Vector2 (0.0f,0.0f));
+			}
+			else
+			{
+				set_uv_width(-0.0625);
+				set_uv_position(abfw::Vector2 (0.0625,0.0f));
+			}
+		}
+		else if (gDir == UP)
+		{
+			if (move_right == true)
+			{
+				set_uv_width(0.0625);
+				set_uv_position(abfw::Vector2 (0.0f,1));
+			}
+			else
+			{
+				set_uv_width(-0.0625);
+				set_uv_position(abfw::Vector2 (0.0625,1));
+			}
+		}
+
+		//set up animation
+		InitSpriteAnimation(0.005,16,false,SCROLL_X,0,0);
+				
+	}
+	else
+	{
+		//needs to be set from stick 	
+		if(yAxis > 0)
+		{
+			moveUp = false;
+		}
+		else if(yAxis < 0)
+		{
+			moveUp = true;
+		}
+
+		if(gDir == LEFT)
+		{
+			if (moveUp == true)
+			{
+				set_uv_height(0.0625);
+				set_uv_position(abfw::Vector2(0.0f,0.0625));
+			}
+			else
+			{
+				set_uv_height(-0.0625);
+				set_uv_position(abfw::Vector2(0.0f,1.0f));
+			}
+		}
+		else if (gDir == RIGHT)
+		{
+			if (moveUp == true)
+			{
+				set_uv_height(0.0625);
+				set_uv_position(abfw::Vector2(0.0f,0.0625));
+			}
+			else
+			{
+				set_uv_height(-0.0625);
+				set_uv_position(abfw::Vector2(0.0f,1.0f));
+			}
+		}
+
+		//set up animation
+		InitSpriteAnimation(0.005,16,false,SCROLL_Y,0,0);
 	}
 }
 

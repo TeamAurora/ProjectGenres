@@ -151,7 +151,7 @@ void GameState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 	}
 
 	font_.RenderText(sprite_renderer_, abfw::Vector3(10.0f, 5.0f, -0.9f), 1.0f, 0xff00ff00, abfw::TJ_LEFT, "Galaxea");
-	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 40.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "health  : %.0f", player_.health());	//display player health
+	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 40.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "health  : %.0f", player_.health());//display player health
 	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 5.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "Score : %.0f", score_);//display player score
 	font_.RenderText(sprite_renderer_, abfw::Vector3(850.0f, 510.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "FPS: %.1f", frame_rate_);
 
@@ -182,6 +182,7 @@ void GameState::LoadTextures()
 	playerDeath = application_->LoadTextureFromPNG("Robot_Animation_death.png");
 	rotPlayerDeath = application_->LoadTextureFromPNG("Robot_Animation_death_rot.png");
 	playerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP.png");
+	rotPlayerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP_rot.png");
 
 	redPUTex = application_->LoadTextureFromPNG("Red.png");
 	bluePUTex = application_->LoadTextureFromPNG("Blue.png");
@@ -340,6 +341,9 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 			case Player::DEAD:
 				player_.set_texture(rotPlayerDeath);
 				break;
+			case Player::JUMPING:
+				player_.set_texture(rotPlayerJump);
+				break;
 		};
 	}
 	else
@@ -358,6 +362,9 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 				break;
 			case Player::DEAD:
 				player_.set_texture(playerDeath);
+				break;
+			case Player::JUMPING:
+				player_.set_texture(playerJump);
 				break;
 		};
 	}

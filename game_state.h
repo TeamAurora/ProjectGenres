@@ -62,6 +62,7 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* playerDeath;	
 	abfw::Texture* rotPlayerDeath;
 	abfw::Texture* playerJump;
+	abfw::Texture* rotPlayerJump;
 	// pickup textures
 	abfw::Texture* redPUTex;
 	abfw::Texture* bluePUTex;

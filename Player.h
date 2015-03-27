@@ -29,16 +29,17 @@ public:
 	float currentRayAngle; // angle of raycast line displayed on screen
 
 	/////// Enumerated states player can be in - use these to do logic & for sprite animation
-	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING, DEAD };
+	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING, DEAD, JUMPING };
 	OBJECTSTATE state_;
 	
-	bool deadAnim;
+	bool deadAnim;//has the death animation been played
 private:
 	//set up uv coords for animations
-	void setUVCoordinates(float width, float height);//take the height and width of single frame of the sprite
+	//void setUVCoordinates(float width, float height);//take the height and width of single frame of the sprite
 	void runningAnimation();
 	void idleAnimation();
 	void deadAnimation();
+	void jumpAnimation(float, float);
 
 	float damage;//amount of damage taken
 	b2Vec2 knockbackForce;//push player back when hit

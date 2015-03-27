@@ -226,14 +226,14 @@ void Contact_Listener::EndContact(b2Contact* contact)
 			((Player *)game_object_b)->hurting = false;
 		}
 
-		//touching platform
+		//stop touching platform
 		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::PLATFORM)
 		{
-			((Player *)game_object)->state_ = Player::INAIR;
+			//((Player *)game_object)->state_ = Player::JUMPING;
 		}
 		else if (game_object->getType() == GameObject::PLATFORM && game_object_b->getType() == GameObject::PLAYER)
 		{
-			((Player *)game_object_b)->state_ = Player::INAIR;
+			//((Player *)game_object_b)->state_ = Player::JUMPING;
 		}
 	}
 }
