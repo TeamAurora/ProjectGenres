@@ -5,19 +5,14 @@
 class Button : public Sprite
 {
 public:
-	Button();
+	Button(abfw::Texture* default_texture, abfw::Texture* highlighted_texture);
 	~Button();
 
-	void InputLoop(const abfw::SonyController* controller_);
-
-	bool Selected;
-
-	//void SetIndexedTexture(const abfw::Texture* const texture, int index) { textures_[index] = texture; }
-	//const abfw::Texture* const IndexedTexture(int index) const { return textures_[index]; }
+	void Select(bool state);
+	bool Selected() const { return selected_; }
 
 private:
 
-	//virtual void DoInput(const abfw::SonyController* controller_) = 0;
-
-	//const abfw::Texture* textures_[2];
+	const abfw::Texture* textures[2];
+	bool selected_;
 };

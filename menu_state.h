@@ -16,13 +16,13 @@ public:
 	
 private:
 
-	enum SELECTION { START, HELP, OPTIONS };
-	SELECTION selection_;
+	enum BUTTONSELECTION { START, HELP, OPTIONS };
+	BUTTONSELECTION selection_;
 
 	int level_selection_;
 
-	enum MENUSTATE { MAIN_MENU, HELP_SCREEN, OPTIONS_SCREEN, LEVEL_SELECT };
-	MENUSTATE state_;
+	enum RENDERSTATE { MAIN_MENU, HELP_SCREEN, OPTIONS_SCREEN, LEVEL_SELECT };
+	RENDERSTATE render_;
 	
 	void LoadTextures();
 	
@@ -30,13 +30,6 @@ private:
 	abfw::Texture* help_screen_background_texture_;
 	abfw::Texture* options_screen_background_texture_;
 	abfw::Texture* level_select_background_texture_;
-	abfw::Texture* start_button_texture_;
-	abfw::Texture* start_button_highlighted_texture_;
-	abfw::Texture* help_button_texture_;
-	abfw::Texture* help_button_highlighted_texture_;
-	abfw::Texture* options_button_texture_;
-	abfw::Texture* options_button_highlighted_texture_;
-	abfw::Texture* level_buttons_texture[6]; // 6 textures for 3 buttons (alternating between non-highlighted and highlighted textures)
 	Sprite background_;
 	Button start_button_;
 	Button help_button_;

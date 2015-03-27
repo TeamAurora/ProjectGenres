@@ -4,6 +4,7 @@
 #include "Contact_listener.h"
 #include "NLTmxMap.h"
 
+#include "Button.h"
 #include "game_object.h"
 #include "living_object.h"
 #include "Player.h"
@@ -30,6 +31,8 @@ private:
 	void LoadAssets();
 	void ConstructBackgroundVectorsFromMap();
 	void ConstructPhysicsBodiesFromMap();
+
+	void Pause(bool);
 
 	// override these in derived level classes
 	virtual void LoadTextures() = 0;	// force textures
@@ -61,6 +64,7 @@ private:
 	};
 	Background background_;
 
+	Button pause_buttons[3];
 	bool paused_;
 
 protected:
