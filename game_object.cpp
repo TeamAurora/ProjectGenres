@@ -202,8 +202,10 @@ void GameObject::LinearImpulse(const b2Vec2& impulse, const b2Vec2& point)
 //John//////////////////////////
 void GameObject::CreateStaticBody(b2World* world_,float x , float y, float width, float height)
 {
+	//reset all variable for removing object
 	dead = false;
 	destroyed = false;
+	deadAnim = false;
 
 	body_half_width = width;
 	body_half_height = height;
@@ -264,4 +266,31 @@ void GameObject::Knockback(b2Vec2 pos1, b2Vec2 pos2)
 	}
 
 	body_->ApplyForceToCenter(knockbackForce_);
+}
+
+void GameObject::setAnimation()
+{
+	// depending on objects orientation
+	if(rotated)
+	{		
+		//set uv width and height
+		//set_uv_position(abfw::Vector2(0,0.975));
+		set_uv_width(1.0f);
+		set_uv_height(0.125f);
+
+		//set up animation
+		InitSpriteAnimation(0.07,8,false,SCROLL_Y,0,0);
+	}
+	else
+	{		
+		//set uv width and height
+		set_uv_position(abfw::Vector2(0,0));
+		set_uv_width(0.125f);
+		set_uv_height(1.0f);
+
+		//set up animation
+		InitSpriteAnimation(0.07,8,false,SCROLL_X,0,0);
+	}
+
+
 }

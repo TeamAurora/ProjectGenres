@@ -45,6 +45,8 @@ private: // PRIVATE METHODS (FUNCTIONS)
 
 	void Restart();//resets and respawns everything to it's orginal position
 	void Destroy(GameObject &object);//will destroy non-destroyed body thats been passed in
+	void SetTextures();
+
 /////////
 private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	
@@ -63,6 +65,9 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* rotPlayerDeath;
 	abfw::Texture* playerJump;
 	abfw::Texture* rotPlayerJump;
+	//enemy texture
+	abfw::Texture* enemyMove;
+	abfw::Texture* enemyDeath;
 	// pickup textures
 	abfw::Texture* redPUTex;
 	abfw::Texture* bluePUTex;

@@ -32,7 +32,6 @@ public:
 	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING, DEAD, JUMPING };
 	OBJECTSTATE state_;
 	
-	bool deadAnim;//has the death animation been played
 private:
 	//set up uv coords for animations
 	//void setUVCoordinates(float width, float height);//take the height and width of single frame of the sprite
@@ -40,6 +39,8 @@ private:
 	void idleAnimation();
 	void deadAnimation();
 	void jumpAnimation(float, float);
+
+	void changeState();
 
 	float damage;//amount of damage taken
 	b2Vec2 knockbackForce;//push player back when hit

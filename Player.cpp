@@ -86,6 +86,7 @@ void Player::Create_Player(b2World* world_, float x, float y)
 
 	body_->SetUserData(this);
 
+	//sprite set up
 	//set sprite size to match body
 	set_width(BOX2D_GFX_SIZE(2 * body_half_width));
 	set_height(BOX2D_GFX_SIZE(2 * body_half_height));
@@ -99,11 +100,11 @@ void Player::Create_Player(b2World* world_, float x, float y)
 void Player::Update(const float& ticks, bool gameOver, bool flying)
 {
 	bool result;
-
-	//update sprite position to match body
+	
 	float new_x = BOX2D_GFX_POS_X(body_->GetPosition().x);
 	float new_y = BOX2D_GFX_POS_Y(body_->GetPosition().y);
 
+	//update sprite position to match body
 	set_position(abfw::Vector3(new_x, new_y, 0.f));
 	set_rotation(-body_->GetAngle());
 
@@ -125,26 +126,9 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 		dead = true;
 	}
 
-
-	//change state
-	if(move == true && dead == false && state_ != INAIR)
-	{
-		state_ = RUNNING;
-	}
-	else if (attacking == true && state_ != INAIR)
-	{
-		state_ = ATTACKING;
-	}
-	else if(dead == true)
-	{
-		state_ = DEAD;
-		body_->SetLinearVelocity(b2Vec2(0,0));
-	}
-	else if (state_ != INAIR && state_ != JUMPING)
-	{
-		state_ = IDLE;
-	}
+	changeState();//check variables and change player's state
 	
+
 	//set player's axis
 	if(gDir == UP || gDir == DOWN)
 	{
@@ -157,6 +141,30 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	if(mflying == false)
 	{
+		//flip facing back the right way after jump has landed
+		if(prevState == INAIR &&  state_ != INAIR)
+		{
+			if(move_right)
+			{
+				move_right = false;
+			}
+			else
+			{
+				move_right = true;
+			}
+
+			if(moveUp)
+			{
+				moveUp = false;
+			}
+			else
+			{
+				moveUp = true;
+			}
+		}
+
+	}
+
 		//set up animations for each state
 		if(state_ != prevState)
 		{
@@ -194,17 +202,25 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 		//check for animations that play once
 		if(state_ == DEAD)
 		{
-			deadAnim = result;
+			deadAnim = result;//death animation has played
 		}
 
+		//jump animation has played
 		if(state_ == JUMPING && result == true)
 		{
 			state_ = INAIR;
 		}
-	}
 	
-	if(state_ != JUMPING && state_ != INAIR)
+	if(!mflying)
 	{
+		if(state_ != JUMPING && state_ != INAIR)//no change in movment during jump
+		{
+			//apply gravity
+			body_->ApplyForceToCenter(gravity);
+		}
+	}
+	else
+	{		
 		//apply gravity
 		body_->ApplyForceToCenter(gravity);
 	}
@@ -226,21 +242,25 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			{
 				gDir = UP;
 				gravity = b2Vec2(0.0f, 10.0f);
+				state_ = INAIR;
 			}
 			else if (controller->right_stick_x_axis() > jumpCutOff)//right
 			{
 				gDir = RIGHT;
 				gravity = b2Vec2(10.0f, 0.0f);
+				state_ = INAIR;
 			}
 			else if (controller->right_stick_x_axis() < -jumpCutOff)//left
 			{
 				gDir = LEFT;
 				gravity = b2Vec2(-10.0f, 0.0f);
+				state_ = INAIR;
 			}
 			else if (controller->right_stick_y_axis()> jumpCutOff)//down
 			{
 				gDir = DOWN;
 				gravity = b2Vec2(0.0f, -10.0f);
+				state_ = INAIR;
 			}
 		}
 		else//wall jump
@@ -257,9 +277,11 @@ void Player::Player_Input(const abfw::SonyController* controller)
 				state_ = JUMPING;
 				jumpAnimation(xaxisval, yaxisval);
 
+				//set_rotation(currentRayAngle);
+			
+
 				//state_ = INAIR;
 				b2Vec2 angle = b2Vec2(sinf(currentRayAngle), cosf(currentRayAngle));
-
 				b2Vec2 impulse = b2Vec2(rayLength * angle);
 
 				body_->ApplyLinearImpulse(impulse,body_->GetWorldCenter());
@@ -324,6 +346,53 @@ void Player::Player_Input(const abfw::SonyController* controller)
 		}
 	}
 	body_->ApplyForceToCenter(force);
+}
+
+////Rebecca
+void Player::setGravity(int n)
+{
+	switch (n)
+	{
+		case 0:
+			gDir = DOWN;
+			gravity = b2Vec2(0.0f, -10.0f);
+			break;
+		case 1:
+			gDir = RIGHT;
+			gravity = b2Vec2(10.0f, 0.0f);
+			break;
+		case 2:
+			gDir = UP;
+			gravity = b2Vec2(0.0f, 10.0f);
+			break;
+		case 3:
+			gDir = LEFT;
+			gravity = b2Vec2(-10.0f, 0.0f);
+			break;
+	}
+}
+
+//change state
+void Player::changeState()
+{
+	
+	if(move == true && dead == false && state_ != INAIR)//only run when on a surface
+	{
+		state_ = RUNNING;
+	}
+	else if (attacking == true && state_ != INAIR)//no mid air attack
+	{
+		state_ = ATTACKING;
+	}
+	else if(dead == true)
+	{
+		state_ = DEAD;
+		body_->SetLinearVelocity(b2Vec2(0,0));//stop all movement
+	}
+	else if (state_ != INAIR && state_ != JUMPING)//state stays as INAIR until a surface is touched
+	{
+		state_ = IDLE;
+	}
 }
 
 void Player::runningAnimation()
@@ -553,7 +622,7 @@ void Player::deadAnimation()
 				set_uv_width(-0.0625);
 				set_uv_position(abfw::Vector2 (0.0625,1));
 			}
-		}
+		}				
 
 		//set up animation
 		InitSpriteAnimation(0.07,16,false,SCROLL_X,0,0);
@@ -698,29 +767,5 @@ void Player::jumpAnimation(float xAxis, float yAxis)
 
 		//set up animation
 		InitSpriteAnimation(0.005,16,false,SCROLL_Y,0,0);
-	}
-}
-
-////Rebecca
-void Player::setGravity(int n)
-{
-	switch (n)
-	{
-		case 0:
-			gDir = DOWN;
-			gravity = b2Vec2(0.0f, -10.0f);
-			break;
-		case 1:
-			gDir = RIGHT;
-			gravity = b2Vec2(10.0f, 0.0f);
-			break;
-		case 2:
-			gDir = UP;
-			gravity = b2Vec2(0.0f, 10.0f);
-			break;
-		case 3:
-			gDir = LEFT;
-			gravity = b2Vec2(-10.0f, 0.0f);
-			break;
 	}
 }

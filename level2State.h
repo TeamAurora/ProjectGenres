@@ -36,7 +36,7 @@ private: // PRIVATE METHODS (FUNCTIONS)
 	void LoadSounds();
 	void InputLoop(const abfw::SonyController* controller);
 	void UpdateGameObjects(const float& ticks_, const int& frame_counter_); // updates game object - deleting flagged ones, updating positions and spawning new ones
-
+	void SetTextures();
 	
 ///John///
 	void CreateObjects();//call create functions for all gameobjects
@@ -55,11 +55,20 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	// Store single-object textures in the game object it's used for
 	// player textures
 	abfw::Texture* playerTex;
-	abfw::Texture* rotPlayerTex;
-	abfw::Texture* player[3];
+	abfw::Texture* rotPlayerTex;	
+	abfw::Texture* playerIdle;	
+	abfw::Texture* rotPlayerIdle;
+	abfw::Texture* playerDeath;	
+	abfw::Texture* rotPlayerDeath;
+	abfw::Texture* playerJump;
+	abfw::Texture* rotPlayerJump;
+	//enemy texture
+	abfw::Texture* enemyShooting;	
+	abfw::Texture* shooterDeath;
 	// pickup textures
 	abfw::Texture* redPUTex;
 	abfw::Texture* bluePUTex;
+	//platform texture
 	abfw::Texture* platformTex;
 	// plant textures
 	abfw::Texture* plantWallTex;
@@ -67,6 +76,8 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* rotPlantBlockTex;
 	// spike texture - TODO get spike texture
 	abfw::Texture* spikeTexture;
+	//arrow texture for jump aim
+	abfw::Texture* arrowTex;
 	
 	// STATE-SPECIFIC Sound effects
 	
