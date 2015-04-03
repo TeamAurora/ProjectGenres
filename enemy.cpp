@@ -7,10 +7,20 @@ Enemy::Enemy()
 	type_ = ENEMY;
 	
 	//initalise values
-	move_v = 4;
+	move_v = 5;
 	threshold_ = 20;
 	range_ = 150;
 	patrolTime_ = 20;
+
+	//texture coords
+	uv_x = 0.0f;
+	uv_y = 0.0f;
+	uv_width = 0.0625f;
+	uv_height = 1.0f;
+	meleeState_ = IDLE;
+	shooterState_ = IDLE;
+
+	shotFired = false;
 }
 
 void Enemy::Create_Enemy(b2World* world_,float x , float y)
@@ -20,14 +30,15 @@ void Enemy::Create_Enemy(b2World* world_,float x , float y)
 	destroyed = false;
 	moveTimer_ = 0;
 	move = true;
+	deadAnim = false;
 
 	//starting position
 	bodyInitialPosition.x = x;
 	bodyInitialPosition.y = y;
 
 	//size
-	body_half_width = 0.25f;
-	body_half_height = 0.25f;
+	body_half_width = 0.4f;
+	body_half_height = 0.4f;
 
 	//assigning values to body
 	b2BodyDef enemy_bodyDef;
@@ -46,19 +57,22 @@ void Enemy::Create_Enemy(b2World* world_,float x , float y)
 	enemy_fixtureDef.restitution = 0.1f; // bouncieness
 	body_->CreateFixture(&enemy_fixtureDef);
 
+	body_->SetUserData(this);
 
-	//set sprite size to match body
+	//Sprite set up
+	//set size to match body
 	set_width(BOX2D_GFX_SIZE(2*body_half_width));
 	set_height(BOX2D_GFX_SIZE(2*body_half_height));
 
-	body_->SetUserData(this);
+	//uv height, width and position
+	set_uv_height(uv_height);
+	set_uv_width(uv_width);
+	set_uv_position(abfw::Vector2(uv_x, uv_y));
 
-	//set colour red
-	set_colour(0xff0000ff);
-
+	//set_colour(0xff0000ff);//red
 }
 
-void Enemy::Update_Enemy(float ticks, b2Vec2 playerPos, bool patrol)
+void Enemy::Update_Enemy(float ticks, b2Vec2 playerPos, bool meleeEnemy)
 {
 	//update sprite position to match body
 	float enemy_new_x = BOX2D_GFX_POS_X(body_->GetPosition().x);
@@ -66,21 +80,139 @@ void Enemy::Update_Enemy(float ticks, b2Vec2 playerPos, bool patrol)
 
 	set_position(abfw::Vector3(enemy_new_x,enemy_new_y,0.f));
 	set_rotation(-body_->GetAngle());
+
 	//gives position - used for spawning bullets
 	x = enemy_new_x;
 	y = enemy_new_y;
 
-	patrol_ = patrol;
-
-	if(patrol == true)
+	if(meleeEnemy)//update for melee enemies
 	{
-		Patrol(ticks);
+		MeleeUpdate(ticks, playerPos);
 	}
-
-	Attack(playerPos, enemy_new_x, enemy_new_y);//move enemy to hurt player
+	else
+	{
+		ShooterUpdate(ticks);
+	}
 
 	//apply gravity
 	body_->ApplyForceToCenter(gravity);
+}
+
+void Enemy::MeleeUpdate(float ticks, b2Vec2 playerPos)
+{
+	bool result;
+
+	//change state
+	OBJECTSTATE prevState = meleeState_;
+
+	if(dead == false)
+	{
+		Patrol(ticks);
+		meleeState_ = MOVING;
+	}	
+	else
+	{
+		meleeState_ = DEAD;
+	}
+
+	
+	Attack(playerPos, x, y);//move enemy to hurt player
+
+	//set up animations for each state
+	if(meleeState_ != prevState)
+	{
+		switch(meleeState_)
+		{
+			case MOVING:
+					moveAnimation();
+					break;			 
+			case ATTACKING:
+
+					break;
+			case DEAD:
+					deathAnimation(true);
+					break;
+				
+		};
+	}
+
+	//move = true when moving left but Animate takes true for moving right
+	//has to be switched to play animations
+	bool facing;
+	if(move)
+	{
+		facing = false;
+	}
+	else
+	{
+		facing = true;
+	}
+	
+	//do animation
+	result = Animate(ticks, facing);
+
+	if(meleeState_ == DEAD)
+	{
+		deadAnim = result;
+	}
+}
+
+void Enemy::ShooterUpdate(float ticks)
+{
+	bool result = false;
+
+	if(shooterState_ == IDLE)
+	{
+		uv_width = 0.03125f;
+		set_uv_width(uv_width);
+		set_uv_height(-uv_height);	
+		set_uv_position(abfw::Vector2 (0.0f,1.0f));
+	}
+
+	//change state
+	OBJECTSTATE prevState = shooterState_;
+
+	if(shooting == true && dead != true)
+	{
+		shooterState_ = SHOOTING;
+	}
+	else if(dead == true)
+	{
+		shooterState_ = DEAD;
+	}
+	else
+	{
+		shooterState_ = IDLE;
+	}
+
+	//set up animations for each state
+	if(shooterState_ != prevState)
+	{
+		switch(shooterState_)
+		{	 
+			case SHOOTING:
+					shootAnimation();
+					break;
+			case DEAD:
+					deathAnimation(false);
+					break;		
+		};
+	}
+
+	//do animation
+	result = Animate(ticks, true);
+
+	//check for single play animations
+	if(shooterState_ == SHOOTING)
+	{
+		shotFired = result;
+	}
+
+	if(shooterState_ == DEAD)
+	{
+		deadAnim = result;
+	}
+
 }
 
 void Enemy::Attack(b2Vec2 playerPos, float enemyX, float enemyY)
@@ -127,26 +259,28 @@ void Enemy::Attack(b2Vec2 playerPos, float enemyX, float enemyY)
 	}
 }
 
-
 void Enemy::Patrol(float ticks)
 {
 	//make enemies move back and forth
 	if(moveTimer_ == 0 && move == true)
 	{
-		force.Set(-move_v,0.0f);
+		force.Set(-move_v,0.0f);//left
+		moveAnimation();
 	}
 
-	 if(moveTimer_ >= patrolTime_)
+	if(moveTimer_ >= patrolTime_  && moveTimer_ <= (patrolTime_ + 1))
 	{
 		move = false;
-		force.Set(move_v,0.0f);
+		force.Set(move_v,0.0f);//right
+		moveAnimation();
 	}
 
-	if(moveTimer_ >= (patrolTime_*2) && move == false)
+	if(moveTimer_ >= (patrolTime_*2) &&  moveTimer_ <= (patrolTime_*2 + 1) && move == false)
 	{
 		move = true;
-		force.Set(-move_v,0.0f);
-		moveTimer_ = 0;
+		force.Set(-move_v,0.0f);//left again
+		moveTimer_ = 0;		
+		moveAnimation();
 	}
 
 	//set velocity cap
@@ -163,3 +297,62 @@ void Enemy::Patrol(float ticks)
 	body_->ApplyForceToCenter(force);
 }
 
+void Enemy::moveAnimation()
+{
+	if(moveTimer_ == 0 && move == true)
+	{
+		set_uv_width(-uv_width);// face left
+	}
+
+	if(moveTimer_ >= patrolTime_)
+	{
+		set_uv_width(uv_width);//face right
+	}
+
+	if(moveTimer_ >= (patrolTime_*2) && move == false)
+	{
+		set_uv_width(-uv_width);//face left
+	}
+
+	InitSpriteAnimation(0.025,16,true,SCROLL_X,0,0);
+}
+
+void Enemy::shootAnimation()
+{
+	set_uv_width(uv_width);
+	set_uv_height(-uv_height);
+
+	//make sure sprites starts from first frame
+	set_uv_position(abfw::Vector2 (0.0f,1.0f));
+
+	InitSpriteAnimation(0.025,32,false,SCROLL_X,0,0);
+}
+
+void Enemy::deathAnimation(bool melee)
+{ 
+	if(melee)
+	{
+		//set facing
+		if(move)
+		{
+			set_uv_width(-uv_width);// face left
+		}
+		else
+		{
+			set_uv_width(uv_width);// face right
+		}
+
+		//make sure sprites starts from first frame
+		set_uv_position(abfw::Vector2 (0.0f,0.0f));
+	}
+	else
+	{
+		set_uv_width(0.0625);
+		//make sure sprites starts from first frame
+		set_uv_position(abfw::Vector2 (0.0f,1.0f));
+	}
+
+	
+	
+	InitSpriteAnimation(0.07,16,false,SCROLL_X,0,0);
+}

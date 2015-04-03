@@ -54,11 +54,17 @@ public:
 /////John// 
 	void CreateStaticBody(b2World* world_, float x , float y, float width, float height);//create Static body at (x,y) with that width & height
 	void Knockback(b2Vec2, b2Vec2);//knock object back when they take damage
+	void setAnimation();//set up plants for death animation
 
 	bool dead;//flag for killing 
 	bool destroyed;// to check if object has removed from game
 
 	b2Body* body_; // pointer to a box2d body
+
+	
+	//animation
+	bool deadAnim;//has the death animation been played
+	bool rotated;//are the plants rotated
 //////////
 protected:
 	enum PHYSICSENGINE { DEFAULT, BOX2D }; // used to keep same functions being usable independent of physics engine (switch statement in each function handles switching between functionality)
@@ -70,6 +76,7 @@ protected:
 	b2World* world_; // pointer to a box2d world
 
 ///John////
+
 	//Initial values for making body and sprites
 	abfw::Vector2 bodyInitialPosition;
 	float body_half_width;
@@ -84,6 +91,7 @@ protected:
 	//Knockback
 	b2Vec2 knockbackForce_;//push object back when hit
 	float magnitude_;///size of knockback force
+
 ///////
 };
 

@@ -19,6 +19,9 @@ Sprite::~Sprite()
 }
 
 const bool Sprite::Animate(float ticks, bool right)
+=======
+const bool Sprite::Animate(float ticks, bool facing)
+>>>>>>> origin/John's
 {
 	if((current_frame_ >= frame_count_) && (looping_ == false)) // if the current animation frame is higher than the number of frames in the animation and looping is false
 	{
@@ -30,7 +33,7 @@ const bool Sprite::Animate(float ticks, bool right)
 		animation_time_ -= frame_duration_;
 		current_frame_++; // adds 1 to current animation frame count
 
-		if(right == true)
+		if(facing == true)//check facing
 		{
 			switch(sheettype_)
 			{
@@ -74,7 +77,7 @@ const bool Sprite::Animate(float ticks, bool right)
 					break;
 			}
 		}
-		else
+		else//same as above but facing the opposite direction
 		{
 			switch(sheettype_)
 			{
@@ -96,11 +99,11 @@ const bool Sprite::Animate(float ticks, bool right)
 					uv_position_.x -= uv_width_;								// scroll across 1 frame on x axis
 					if(uv_position_.x > (x_frame_count_ - 1) * -uv_width_)		// if moved off right edge of sprite
 					{
-						uv_position_.x = 0;										// moves back to start of row
+						uv_position_.x = -uv_width_;							// moves back to start of row
 						uv_position_.y += uv_height_;							// scrolls down 1 frame on y axis
-						if(uv_position_.y > (y_frame_count_ - 1) * -uv_height_)	// if moved off bottom edge of sprite
+						if(uv_position_.y > (y_frame_count_ - 1) * uv_height_)	// if moved off bottom edge of sprite
 						{
-							uv_position_.y = 0;									// moves back to start of column
+							uv_position_.y = 0.0;								// moves back to start of column
 						}
 					}
 					break;
@@ -108,9 +111,9 @@ const bool Sprite::Animate(float ticks, bool right)
 					uv_position_.y -= uv_height_;								// scrolls down 1 frame on y axis
 					if(uv_position_.y > (y_frame_count_ - 1) * -uv_height_)		// if moved off bottom edge of sprite
 					{
-						uv_position_.y = 0;										// moves back to start of column
-						uv_position_.x += uv_width_;								// scroll across 1 frame on x axis
-						if(uv_position_.x > (x_frame_count_ - 1) * -uv_width_)	// if moved off right edge of sprite
+						uv_position_.y = -uv_height_;							// moves back to start of column
+						uv_position_.x += uv_width_;							// scroll across 1 frame on x axis
+						if(uv_position_.x > (x_frame_count_ - 1) * uv_width_)	// if moved off right edge of sprite
 						{
 							uv_position_.x = 0;									// moves back to start of row
 						}

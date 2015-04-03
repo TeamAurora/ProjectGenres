@@ -9,7 +9,8 @@ GameObject::GameObject() :
 	world_(NULL),
 	body_(NULL),
 	physicsengine_(DEFAULT),
-	magnitude_(150)
+	magnitude_(150), 
+	dead(true)
 {
 }
 
@@ -201,8 +202,10 @@ void GameObject::LinearImpulse(const b2Vec2& impulse, const b2Vec2& point)
 //John//////////////////////////
 void GameObject::CreateStaticBody(b2World* world_,float x , float y, float width, float height)
 {
+	//reset all variable for removing object
 	dead = false;
 	destroyed = false;
+	deadAnim = false;
 
 	body_half_width = width;
 	body_half_height = height;
@@ -223,9 +226,9 @@ void GameObject::CreateStaticBody(b2World* world_,float x , float y, float width
 	b2PolygonShape shape;
 	shape.SetAsBox(body_half_width, body_half_height);
 
-	/*b2FixtureDef fixtureDef;
+	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &shape;
-	fixtureDef.friction = 0.5f;*/
+	fixtureDef.friction = 0.1f;
 	// bind the shape to the body
 	body_ -> CreateFixture(&shape, 0.0f);
 
@@ -263,4 +266,31 @@ void GameObject::Knockback(b2Vec2 pos1, b2Vec2 pos2)
 	}
 
 	body_->ApplyForceToCenter(knockbackForce_);
+}
+
+void GameObject::setAnimation()
+{
+	// depending on objects orientation
+	if(rotated)
+	{		
+		//set uv width and height
+		//set_uv_position(abfw::Vector2(0,0.975));
+		set_uv_width(1.0f);
+		set_uv_height(0.125f);
+
+		//set up animation
+		InitSpriteAnimation(0.07,8,false,SCROLL_Y,0,0);
+	}
+	else
+	{		
+		//set uv width and height
+		set_uv_position(abfw::Vector2(0,0));
+		set_uv_width(0.125f);
+		set_uv_height(1.0f);
+
+		//set up animation
+		InitSpriteAnimation(0.07,8,false,SCROLL_X,0,0);
+	}
+
+
 }

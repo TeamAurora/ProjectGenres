@@ -18,7 +18,24 @@ class Enemy : public GameObject
 
 		b2Vec2 gravity;//keep the enemy on a surface
 		float x,y;
+
+		// Enumerated states enemy can be in
+		enum OBJECTSTATE {IDLE, MOVING, ATTACKING, DEAD, SHOOTING };
+		OBJECTSTATE meleeState_;
+		OBJECTSTATE shooterState_;
+
+		bool shotFired;
+		bool shooting;
 private:
+		//updates for each enemy type
+		void MeleeUpdate(float ticks, b2Vec2 playerPos);
+		void ShooterUpdate(float ticks);
+
+		//set up for said animations
+		void moveAnimation();
+		void deathAnimation(bool);
+		void shootAnimation();
+
 		float threshold_;//check player is on same level
 		float range_;//range on enemy attack
 		bool patrol_;
