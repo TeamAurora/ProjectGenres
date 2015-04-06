@@ -120,6 +120,7 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collectible.cpp" />
+    <ClCompile Include="CollisionTile.cpp" />
     <ClCompile Include="contact_listener.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="game_application.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collectible.h" />
+    <ClInclude Include="CollisionTile.h" />
     <ClInclude Include="Contact_listener.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="game_application.h" />

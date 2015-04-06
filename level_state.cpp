@@ -30,8 +30,9 @@ void LevelState::InitializeState()
 
 void LevelState::TerminateState()
 {
-	for (auto body : level_map_.collision_layer)
+	for (int i = 0 ; i < level_map_.collision_layer.size(); i++)
 	{
+		auto body = level_map_.collision_layer[i]->body_;
 		world_->DestroyBody(body);
 	}
 	DeleteNull(world_);
@@ -55,7 +56,11 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 	const abfw::SonyController* controller = controller_manager_.GetController(0);
 	if (controller) // if controller exists
 	{
-		if (controller->buttons_pressed() & ABFW_SONY_CTRL_START)
+		if(paused_)
+		{
+			return PauseInputLoop(controller);
+		}
+		else if (controller->buttons_pressed() & ABFW_SONY_CTRL_START)
 		{
 			Pause(true);
 		}
@@ -63,41 +68,41 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 		{
 			return InputLoop(controller);
 		}
-		else
-			return current_state_;
 	}
 }
 
 void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
-	for (auto tile : level_map_.low_layer)
+	for (int tile = 0 ; tile < level_map_.low_layer.size(); tile++)
 	{
-		sprite_renderer_->DrawSprite(tile);
+		sprite_renderer_->DrawSprite(level_map_.low_layer[tile]);
 	}
 
-	for (auto tile : level_map_.mid_layer)
+	for (int tile = 0 ; tile < level_map_.mid_layer.size(); tile++)
 	{
-		sprite_renderer_->DrawSprite(tile);
+		sprite_renderer_->DrawSprite(level_map_.mid_layer[tile]);
 	}
 
-	for (auto pickup : pickups_)
+	for (int pickup = 0; pickup < pickups_.size(); pickup++)
 	{
-		sprite_renderer_->DrawSprite(pickup);
+		sprite_renderer_->DrawSprite(pickups_[pickup]);
 	}
 
 	sprite_renderer_->DrawSprite(player_);
 	sprite_renderer_->DrawSprite(arrow_);
 
-	for (auto tile : level_map_.high_layer)
+	for (int tile = 0 ; tile < level_map_.high_layer.size(); tile++)
 	{
-		sprite_renderer_->DrawSprite(tile);
+		sprite_renderer_->DrawSprite(level_map_.high_layer[tile]);
 	}
 
 	if (paused_)
 	{
 		sprite_renderer_->DrawSprite(pause_background_);
-		for ( auto b : pause_buttons_ )
-			sprite_renderer_->DrawSprite(b);
+		for ( int button = 0 ; button < pause_buttons_.size(); button++)
+		{
+			sprite_renderer_->DrawSprite(pause_buttons_[button]);
+		}
 	}
 
 	// UI
@@ -123,21 +128,23 @@ void LevelState::LoadMap(string map_filename)
 	tiles.reserve(map_->totalTileCount); // reserve enough space (prevent constant resizing every push_back)
 
 	// load all textures
-	for (auto tileset : map_->tilesets)
+	for (int tilesetindex = 0 ; tilesetindex < map_->tilesets.size(); tilesetindex++)
 	{
+		auto tileset = map_->tilesets[tilesetindex];
 		if (tileset->name == "Collision") // don't bother loading collision tilesets textures
 			continue;
 
-		for (auto tile : tileset->tiles)
+		for (int tileindex = 0 ; tileindex < tileset->tiles.size(); tileindex++)
 		{
+			auto tile = tileset->tiles[tileindex];
 			auto tiletexture = application_->LoadTextureFromPNG(tile->filename.c_str());
 			tiles.push_back(tiletexture);
 		}
 	}
 
-	for (auto layer : map_->layers)
+	for (int layerindex = 0 ; layerindex < map_->layers.size() ; layerindex++)
 	{
-
+		auto layer = map_->layers[layerindex];
 		enum LAYER { LOW = 1, MID = 2, HIGH = 3, COLLISION = 4 };
 		LAYER layer_type_;
 		int layer_tile_size;

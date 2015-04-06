@@ -12,6 +12,7 @@
 #include "collectible.h"
 #include "blade.h"
 #include "bullet.h"
+#include "CollisionTile.h"
 
 #include <vector>
 #include <array>
@@ -60,7 +61,7 @@ private:
 		std::vector<Sprite> high_layer;
 		std::vector<Sprite> mid_layer;
 		std::vector<Sprite> low_layer;
-		std::vector<b2Body*> collision_layer;
+		std::vector<CollisionTile*> collision_layer;
 	};
 	LevelMap level_map_;
 
@@ -84,7 +85,7 @@ protected:
 	
 	// STATE-SPECIFIC Game/Living Objects
 	//std::vector<GameObject> platforms_;
-	std::array<GameObject, 20> pickups_;
+	std::vector<GameObject> pickups_;
 	//std::vector<LivingObject> plants_;
 	//std::vector<GameObject> spikes_;
 	Player player_;

@@ -18,7 +18,7 @@ class GameObject : public Sprite
 {	// Physics based game object
 public:
 
-	enum TYPE { PLAYER, PLATFORM, ENEMY, PICKUP, WALL, PLANT, SPIKE, BLADE, BULLET }; // used for specific collision response - objects type
+	enum TYPE { PLAYER, COLLISIONTILE, ENEMY, PICKUP, PLANT, SPIKE, BLADE, BULLET }; // used for specific collision response - objects type
 
 	GameObject();		// Default constructor for default gameobjects
 	virtual ~GameObject();
