@@ -30,16 +30,14 @@ public:
 
 private:
 
-	void LoadAssets();
-
 	void Pause(bool);
+	APPSTATE PauseInputLoop(const abfw::SonyController* controller);
 
 	// override these in derived level classes
-	virtual void LoadTextures() = 0;	// force textures
-	virtual void LoadSounds();			// do not force sound
-	virtual void UpdateGameObjects(const float& ticks_, const int& frame_counter_);
+	virtual void LoadAssets() = 0;	// force loading assets
+	virtual void UpdateGameObjects(const float& ticks_, const int& frame_counter_) = 0;
 	virtual APPSTATE InputLoop(const abfw::SonyController* controller) = 0; // force an inputloop that returns a state for next frame
-
+	
 	///John///
 	void CreateObjects();//call create functions for all gameobjects
 	void PlantPickUps();//spawn pickups from plants when they are destroyed
@@ -48,16 +46,14 @@ private:
 	void Destroy(GameObject &object);//will destroy non-destroyed body thats been passed in
 	/////////
 
-private:
-
 	APPSTATE current_state_;
-
 	b2World* world_;
 	Contact_Listener contact_listener_;
 
 	// Background layers
 	struct LevelMap
 	{
+		std::vector<abfw::Texture*> textures;
 		std::vector<Sprite> high_layer;
 		std::vector<Sprite> mid_layer;
 		std::vector<Sprite> low_layer;
@@ -73,6 +69,11 @@ protected:
 
 	void LoadMap(string map_filename);
 
+	// Spawn functions
+	void SpawnSpike(b2Vec3 position, b2Vec2 dimensions);
+	void SpawnPickup(b2Vec3 position, abfw::Texture* texture);
+	void SpawnBullet(b2Vec3 position, b2Vec3 target);
+
 	// SHARED Textures
 	// Store single-object textures in the object it's used for (e.g. player textures)
 	abfw::Texture* red_pickup_texture_;
@@ -81,22 +82,21 @@ protected:
 	abfw::Texture* green_pickup_texture_;
 	abfw::Texture* plantWallTex;
 	abfw::Texture* plantBlockTex;
-	//abfw::Texture* spikeTexture;
+	abfw::Texture* spike_texture;
 	
 	// STATE-SPECIFIC Game/Living Objects
-	//std::vector<GameObject> platforms_;
 	std::vector<GameObject> pickups_;
+	std::vector<Enemy> enemies_;
+	std::vector<Bullet> bullets_;
 	//std::vector<LivingObject> plants_;
-	//std::vector<GameObject> spikes_;
+	std::vector<GameObject> spikes_;
 	Player player_;
 	Blade blade_;
-	Bullet bullet_;
-	Enemy enemy_;
 	Sprite arrow_; //arrow showing where player wants to jump
 
 	// STATE-SPECIFIC Variables
 	float score_;		// Score for this level
 	bool gameOver_;		// Track current level status
 	float attackTime;	// Amount of time between when attack can be pressed
-	float reloadTime;	//time between shots from the enemy
+	float reloadTime;	// Time between shots from the enemy
 };

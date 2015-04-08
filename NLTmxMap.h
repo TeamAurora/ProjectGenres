@@ -54,8 +54,8 @@ public:
 public:
     
     ~NLTmxMapObject() {
-        for ( auto property : properties ) {
-            delete property;
+        for ( int propertyindex = 0; propertyindex < properties.size(); propertyindex++ ) {
+            DeleteNull(properties[propertyindex]);
         }
     }
 };
@@ -71,8 +71,8 @@ public:
     vector<NLTmxMapObject*> objects;
     
     ~NLTmxMapObjectGroup() {
-        for ( auto o : objects ) {
-            delete o;
+        for ( int objectindex = 0; objectindex < objects.size(); objectindex++ ) {
+            DeleteNull(objects[objectindex]);
         }
     }
 };
@@ -92,20 +92,18 @@ public:
     vector<NLTmxMapObjectGroup*> groups;
     
     ~NLTmxMap() {
-        for ( auto g : groups ) {
-            delete g;
+        for ( int groupindex = 0; groupindex < groups.size(); groupindex++ ) {
+            DeleteNull(groups[groupindex]);
         }
         
-        for ( auto l : layers ) {
-            delete l;
+        for ( int layerindex = 0; layerindex < layers.size(); layerindex++ ) {
+            DeleteNull(layers[layerindex]);
         }
         
-        for ( auto ts : tilesets ) {
-            delete ts;
+        for ( int tilesetindex = 0; tilesetindex < tilesets.size(); tilesetindex++ ) {
+            DeleteNull(tilesets[tilesetindex]);
         }
     }
-    
-    
 };
 
 

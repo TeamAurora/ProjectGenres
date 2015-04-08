@@ -11,30 +11,30 @@ public:
 		DIAGONAL
 	};
 
-	CollisionTile(SHAPETYPE shapetype, int flag);
+	CollisionTile(SHAPETYPE shapetype);
 	virtual ~CollisionTile(void);
 
-	// Bitshifted values since shapes can have multiple collidable edges
-	enum BOXEDGES
+	// flags to hint collidable edges
+	struct EDGES
 	{
-		LEFT = 1 << 0,	// Binary 0001 - 0 or 1 bit
-		DOWN = 1 << 1,	// Binary 0010 - 0 or 2 bit
-		RIGHT = 1 << 2,	// Binary 0100 - 0 or 4 bit
-		UP = 1 << 3,	// Binary 1000 - 0 or 8 bit
-		OUTOFRANGE = 1 << 4
+		bool LEFT;
+		bool DOWN;
+		bool RIGHT;
+		bool UP;
 	};
 
+	// enum to check if the shape has a diagonal edge (only 1 per tile)
 	enum DIAGONALS
 	{
-		TOPLEFT = 0,
+		NONE = 0,
+		TOPLEFT,
 		BOTTOMLEFT,
 		BOTTOMRIGHT,
-		TOPRIGHT,
-		OUTOFRANGE
+		TOPRIGHT
 	};
 
 	SHAPETYPE shapetype_;
-	BOXEDGES edges_;
+	EDGES edges_;
 	DIAGONALS diagonal_;
 
 
