@@ -7,7 +7,7 @@ Enemy::Enemy()
 	type_ = ENEMY;
 	
 	//initalise values
-	move_v = 5;
+	move_v = 4;
 	threshold_ = 20;
 	range_ = 150;
 	patrolTime_ = 20;
@@ -325,7 +325,7 @@ void Enemy::shootAnimation()
 	//make sure sprites starts from first frame
 	set_uv_position(abfw::Vector2 (0.0f,1.0f));
 
-	InitSpriteAnimation(0.025,32,false,SCROLL_X,0,0);
+	InitSpriteAnimation(0.0125,32,false,SCROLL_X,0,0);
 }
 
 void Enemy::deathAnimation(bool melee)

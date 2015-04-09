@@ -112,6 +112,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	mflying = flying;//check what animation should be done
 
+
 	OBJECTSTATE prevState = state_;
 
 	//damage player
@@ -124,10 +125,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 	if(health() <= 0)
 	{
 		dead = true;
-	}
-
-	changeState();//check variables and change player's state
-	
+	}	
 
 	//set player's axis
 	if(gDir == UP || gDir == DOWN)
@@ -141,6 +139,8 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	if(mflying == false)
 	{
+		changeState();//check variables and change player's state
+
 		//flip facing back the right way after jump has landed
 		if(prevState == INAIR &&  state_ != INAIR)
 		{
@@ -163,8 +163,6 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 			}
 		}
 
-	}
-
 		//set up animations for each state
 		if(state_ != prevState)
 		{
@@ -177,8 +175,8 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 						runningAnimation();
 						break;			 
 				case ATTACKING:
-
-					break;
+						attackAnimation();
+						break;
 				case DEAD:
 						deadAnimation();
 					break;
@@ -187,30 +185,59 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 					break;
 			};
 		}
+	}
+	else
+	{
+		//set up animations for each state
+		if(state_ != prevState)
+		{
+			
+			switch(state_)
+			{
+				case ATTACKING:
+						attackAnimation();
+						break;
+				case FLYING:
+						//flyAnimation();
+						break;
+				case DEAD:
+						deadAnimation();
+						break;
+			};
+		}
+	}
+	
 
 		
-		// play the animation
-		if(horizontal == true)
-		{
-			result = Animate(ticks, move_right);
-		}
-		else
-		{
-			result = Animate(ticks, moveUp);
-		}
+	// play the animation
+	if(horizontal == true)
+	{
+		result = Animate(ticks, move_right);
+	}
+	else
+	{
+		result = Animate(ticks, moveUp);
+	}
 
-		//check for animations that play once
-		if(state_ == DEAD)
-		{
-			deadAnim = result;//death animation has played
-		}
+	//check for animations that play once
+	if(state_ == DEAD)
+	{
+		deadAnim = result;//death animation has played
+	}
 
-		//jump animation has played
-		if(state_ == JUMPING && result == true)
-		{
-			state_ = INAIR;
-		}
+	//jump animation has played
+	if(state_ == JUMPING && result == true)
+	{
+		state_ = INAIR;
+	}
+
+	//attack animation has played
+	if(state_ == ATTACKING && result == true)
+	{
+		attacking = false;
+	}
 	
+
 	if(!mflying)
 	{
 		if(state_ != JUMPING && state_ != INAIR)//no change in movment during jump
@@ -242,25 +269,31 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			{
 				gDir = UP;
 				gravity = b2Vec2(0.0f, 10.0f);
-				state_ = INAIR;
+				state_ = FLYING;
+				flyAnimation();
 			}
 			else if (controller->right_stick_x_axis() > jumpCutOff)//right
 			{
 				gDir = RIGHT;
 				gravity = b2Vec2(10.0f, 0.0f);
-				state_ = INAIR;
+				state_ = FLYING;
+				move_right = true;
+				flyAnimation();
 			}
 			else if (controller->right_stick_x_axis() < -jumpCutOff)//left
 			{
 				gDir = LEFT;
 				gravity = b2Vec2(-10.0f, 0.0f);
-				state_ = INAIR;
+				state_ = FLYING;
+				move_right = false;
+				flyAnimation();
 			}
 			else if (controller->right_stick_y_axis()> jumpCutOff)//down
 			{
 				gDir = DOWN;
 				gravity = b2Vec2(0.0f, -10.0f);
-				state_ = INAIR;
+				state_ = FLYING;
+				flyAnimation();
 			}
 		}
 		else//wall jump
@@ -340,10 +373,6 @@ void Player::Player_Input(const abfw::SonyController* controller)
 		{
 			attacking = true;
 		}
-		else
-		{
-			attacking = false;
-		}
 	}
 	body_->ApplyForceToCenter(force);
 }
@@ -375,7 +404,6 @@ void Player::setGravity(int n)
 //change state
 void Player::changeState()
 {
-	
 	if(move == true && dead == false && state_ != INAIR)//only run when on a surface
 	{
 		state_ = RUNNING;
@@ -389,7 +417,7 @@ void Player::changeState()
 		state_ = DEAD;
 		body_->SetLinearVelocity(b2Vec2(0,0));//stop all movement
 	}
-	else if (state_ != INAIR && state_ != JUMPING)//state stays as INAIR until a surface is touched
+	else if (state_ != INAIR && state_ != JUMPING && attacking != true)//state stays as INAIR until a surface is touched
 	{
 		state_ = IDLE;
 	}
@@ -768,4 +796,114 @@ void Player::jumpAnimation(float xAxis, float yAxis)
 		//set up animation
 		InitSpriteAnimation(0.005,16,false,SCROLL_Y,0,0);
 	}
+}
+
+void Player::attackAnimation()
+{
+	if(mflying == false)
+	{
+		//flip for gravity
+		if (gDir == UP)
+		{
+			set_uv_height(-1);
+		}
+		else if (gDir == DOWN)
+		{
+			set_uv_height(1);
+		}
+		else if (gDir == RIGHT)
+		{
+			set_uv_width(-1);
+		}
+		else if (gDir == LEFT)
+		{
+			set_uv_width(1);
+		}
+	}
+		
+	//orientate sprite with direction
+	if (horizontal == true)
+	{
+		if(gDir == DOWN)
+		{
+			if (move_right == true)
+			{
+				set_uv_width(0.0833);
+				set_uv_position(abfw::Vector2 (0.0f,0.0f));
+			}
+			else
+			{
+				set_uv_width(-0.0833);
+				set_uv_position(abfw::Vector2 (0.0833,0.0f));
+			}
+		}
+		else if (gDir == UP)
+		{
+			if (move_right == true)
+			{
+				set_uv_width(0.0833);
+				set_uv_position(abfw::Vector2 (0.0f,1));
+			}
+			else
+			{
+				set_uv_width(-0.0833);
+				set_uv_position(abfw::Vector2 (0.0833,1));
+			}
+		}				
+
+		//set up animation
+		InitSpriteAnimation(0.07,12,false,SCROLL_X,0,0);
+				
+	}
+	else
+	{
+		if(gDir == LEFT)
+		{
+			if (moveUp == true)
+			{
+				set_uv_height(0.0833);
+				set_uv_position(abfw::Vector2(0.0f,0.0833));
+			}
+			else
+			{
+				set_uv_height(-0.0833);
+				set_uv_position(abfw::Vector2(0.0f,1.0f));
+			}
+		}
+		else if (gDir == RIGHT)
+		{
+			if (moveUp == true)
+			{
+				set_uv_height(0.0833);
+				set_uv_position(abfw::Vector2(0.0f,(1-0.0833)));
+			}
+			else
+			{
+				set_uv_height(-0.0833);
+				set_uv_position(abfw::Vector2(0.0f,1.0f));
+			}
+		}
+
+		//set up animation
+		InitSpriteAnimation(0.07,12,false,SCROLL_Y,0,0);
+	}
+}
+
+void Player::flyAnimation()
+{
+	if (move_right == true)
+	{
+		set_uv_width(0.0625f);
+		set_uv_height(1);
+		set_uv_position(abfw::Vector2 (0.0f,0.0f));
+	}
+	else
+	{
+		set_uv_width(-0.0625f);
+		set_uv_height(1);
+		set_uv_position(abfw::Vector2 (0.0625f,0.0f));
+	}
+
+	//set up animation
+	InitSpriteAnimation(0.0125,16,true,SCROLL_X,16,2);
 }

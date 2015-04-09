@@ -62,9 +62,11 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* rotPlayerDeath;
 	abfw::Texture* playerJump;
 	abfw::Texture* rotPlayerJump;
+	abfw::Texture* playerFlying;
 	//enemy texture
 	abfw::Texture* enemyShooting;	
 	abfw::Texture* shooterDeath;
+	abfw::Texture* bullet;
 	// pickup textures
 	abfw::Texture* redPUTex;
 	abfw::Texture* bluePUTex;

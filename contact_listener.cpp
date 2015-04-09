@@ -119,7 +119,10 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 				}
 			}
 
-			((Player *)game_object)->state_ = Player::GROUNDED;
+			if(((Player *)game_object)->mflying !=true)
+			{
+				((Player *)game_object)->state_ = Player::GROUNDED;
+			}
 			((Player *)game_object)->body_->SetLinearVelocity(b2Vec2(0,0));//stop bouncing
 		}
 
@@ -154,7 +157,10 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 				}	
 			}
 
-			((Player *)game_object_b)->state_ = Player::GROUNDED;
+			if(((Player *)game_object_b)->mflying !=true)
+			{
+				((Player *)game_object_b)->state_ = Player::GROUNDED;
+			}
 			((Player *)game_object_b)->body_->SetLinearVelocity(b2Vec2(0,0));//stop bouncing
 		}
 	

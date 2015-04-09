@@ -29,8 +29,9 @@ public:
 	float currentRayAngle; // angle of raycast line displayed on screen
 
 	/////// Enumerated states player can be in - use these to do logic & for sprite animation
-	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING, DEAD, JUMPING };
+	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING, DEAD, JUMPING, FLYING };
 	OBJECTSTATE state_;
+	bool mflying;
 	
 private:
 	//set up uv coords for animations
@@ -38,7 +39,9 @@ private:
 	void runningAnimation();
 	void idleAnimation();
 	void deadAnimation();
+	void attackAnimation();
 	void jumpAnimation(float, float);
+	void flyAnimation();
 
 	void changeState();
 
@@ -50,6 +53,5 @@ private:
 
 	float jumpCutOff, moveCutOff;//how far the sticks have to be pushed to trigger action
 	float rayLength;
-	bool mflying;
 };
 

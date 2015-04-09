@@ -192,10 +192,12 @@ void Level2State::LoadTextures()
 	rotPlayerDeath = application_->LoadTextureFromPNG("Robot_Animation_death_rot.png");
 	playerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP.png");
 	rotPlayerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP_rot.png");
+	playerFlying = application_->LoadTextureFromPNG("Robot_floating.png");
 
 	//enemy
 	enemyShooting = application_->LoadTextureFromPNG("shooting.png");
 	shooterDeath = application_->LoadTextureFromPNG("shooter_death.png");
+	bullet = application_->LoadTextureFromPNG("projectile.png");
 
 	redPUTex = application_->LoadTextureFromPNG("Red.png");
 	bluePUTex = application_->LoadTextureFromPNG("Blue.png");
@@ -212,8 +214,9 @@ void Level2State::SetTextures()
 	background_.set_width(platform_.width());
 	background_.set_position(abfw::Vector3(platform_.width()*0.5f, platform_.height()*0.5f, 1.0f));
 
-	player2_.set_texture(playerTex);
+	player2_.set_texture(playerFlying);
 	enemy2_.set_texture(enemyShooting);
+	bullet2_.set_texture(bullet);
 
 	//alternate pickup textures
 	for(int g = 0; g < PICKUP_NUM2;g+=2)
@@ -333,7 +336,7 @@ void Level2State::UpdateGameObjects(const float& ticks_, const int& frame_counte
 
 			if(enemy2_.shotFired)//shoot animation done
 			{
-				//bullet2_.CreateBullet(world_,enemy2_.x,enemy2_.y, enemy2_.gravity,  player2_.currentPos);//fire
+				bullet2_.CreateBullet(world_,enemy2_.x,enemy2_.y, enemy2_.gravity,  player2_.currentPos);//fire
 				//reset 
 				reloadTime = 0;
 				enemy2_.shotFired = false;
@@ -381,50 +384,50 @@ void Level2State::UpdateGameObjects(const float& ticks_, const int& frame_counte
 
 	//change sprite for horizontal or vertical movement
 //change sprite for horizontal or vertical movement
-	if (player2_.horizontal == false)
-	{
-		//change textures
-		switch(player2_.state_)
-		{
-			case Player::IDLE:
-					player2_.set_texture(rotPlayerIdle);
-					break;
-			case Player::RUNNING:
-					player2_.set_texture(rotPlayerTex);
-					break;			 
-			case Player::ATTACKING:
+	//if (player2_.horizontal == false)
+	//{
+	//	//change textures
+	//	switch(player2_.state_)
+	//	{
+	//		case Player::IDLE:
+	//				player2_.set_texture(rotPlayerIdle);
+	//				break;
+	//		case Player::RUNNING:
+	//				player2_.set_texture(rotPlayerTex);
+	//				break;			 
+	//		case Player::ATTACKING:
 
-				break;
-			case Player::DEAD:
-				player2_.set_texture(rotPlayerDeath);
-				break;
-			case Player::JUMPING:
-				player2_.set_texture(rotPlayerJump);
-				break;
-		};
-	}
-	else
-	{
+	//			break;
+	//		case Player::DEAD:
+	//			player2_.set_texture(rotPlayerDeath);
+	//			break;
+	//		case Player::FLYING:
+	//			player2_.set_texture(playerFlying);
+	//			break;
+	//	};
+	//}
+	//else
+	//{
 		//change textures
 		switch(player2_.state_)
 		{
-			case Player::IDLE:
-					player2_.set_texture(playerIdle);
-					break;
-			case Player::RUNNING:
-					player2_.set_texture(playerTex);
-					break;			 
+			//case Player::IDLE:
+			//		//player2_.set_texture(playerIdle);
+			//		break;
+			//case Player::RUNNING:
+			//		player2_.set_texture(playerTex);
+			//		break;			 
 			case Player::ATTACKING:
 
 				break;
 			case Player::DEAD:
 				player2_.set_texture(playerDeath);
 				break;
-			case Player::JUMPING:
-				player2_.set_texture(playerJump);
+			case Player::FLYING:
+				player2_.set_texture(playerFlying);
 				break;
 		};
-	}
+	//}
 
 	switch(enemy2_.shooterState_)
 	{
@@ -462,6 +465,7 @@ void Level2State::CreateObjects()
 {
 	
 	player2_.Create_Player(world_,GFX_BOX2D_POS_X(platform_.width()*0.15),GFX_BOX2D_POS_Y(platform_.height()*0.85));
+	player2_.state_ = Player::FLYING;
 	enemy2_.Create_Enemy(world_, GFX_BOX2D_POS_X(platform_.width()*0.55f),GFX_BOX2D_POS_Y(platform_.height()*0.1));
 	enemy2_.gravity = b2Vec2(0,10);
 

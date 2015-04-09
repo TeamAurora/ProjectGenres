@@ -159,6 +159,8 @@ void GameState::LoadTextures()
 	rotPlayerDeath = application_->LoadTextureFromPNG("Robot_Animation_death_rot.png");
 	playerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP.png");
 	rotPlayerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP_rot.png");
+	playerAttack = application_->LoadTextureFromPNG("Robot_Animation_attackl.png");
+	rotPlayerAttack = application_->LoadTextureFromPNG("Robot_Animation_attackl _rot.png");
 
 	//enemy
 	enemyMove = application_->LoadTextureFromPNG("Enemy_walk.png");
@@ -371,6 +373,7 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 		blade_.created = false;
 	}
 	
+	//put blade in right
 	if(blade_.created == true)
 	{
 		blade_.Update(ticks_,player_);
@@ -433,14 +436,14 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 					player_.set_texture(rotPlayerTex);
 					break;			 
 			case Player::ATTACKING:
-
-				break;
+					player_.set_texture(rotPlayerAttack);
+					break;
 			case Player::DEAD:
-				player_.set_texture(rotPlayerDeath);
-				break;
+					player_.set_texture(rotPlayerDeath);
+					break;
 			case Player::JUMPING:
-				player_.set_texture(rotPlayerJump);
-				break;
+					player_.set_texture(rotPlayerJump);
+					break;
 		};
 	}
 	else
@@ -455,14 +458,14 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 					player_.set_texture(playerTex);
 					break;			 
 			case Player::ATTACKING:
-
-				break;
+					player_.set_texture(playerAttack);
+					break;
 			case Player::DEAD:
-				player_.set_texture(playerDeath);
-				break;
+					player_.set_texture(playerDeath);
+					break;
 			case Player::JUMPING:
-				player_.set_texture(playerJump);
-				break;
+					player_.set_texture(playerJump);
+					break;
 		};
 	}
 	
