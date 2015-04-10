@@ -1,6 +1,7 @@
 ///////////John & Rebecca//////////
 #pragma once
 #include "living_object.h"
+#include "CollisionTile.h"
 
 class Player :
 	public LivingObject
@@ -14,7 +15,7 @@ public:
 	void Create_Player(b2World* world_, float x, float y); // make player body and match it to sprite
 	void Update(const float& ticks_, bool gameOver, bool flying);// player update loop - called from UpdateGameObjects in gamestate
 	void Player_Input(const class abfw::SonyController* controller_);	// player input loop - called from InputLoop in gamestate
-	void setGravity(int);
+	void DetermineOrientation(CollisionTile* collisiontile); // deterimes orientation after colliding with a collisiontile
 
 	b2Vec2 gravity;//personal gravity
 	
@@ -48,8 +49,10 @@ private:
 	float damage;//amount of damage taken
 	b2Vec2 knockbackForce;//push player back when hit
 
-	enum gravityDirection { UP, DOWN, LEFT, RIGHT };
-	gravityDirection gDir;
+	enum Direction { UP, DOWN, LEFT, RIGHT };
+	Direction gDir;
+
+	void setGravity(Direction direction);
 
 	float jumpCutOff, moveCutOff;//how far the sticks have to be pushed to trigger action
 	float rayLength;

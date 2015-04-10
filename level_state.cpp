@@ -42,7 +42,7 @@ void LevelState::TerminateState()
 	// delete all collision layer bodies
 	for (int collisiontileindex = 0 ; collisiontileindex < level_map_.collision_layer.size(); collisiontileindex++)
 	{
-		level_map_.collision_layer[collisiontileindex]->DestroyBody();
+		DeleteNull(level_map_.collision_layer[collisiontileindex]);
 	}
 	DeleteNull(world_);
 }
@@ -152,12 +152,6 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 	}
 }
 
-void LevelState::LoadAssets()
-{
-	LoadTextures();
-	LoadSounds();
-}
-
 void LevelState::LoadMap(string map_filename)
 {
 	NLTmxMap* map_ = NLLoadTmxMap(map_filename.c_str());
@@ -198,7 +192,7 @@ void LevelState::LoadMap(string map_filename)
 		else if (layer->name == "High128") { layer_tile_size = 128; layer_type_ = HIGH; }
 		else if (layer->name == "High256") { layer_tile_size = 256; layer_type_ = HIGH; }
 		else if (layer->name == "High512") { layer_tile_size = 512; layer_type_ = HIGH; }
-		else if (layer->name == "Collision") { layer_type_ = COLLISION; }
+		else if (layer->name == "Collision") { layer_tile_size = 128; layer_type_ = COLLISION; }
 
 		// Begin iterating over layer data
 		auto dataindex = layer->data.begin();
@@ -246,11 +240,7 @@ void LevelState::LoadMap(string map_filename)
 				if (layer_type_ == COLLISION)
 				{
 					CollisionTile* tile;
-
-					b2BodyDef body;
-
-
-					tile->AddBody(world_, body);
+					
 					// Assumption that the data for the collision tiles is correct (collision tileset is the first loaded tileset and in right order)
 					switch (*dataindex)
 					{
@@ -348,6 +338,43 @@ void LevelState::LoadMap(string map_filename)
 						tile->edges_.RIGHT = true;
 						break;
 					}
+
+					// flags type as COLLISIONTILE
+					tile->setType(GameObject::COLLISIONTILE);
+
+					float x_pos = layer_tile_size * x;
+					float y_pos = layer_tile_size * y;
+
+					// Define and add box2d body
+					b2BodyDef body;
+					body.type = b2_staticBody;
+					body.position = b2Vec2(GFX_BOX2D_POS_X(x_pos), GFX_BOX2D_POS_Y(y_pos));
+					tile->AddBody(world_, body);
+
+					// Instantiate fixture and its shape
+					b2FixtureDef fixture;
+					b2PolygonShape shape;
+
+					// change fixture shape depending on the shapetype of tile
+					switch(tile->shapetype_)
+					{
+					case CollisionTile::BOX:
+						// normal square box
+						shape.SetAsBox(GFX_BOX2D_SIZE(layer_tile_size), GFX_BOX2D_SIZE(layer_tile_size));
+						break;
+					case CollisionTile::DIAGONAL:
+						// create a diamond (box rotated 45 degrees about its centre)
+						shape.SetAsBox(GFX_BOX2D_SIZE(layer_tile_size), GFX_BOX2D_SIZE(layer_tile_size), b2Vec2(0.0f, 0.0f), 45.0f);
+						break;
+					}
+					
+					// complete the shape definition and add fixture
+					fixture.shape = &shape;
+					fixture.density = 0.0f;
+					tile->AddFixture(fixture);
+
+					// push completed tile to collision layer
+					level_map_.collision_layer.push_back(tile);
 				}
 				
 				dataindex++;
@@ -356,36 +383,78 @@ void LevelState::LoadMap(string map_filename)
 	}
 }
 
-void LevelState::SpawnSpike(b2Vec3 position_, b2Vec2 dimensions_)
+void LevelState::SpawnSpike(b2Vec2 _position, b2Vec2 _dimensions)
 {
-	float x_pos_ = position_.x;
-	float y_pos_ = position_.y;
-	float width_ = dimensions_.x;
-	float height_ = dimensions_.y;
+	float x_pos = _position.x;
+	float y_pos = _position.y;
+	float width = _dimensions.x;
+	float height = _dimensions.y;
 
-	GameObject spike_ = GameObject();
+	GameObject spike = GameObject();
 
 	// Define and add box2d body
-	b2BodyDef body_;
-	body_.type = b2_staticBody;
-	body_.position = b2Vec2(GFX_BOX2D_POS_X(x_pos_), GFX_BOX2D_POS_Y(y_pos_));
-	spike_.AddBody(world_, body_); // this also changes this object to use box2d physics in all its functions
+	b2BodyDef body;
+	body.type = b2_staticBody;
+	body.position = b2Vec2(GFX_BOX2D_POS_X(x_pos), GFX_BOX2D_POS_Y(y_pos));
+	spike.AddBody(world_, body); // this also changes this object to use box2d physics in all its functions
 
 	// Define and add box2d fixture
-	b2FixtureDef fixture_;
-	b2PolygonShape shape_;
-	shape_.SetAsBox(GFX_BOX2D_SIZE(dimensions_.x), GFX_BOX2D_SIZE(dimensions_.y));
-	fixture_.shape = &shape_;
-	fixture_.density = 0.0f;
-	spike_.AddFixture(fixture_);
+	b2FixtureDef fixture;
+	b2PolygonShape shape;
+	shape.SetAsBox(GFX_BOX2D_SIZE(width/2.0f), GFX_BOX2D_SIZE(height/2.0f));
+	fixture.shape = &shape;
+	fixture.density = 0.0f;
+	spike.AddFixture(fixture);
 
 	// Initialize all the gameobject related things for this spike
-	spike_.InitSprite(dimensions_.x, dimensions_.y, abfw::Vector3(x_pos_, y_pos_, 0.0f), spike_texture); // init sprite properties
-	spike_.setType(GameObject::SPIKE);
-	spike_.set_visibility(true);			// Makes projectile visible
+	spike.InitSprite(width, height, abfw::Vector3(x_pos, y_pos, 0.0f), spike_texture_); // init sprite properties
+	spike.setType(GameObject::SPIKE);
+	spike.set_visibility(true);			// Makes projectile visible
 
 	// adds this spike to the spikes vector
-	spikes_.push_back(spike_);
+	spikes_.push_back(spike);
+
+}
+
+void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, abfw::Texture* _texture)
+{
+	float x_pos = _spawn_position.x;
+	float y_pos = _spawn_position.y;
+
+	float width = _dimensions.x;
+	float height = _dimensions.y;
+
+	GameObject pickup = GameObject();
+
+	// Define and add box2d body
+	b2BodyDef body;
+	body.type = b2_staticBody;
+	body.position = b2Vec2(GFX_BOX2D_POS_X(x_pos), GFX_BOX2D_POS_Y(y_pos));
+	pickup.AddBody(world_, body); // this also changes this object to use box2d physics in all its functions
+
+	// Define and add box2d fixture
+	b2FixtureDef fixture;
+	b2PolygonShape shape;
+	shape.SetAsBox(GFX_BOX2D_SIZE(width/2.0f), GFX_BOX2D_SIZE(height/2.0f));
+	fixture.shape = &shape;
+	fixture.density = 0.0f;
+	pickup.AddFixture(fixture);
+
+	// Initialize all the gameobject related things for this pickup
+	pickup.InitSprite(width, height, abfw::Vector3(x_pos, y_pos, 0.0f), _texture); // init sprite properties
+	pickup.setType(GameObject::PICKUP);
+	pickup.set_visibility(true);			// Makes projectile visible
+
+	pickups_.push_back(pickup);
+}
+
+void LevelState::SpawnBullet(b2Vec2 spawn_position)
+{
+
+}
+
+void LevelState::SpawnEnemy(b2Vec2 spawn_point)
+{
 
 }
 
@@ -393,8 +462,7 @@ void LevelState::Destroy(GameObject &object)
 {
 	if(object.destroyed == false)
 	{
-		world_->DestroyBody(object.body_);
-		object.body_ = NULL;
+		object.DestroyBody();
 		object.destroyed = true;
 	}
 }

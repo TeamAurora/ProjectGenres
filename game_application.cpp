@@ -30,7 +30,7 @@ GameApplication::~GameApplication()
 void GameApplication::Init()
 {
 	// load the font to draw the on-screen text
-	bool font_loaded = font_.Load("comic_sans", platform_);
+	bool font_loaded = font_.Load("vermin_vibes_2", platform_);
 	if(!font_loaded)
 	{
 		std::cout << "Font failed to load." << std::endl;

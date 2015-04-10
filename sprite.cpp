@@ -18,10 +18,7 @@ Sprite::~Sprite()
 	DeleteNull(texture_);
 }
 
-const bool Sprite::Animate(float ticks, bool right)
-=======
 const bool Sprite::Animate(float ticks, bool facing)
->>>>>>> origin/John's
 {
 	if((current_frame_ >= frame_count_) && (looping_ == false)) // if the current animation frame is higher than the number of frames in the animation and looping is false
 	{

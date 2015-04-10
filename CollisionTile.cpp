@@ -15,4 +15,5 @@ CollisionTile::CollisionTile(SHAPETYPE shapetype) :
 
 CollisionTile::~CollisionTile(void)
 {
+	DestroyBody();
 }

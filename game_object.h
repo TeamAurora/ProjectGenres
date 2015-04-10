@@ -56,18 +56,17 @@ public:
 	void Knockback(b2Vec2, b2Vec2);//knock object back when they take damage
 	void setAnimation();//set up plants for death animation
 
-	bool dead;//flag for killing 
+	bool dead;//flag for killing
 	bool destroyed;// to check if object has removed from game
 
-	b2Body* body_; // pointer to a box2d body
-
-	
 	//animation
 	bool deadAnim;//has the death animation been played
 	bool rotated;//are the plants rotated
 //////////
 protected:
 	enum PHYSICSENGINE { DEFAULT, BOX2D }; // used to keep same functions being usable independent of physics engine (switch statement in each function handles switching between functionality)
+	
+	b2Body* body_; // pointer to a box2d body
 
 	TYPE type_;
 	PHYSICSENGINE physicsengine_;

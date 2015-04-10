@@ -15,7 +15,7 @@ Level_2::~Level_2()
 {
 }
 
-void Level_2::LoadTextures()
+void Level_2::LoadAssets()
 {
 	//Load textures using application_->LoadTextureFromPNG("texturename.png")
 	// single object texture loaded directly into objects
@@ -42,11 +42,6 @@ void Level_2::LoadTextures()
 	//plantWallTex = application_->LoadTextureFromPNG("Plant_Wall.png");
 	//plantBlockTex = application_->LoadTextureFromPNG("Plant_Block.png");
 	//rotPlantBlockTex = application_->LoadTextureFromPNG("Plant_Block_rot.png");
-}
-
-void Level_2::LoadSounds()
-{
-
 }
 
 APPSTATE Level_2::InputLoop(const abfw::SonyController* controller)

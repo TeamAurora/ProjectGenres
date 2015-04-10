@@ -38,7 +38,7 @@ Player::Player()
 	//jump angle in radians
 	currentRayAngle = 0; //5.235987756 ;//300 radians
 	rayLength = 5.0f;
-	setGravity(0);//down
+	setGravity(DOWN);//down
 }
 
 Player::~Player()
@@ -71,7 +71,7 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	bodyDef.position.x = bodyInitialPosition.x;
 	bodyDef.position.y = bodyInitialPosition.y;
 	bodyDef.fixedRotation = true;//stops body rotating 
-	body_ = world_->CreateBody(&bodyDef);
+	this->AddBody(world_, bodyDef);
 
 	b2PolygonShape dynamicBox;
 	dynamicBox.SetAsBox(body_half_width, body_half_height);
@@ -82,9 +82,7 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	body_->ResetMassData();//it only sets new value after this is called
 	fixtureDef.friction = 0.95f;
 	fixtureDef.restitution = 0.1f; // not bouncy
-	body_->CreateFixture(&fixtureDef);
-
-	body_->SetUserData(this);
+	this->AddFixture(&fixtureDef);
 
 	//sprite set up
 	//set sprite size to match body
@@ -348,28 +346,64 @@ void Player::Player_Input(const abfw::SonyController* controller)
 	body_->ApplyForceToCenter(force);
 }
 
-////Rebecca
-void Player::setGravity(int n)
+//// Craig
+void Player::DetermineOrientation(CollisionTile* collisiontile)
 {
-	switch (n)
+	switch(collisiontile->shapetype_)
 	{
-		case 0:
-			gDir = DOWN;
+	case CollisionTile::BOX:
+		// Ising collisiontile hints to determine which edge of tile is being collided with:
+		//		Checking each edge to see if the centre of player is beyond that edge
+		//		If true, then that edge is being collided with
+		//		NOTE: it's possible to be colliding with multiple edges
+		//		The else-if structure creates an edge-precedence order
+
+		if(collisiontile->edges_.DOWN == true)
+		{
+			if(this->currentPos.y > collisiontile->position().y + (collisiontile->height() / 2.0f))
+				setGravity(DOWN);
+		}
+		else if(collisiontile->edges_.UP == true)
+		{
+			if(this->currentPos.y < collisiontile->position().y - (collisiontile->height() / 2.0f))
+				setGravity(UP);
+		}
+		else if(collisiontile->edges_.LEFT == true)
+		{
+			if(this->currentPos.x < collisiontile->position().y - (collisiontile->width() / 2.0f))
+				setGravity(LEFT);
+		}
+		else if(collisiontile->edges_.RIGHT == true)
+		{
+			if(this->currentPos.y > collisiontile->position().y + (collisiontile->width() / 2.0f))
+				setGravity(RIGHT);
+		}
+		break;
+	case CollisionTile::DIAGONAL:
+		// all diagonals are currently harmful
+		break;
+	}
+}
+
+////Rebecca
+void Player::setGravity(Direction direction)
+{
+	switch (direction)
+	{
+		case DOWN:
 			gravity = b2Vec2(0.0f, -10.0f);
 			break;
-		case 1:
-			gDir = RIGHT;
+		case RIGHT:
 			gravity = b2Vec2(10.0f, 0.0f);
 			break;
-		case 2:
-			gDir = UP;
+		case UP:
 			gravity = b2Vec2(0.0f, 10.0f);
 			break;
-		case 3:
-			gDir = LEFT;
+		case LEFT:
 			gravity = b2Vec2(-10.0f, 0.0f);
 			break;
 	}
+	gDir = direction;
 }
 
 //change state

@@ -6,8 +6,8 @@
 GameObject::GameObject() :
 	visibility_(false),
 	velocity_(0.0f, 0.0f),
-	world_(NULL),
-	body_(NULL),
+	world_(nullptr),
+	body_(nullptr),
 	physicsengine_(DEFAULT),
 	magnitude_(150), 
 	dead(true)
@@ -175,8 +175,9 @@ void GameObject::AddBody(b2World* world, const b2BodyDef body_def)
 void GameObject::DestroyBody()
 {
 	world_->DestroyBody(body_);	// destroys the box2d body of this object
+	body_ = nullptr;
 	physicsengine_ = BOX2D;		// changes back to default physics engine for this object
-	world_ = NULL;			// sets world pointer to null
+	world_ = nullptr;			// sets world pointer to null
 }
 
 void GameObject::AddFixture(const b2FixtureDef fixture_def)
