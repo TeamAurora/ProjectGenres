@@ -20,6 +20,10 @@ class AppState
 {
 public:
 
+	virtual ~AppState()
+	{
+	}
+
 	virtual void InitializeState() = 0;
 	virtual void TerminateState() = 0;
 	virtual APPSTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_) = 0; // returns state to change app to
@@ -33,11 +37,7 @@ protected:
 	audio_manager_(audio_manager)
 	{
 	}
-
-	~AppState()
-	{
-	}
-
+	
 	class abfw::Platform& platform_;
 	class abfw::AudioManager* audio_manager_;
 	const GameApplication* application_;

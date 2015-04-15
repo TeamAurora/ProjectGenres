@@ -23,12 +23,18 @@ public:
 
 	virtual ~LevelState();
 
-	void InitializeState();
-	void TerminateState();
-	APPSTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_);
-	void Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_);
+	void InitializeState() final;
+	void TerminateState() final;
+	APPSTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_) final;
+	void Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_) final;
 
 private:
+
+	virtual void LoadAssets() = 0;	// force loading assets
+	virtual void UpdateGameObjects(const float& ticks_, const int& frame_counter_) = 0; // force an update loop function
+	virtual APPSTATE InputLoop(const abfw::SonyController* controller) = 0; // force an inputloop that returns a state for next frame
+	virtual void CreateObjects() = 0; // force creating the level
+	virtual void Restart() = 0; // force a restart level function
 
 	APPSTATE PauseInputLoop(const abfw::SonyController* controller);
 
@@ -55,12 +61,6 @@ protected:
 
 	LevelState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager, APPSTATE state);
 
-	virtual void LoadAssets() = 0;	// force loading assets
-	virtual void UpdateGameObjects(const float& ticks_, const int& frame_counter_) = 0; // force an update loop function
-	virtual APPSTATE InputLoop(const abfw::SonyController* controller) = 0; // force an inputloop that returns a state for next frame
-	virtual void CreateObjects() = 0; // force creating the level
-	virtual void Restart() = 0; // force a restart level function
-
 	void LoadMap(const char* map_filename);
 	void Pause(bool);
 
@@ -70,7 +70,7 @@ protected:
 	// Spawn functions
 	void SpawnSpike(b2Vec2 spawn_position, b2Vec2 dimensions);
 	void SpawnPickup(b2Vec2 spawn_position,  b2Vec2 dimensions, PickUp::PICKUPTYPE type);
-	void SpawnBullet(b2Vec2 spawn_position);
+	//void SpawnBullet(b2Vec2 spawn_position);
 
 	void Destroy(GameObject &object);//will destroy non-destroyed body thats been passed in
 
