@@ -1,9 +1,7 @@
 #include "menu_state.h"
-#include <graphics/sprite_renderer.h>
-#include <audio/vita/audio_manager_vita.h>
-#include <system/platform.h>
-#include <graphics/texture.h>
 #include "game_application.h"
+#include <graphics\sprite_renderer.h>
+#include <graphics\texture.h>
 #include <sstream>
 
 
@@ -27,7 +25,7 @@ MenuState::MenuState(abfw::Platform& platform, const GameApplication* applicatio
 	for (int buttonindex = 0; buttonindex < options_buttons_.size(); buttonindex++)
 	{
 		options_buttons_[buttonindex].set_position(470.0f, (platform_.height() / options_buttons_.size() + 2) * buttonindex + 1, 0.0f);
-	} 
+	}
 
 	for (int buttonindex = 0; buttonindex < level_buttons_.size(); buttonindex++)
 	{
@@ -35,6 +33,7 @@ MenuState::MenuState(abfw::Platform& platform, const GameApplication* applicatio
 		default_texture << "level_" << buttonindex << "_button.png";
 		highlighted_texture << "level_" << buttonindex << "_button_highlighted.png";
 		level_buttons_[buttonindex] = Button(application_->LoadTextureFromPNG(default_texture.str().c_str()), application_->LoadTextureFromPNG(highlighted_texture.str().c_str()));
+		level_buttons_[buttonindex].set_position((platform_.width() / level_buttons_.size() + 2) * buttonindex + 1, (platform_.height() / 2.0f), 0.0f);
 	}
 }
 
@@ -206,13 +205,10 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 				{
 				case 1:
 					return LEVEL_1;
-					break;
 				case 2:
 					return LEVEL_2;
-					break;
 				case 3:
 					return LEVEL_3;
-					break;
 				}
 			}
 

@@ -44,9 +44,6 @@ APPSTATE IntroState::Update(const float& ticks_, const int& frame_counter_, cons
 void IntroState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
 	sprite_renderer_->DrawSprite(splash_);
-
-	//font_.RenderText(sprite_renderer_, abfw::Vector3(350.0f,250.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "Press Start");
-	//font_.RenderText(sprite_renderer_, abfw::Vector3(350.0f,300.0f,0.9f), 3.0f, 0xff00ffff, abfw::TJ_LEFT, "to play");
 }
 
 void IntroState::LoadTextures()

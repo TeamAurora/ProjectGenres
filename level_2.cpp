@@ -1,13 +1,8 @@
 #include "level_2.h"
-#include <graphics/sprite_renderer.h>
-#include <audio/vita/audio_manager_vita.h>
-#include <graphics/texture.h>
-#include <iostream>
 #include "game_application.h"
-#include "box2d_helpers.h"
 
 Level_2::Level_2(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
-	AppState(platform, application, audio_manager, LEVEL_2)
+	LevelState(platform, application, audio_manager, LEVEL_2)
 {
 }
 
@@ -71,6 +66,8 @@ APPSTATE Level_2::InputLoop(const abfw::SonyController* controller)
 	{
 		application_->camera_->MoveBy(abfw::Vector2(0.0f, 1.0f));
 	}
+
+	return LEVEL_2;
 }
 
 void Level_2::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
@@ -88,7 +85,7 @@ void Level_2::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	}
 	else
 	{
-		Restart();
+		//Restart();
 	}
 	
 	//create and update blade
@@ -113,7 +110,7 @@ void Level_2::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	}
 
 	//update enemy if alive
-	if(enemy2_.dead != true)
+	/*if(enemy2_.dead != true)
 	{
 		enemy2_.Update_Enemy(ticks_, player2_.currentPos, false);
 		reloadTime  += (ticks_*20);
@@ -245,11 +242,11 @@ void Level_2::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	if(score_ == PICKUP_NUM2)
 	{
 		gameOver_ = true;
-	}	
+	}	*/
 }
 
-//void Level_2::CreateObjects()
-//{
+void Level_2::CreateObjects()
+{
 //	
 //	player2_.Create_Player(world_,GFX_BOX2D_POS_X(platform_.width()*0.15),GFX_BOX2D_POS_Y(platform_.height()*0.85));
 //	enemy2_.Create_Enemy(world_, GFX_BOX2D_POS_X(platform_.width()*0.55f),GFX_BOX2D_POS_Y(platform_.height()*0.1));
@@ -336,10 +333,10 @@ void Level_2::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 //		spike2_[k].set_colour(0xff0000ff);//set colour to red
 //		spike2_[k].setType(GameObject::SPIKE);
 //	}
-//}
+}
 
-//void Level_2::Restart()
-//{
+void Level_2::Restart()
+{
 //	//destroy objects
 //	Destroy(player2_);//player
 //	Destroy(enemy2_);//enemy
@@ -366,29 +363,4 @@ void Level_2::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 //	CreateObjects();
 //
 //	gameOver_ = false;
-//}
-//
-//void Level_2::PlantPickUps()
-//{
-//	////left plant
-//	//if(plant2_[2].destroyed == true && pickUp2_[6].spawned == false)
-//	//{
-//	//	pickUp2_[6].Create_pickup(world_,GFX_BOX2D_POS_X(30),GFX_BOX2D_POS_Y(platform_.height()*0.325));
-//	//	pickUp2_[6].spawned = true;
-//	//}
-//
-//	////right plant
-//	//if(plant2_[3].destroyed == true && pickUp2_[7].spawned == false)
-//	//{
-//	//	pickUp2_[7].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.26f),GFX_BOX2D_POS_Y(platform_.height()*0.325));
-//	//	pickUp2_[7].spawned = true;
-//	//}
-//
-//	////top plant
-//	//if(plant2_[4].destroyed == true && pickUp2_[8].spawned == false)
-//	//{
-//	//	pickUp2_[8].Create_pickup(world_,GFX_BOX2D_POS_X(platform_.width()*0.16f),GFX_BOX2D_POS_Y(30));
-//	//	pickUp2_[8].spawned = true;
-//	//}
-//
-//}
+}

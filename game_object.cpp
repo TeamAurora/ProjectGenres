@@ -61,6 +61,7 @@ void GameObject::UpdatePosition()
 	case BOX2D:
 		position_.x = BOX2D_GFX_POS_X(body_->GetPosition().x);
 		position_.y = BOX2D_GFX_POS_Y(body_->GetPosition().y);
+		rotation_ = abfw::RadToDeg(body_->GetAngle()); // also get rotation from box2d body
 		break;
 	}
 }

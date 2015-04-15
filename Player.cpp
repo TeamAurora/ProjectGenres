@@ -82,7 +82,7 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	body_->ResetMassData();//it only sets new value after this is called
 	fixtureDef.friction = 0.95f;
 	fixtureDef.restitution = 0.1f; // not bouncy
-	this->AddFixture(&fixtureDef);
+	this->AddFixture(fixtureDef);
 
 	//sprite set up
 	//set sprite size to match body
@@ -254,7 +254,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 				gravity = b2Vec2(-10.0f, 0.0f);
 				state_ = INAIR;
 			}
-			else if (controller->right_stick_y_axis()> jumpCutOff)//down
+			else if (controller->right_stick_y_axis() > jumpCutOff)//down
 			{
 				gDir = DOWN;
 				gravity = b2Vec2(0.0f, -10.0f);

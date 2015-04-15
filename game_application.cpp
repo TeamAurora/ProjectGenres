@@ -1,7 +1,7 @@
 #include "game_application.h"
+#include <system/platform.h>
 #include <graphics/sprite_renderer.h>
 #include <audio/vita/audio_manager_vita.h>
-#include <system/platform.h>
 #include <assets/png_loader.h>
 #include <graphics/image_data.h>
 #include <graphics/texture.h>
@@ -17,6 +17,7 @@ GameApplication::GameApplication(abfw::Platform& platform) :
 	abfw::Application(platform),
 	sprite_renderer_(NULL),
 	controller_manager_(NULL),
+	audio_manager_(NULL),
 	pCurrentState(NULL),
 	change_state_(false)
 {
@@ -49,7 +50,7 @@ void GameApplication::Init()
 	// Initialize state-shared resources
 	loading_texture_ = LoadTextureFromPNG("loading_background.png");
 	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width() / 2.0f, platform_.height() / 2.0f, 0.0f), loading_texture_);
-	//audio_manager_->LoadMusic("musicname.wav", platform_);
+	audio_manager_->LoadMusic("Main_Menu_Music.wav", platform_);
 }
 
 void GameApplication::CleanUp()
@@ -61,11 +62,10 @@ void GameApplication::CleanUp()
 	// State machine cleanup
 	DeleteNull(pIntro);
 	DeleteNull(pMenu);
-	DeleteNull(pLevelSelect);
 	DeleteNull(pLevel_1);
 	DeleteNull(pLevel_2);
-	DeleteNull(pLevel_3);
-	DeleteNull(pScoreScreen);
+	//DeleteNull(pLevel_3);
+	//DeleteNull(pScoreScreen);
 	pCurrentState = NULL; // Cannot delete the interface pointer (it is never instantiated)
 
 	// Application cleanup
@@ -165,16 +165,14 @@ void GameApplication::ChangeState(APPSTATE next_state)
 						break;
 			case MENU: 	DeleteNull(pMenu);
 						break;
-			case LEVEL_SELECT: 	DeleteNull(pLevelSelect);
-								break;
 			case LEVEL_1: 	DeleteNull(pLevel_1);
 							break;
 			case LEVEL_2: 	DeleteNull(pLevel_2);
 							break;
-			case LEVEL_3: 	DeleteNull(pLevel_3);
+			/*case LEVEL_3: 	DeleteNull(pLevel_3);
 							break;
 			case SCORE_SCREEN: 	DeleteNull(pScoreScreen);
-								break;
+								break;*/
 		}
 	}
 	
@@ -186,21 +184,18 @@ void GameApplication::ChangeState(APPSTATE next_state)
 		case MENU: 	pMenu = new MenuState(platform_, this, audio_manager_);
 					pCurrentState = pMenu;
 					break;
-		case LEVEL_SELECT: 	//pLevelSelect = new LevelSelect(platform_, this, audio_manager_); NYI
-							//pCurrentState = pLevelSelect;
-							break;
 		case LEVEL_1: 	pLevel_1 = new Level_1(platform_, this, audio_manager_);
 						pCurrentState = pLevel_1;
 						break;
-		case LEVEL_2: 	pLevel_2 = new Level_2(platform_, this, audio_manager_); NYI
+		case LEVEL_2: 	pLevel_2 = new Level_2(platform_, this, audio_manager_); // NYI
 						pCurrentState = pLevel_2;
 						break;
-		case LEVEL_3: 	pLevel_3 = new Level_3(platform_, this, audio_manager_); NYI
-						pCurrentState = pLevel_3;
+		/*case LEVEL_3: 	//pLevel_3 = new Level_3(platform_, this, audio_manager_); NYI
+						//pCurrentState = pLevel_3;
 						break;
-		case SCORE_SCREEN: 	pScoreScreen = new ScoreScreen(platform_, this, audio_manager_); NYI
-							pCurrentState = pScoreScreen;
-							break;
+		case SCORE_SCREEN: 	//pScoreScreen = new ScoreScreen(platform_, this, audio_manager_); NYI
+							//pCurrentState = pScoreScreen;
+							break;*/
 	}
 
 	pCurrentState->InitializeState();		// initialize new state

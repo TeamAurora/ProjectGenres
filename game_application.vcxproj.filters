@@ -63,9 +63,6 @@
     <ClCompile Include="bullet.cpp">
       <Filter>Application\GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="collectible.cpp">
-      <Filter>Application\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="enemy.cpp">
       <Filter>Application\GameObjects</Filter>
     </ClCompile>
@@ -92,6 +89,9 @@
     </ClCompile>
     <ClCompile Include="sprite.cpp">
       <Filter>Application\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="pickup.cpp">
+      <Filter>Application\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -134,9 +134,6 @@
     <ClInclude Include="bullet.h">
       <Filter>Application\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="collectible.h">
-      <Filter>Application\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="enemy.h">
       <Filter>Application\GameObjects</Filter>
     </ClInclude>
@@ -172,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="sprite.h">
       <Filter>Application\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="pickup.h">
+      <Filter>Application\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

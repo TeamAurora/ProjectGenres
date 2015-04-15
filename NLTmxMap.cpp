@@ -1,5 +1,5 @@
 #include "RapidXML/rapidxml.hpp"
-#include <iostream>
+//#include <iostream>
 #include "NLTmxMap.h"
 
 
@@ -7,10 +7,10 @@
 using namespace rapidxml;
 
 
-NLTmxMap* NLLoadTmxMap(char* xml )
+NLTmxMap* NLLoadTmxMap(const char* xml )
 {
     xml_document<> doc;
-    doc.parse<0>( xml );
+    doc.parse<0>( const_cast<char*> (xml) );
     
     xml_node<> *mapnode = doc.first_node("map");
     

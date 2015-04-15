@@ -15,7 +15,7 @@ private:
 	void LoadAssets();
 	APPSTATE InputLoop(const abfw::SonyController* controller);
 	void UpdateGameObjects(const float& ticks_, const int& frame_counter_); // updates game object - deleting flagged ones, updating positions and spawning new ones
-
 	void CreateObjects();
+	void Restart();
 };
 

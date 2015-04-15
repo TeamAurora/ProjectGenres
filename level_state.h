@@ -6,12 +6,12 @@
 
 #include "Button.h"
 #include "game_object.h"
-#include "living_object.h"
 #include "Player.h"
 #include "enemy.h"
-#include "collectible.h"
+#include "pickup.h"
 #include "blade.h"
 #include "bullet.h"
+#include "living_object.h"
 #include "CollisionTile.h"
 
 #include <vector>
@@ -20,7 +20,7 @@
 class LevelState : public AppState
 {
 public:
-	LevelState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager, APPSTATE state);
+
 	virtual ~LevelState();
 
 	void InitializeState();
@@ -30,18 +30,9 @@ public:
 
 private:
 
-	void Pause(bool);
 	APPSTATE PauseInputLoop(const abfw::SonyController* controller);
 
-	// override these in derived level classes
-	virtual void LoadAssets() = 0;	// force loading assets
-	virtual void UpdateGameObjects(const float& ticks_, const int& frame_counter_) = 0;
-	virtual APPSTATE InputLoop(const abfw::SonyController* controller) = 0; // force an inputloop that returns a state for next frame
-	
-	void CreateObjects();//call create functions for all gameobjects
-
 	APPSTATE current_state_;
-	Contact_Listener contact_listener_;
 
 	// Background layers
 	struct LevelMap
@@ -56,32 +47,48 @@ private:
 
 	Sprite pause_background_;
 	std::array<Button, 3> pause_buttons_;
+	enum PAUSEBUTTONSELECTION { RESUME, RESTART, QUIT };
+	PAUSEBUTTONSELECTION pause_selection_;
 	bool paused_;
 
 protected:
 
-	void LoadMap(string map_filename);
+	LevelState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager, APPSTATE state);
 
+	virtual void LoadAssets() = 0;	// force loading assets
+	virtual void UpdateGameObjects(const float& ticks_, const int& frame_counter_) = 0; // force an update loop function
+	virtual APPSTATE InputLoop(const abfw::SonyController* controller) = 0; // force an inputloop that returns a state for next frame
+	virtual void CreateObjects() = 0; // force creating the level
+	virtual void Restart() = 0; // force a restart level function
+
+	void LoadMap(const char* map_filename);
+	void Pause(bool);
+
+	Contact_Listener contact_listener_;
 	b2World* world_;
 
 	// Spawn functions
 	void SpawnSpike(b2Vec2 spawn_position, b2Vec2 dimensions);
-	void SpawnPickup(b2Vec2 spawn_position,  b2Vec2 dimensions, abfw::Texture* texture);
+	void SpawnPickup(b2Vec2 spawn_position,  b2Vec2 dimensions, PickUp::PICKUPTYPE type);
 	void SpawnBullet(b2Vec2 spawn_position);
-	void SpawnEnemy(b2Vec2 spawn_point);
 
 	void Destroy(GameObject &object);//will destroy non-destroyed body thats been passed in
 
-	// SHARED Textures
+	// Pickup Textures
 	abfw::Texture* red_pickup_texture_;
 	abfw::Texture* blue_pickup_texture_;
 	abfw::Texture* yellow_pickup_texture_;
 	abfw::Texture* green_pickup_texture_;
+
+	// Plant Textures
 	abfw::Texture* plant_wall_texture_;
 	abfw::Texture* plant_block_texture_;
+
+	// Spike Texture
 	abfw::Texture* spike_texture_;
 
-	// Animation Textures
+	// Player Textures
+	abfw::Texture* playerArrow;
 	abfw::Texture* playerTex;
 	abfw::Texture* rotPlayerTex;
 	abfw::Texture* playerIdle;
@@ -91,12 +98,15 @@ protected:
 	abfw::Texture* playerJump;
 	abfw::Texture* rotPlayerJump;
 
-	// Enemy
+	// Enemy Textures
 	abfw::Texture* enemyMove;
 	abfw::Texture* enemyDeath;
+	abfw::Texture* enemyAttack;
+	abfw::Texture* enemyHit;
+	abfw::Texture* enemyIdle;
 
 	// STATE-SPECIFIC Game/Living Objects
-	std::vector<GameObject> pickups_;
+	std::vector<PickUp> pickups_;
 	std::vector<Enemy> enemies_;
 	std::vector<Bullet> bullets_;
 	std::vector<LivingObject> plants_;

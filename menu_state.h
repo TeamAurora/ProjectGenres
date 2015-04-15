@@ -1,6 +1,6 @@
 #pragma once
 #include "appstate.h"
-#include "Button.h" // Includes sprite and abfw::texture
+#include "Button.h"
 #include <array>
 
 class MenuState :

@@ -9,12 +9,22 @@
 LevelState::LevelState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager, APPSTATE state) :
 	AppState(platform, application, audio_manager),
 	paused_(false),
-	current_state_(state)
+	current_state_(state),
+	pause_selection_(RESUME)
 {
 	world_ = new b2World(b2Vec2_zero);
 	world_->SetAllowSleeping(true);
 	world_->SetContinuousPhysics(true);
 	world_->SetContactListener(&contact_listener_);
+
+	pause_buttons_[0] = Button(application_->LoadTextureFromPNG("pause_resume.png"), application_->LoadTextureFromPNG("pause_resume_highlighted.png"));
+	pause_buttons_[1] = Button(application_->LoadTextureFromPNG("pause_restart.png"), application_->LoadTextureFromPNG("pause_restart_highlighted.png"));
+	pause_buttons_[2] = Button(application_->LoadTextureFromPNG("pause_quit.png"), application_->LoadTextureFromPNG("pause_quit_highlighted.png"));
+
+	for (int buttonindex = 0; buttonindex < pause_buttons_.size(); buttonindex++)
+	{
+		pause_buttons_[buttonindex].set_position(470.0f, (platform_.height() / pause_buttons_.size() + 2) * buttonindex + 1, 0.0f);
+	}
 }
 
 
@@ -38,6 +48,37 @@ void LevelState::TerminateState()
 	{
 		DeleteNull(level_map_.textures[texturesindex]);
 	}
+
+	// Pickup Textures
+	DeleteNull(red_pickup_texture_);
+	DeleteNull(blue_pickup_texture_);
+	DeleteNull(yellow_pickup_texture_);
+	DeleteNull(green_pickup_texture_);
+
+	// Plant Textures
+	DeleteNull(plant_wall_texture_);
+	DeleteNull(plant_block_texture_);
+
+	// Spike Texture
+	DeleteNull(spike_texture_);
+
+	// Player Textures
+	DeleteNull(playerArrow);
+	DeleteNull(playerTex);
+	DeleteNull(rotPlayerTex);
+	DeleteNull(playerIdle);
+	DeleteNull(rotPlayerIdle);
+	DeleteNull(playerDeath);
+	DeleteNull(rotPlayerDeath);
+	DeleteNull(playerJump);
+	DeleteNull(rotPlayerJump);
+
+	// Enemy Textures
+	DeleteNull(enemyMove);
+	DeleteNull(enemyDeath);
+	DeleteNull(enemyAttack);
+	DeleteNull(enemyHit);
+	DeleteNull(enemyIdle);
 
 	// delete all collision layer bodies
 	for (int collisiontileindex = 0 ; collisiontileindex < level_map_.collision_layer.size(); collisiontileindex++)
@@ -72,12 +113,15 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 		else if (controller->buttons_pressed() & ABFW_SONY_CTRL_START)
 		{
 			Pause(true);
+			return current_state_;
 		}
 		else if (!paused_) // do input loop for state if we aren't returning to menustate
 		{
 			return InputLoop(controller);
 		}
 	}
+
+	return current_state_;
 }
 
 void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
@@ -90,11 +134,6 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 	for (int tile = 0 ; tile < level_map_.mid_layer.size(); tile++)
 	{
 		sprite_renderer_->DrawSprite(level_map_.mid_layer[tile]);
-	}
-
-	for (int pickup = 0; pickup < pickups_.size(); pickup++)
-	{
-		sprite_renderer_->DrawSprite(pickups_[pickup]);
 	}
 
 	if(player_.deadAnim == false)
@@ -152,9 +191,64 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 	}
 }
 
-void LevelState::LoadMap(string map_filename)
+void LevelState::Pause(bool _state)
 {
-	NLTmxMap* map_ = NLLoadTmxMap(map_filename.c_str());
+	paused_ = _state;
+}
+
+APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
+{
+	switch(pause_selection_)
+	{
+	case RESUME:
+		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
+		{
+			paused_ = false;
+		}
+		if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
+		{
+			pause_selection_ = RESTART;
+			pause_buttons_[1].Select(true);
+			pause_buttons_[0].Select(false);
+		}
+		break;
+	case RESTART:
+		if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
+		{
+			pause_selection_ = RESUME;
+			pause_buttons_[0].Select(true);
+			pause_buttons_[1].Select(false);
+		}
+		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
+		{
+			Restart();
+		}
+		if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
+		{
+			pause_selection_ = QUIT;
+			pause_buttons_[2].Select(true);
+			pause_buttons_[1].Select(false);
+		}
+		break;
+	case QUIT:
+		if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
+		{
+			pause_selection_ = RESTART;
+			pause_buttons_[1].Select(true);
+			pause_buttons_[2].Select(false);
+		}
+		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
+		{
+			return MENU;
+		}
+		break;
+	}
+	return current_state_;
+}
+
+void LevelState::LoadMap(const char* map_filename)
+{
+	NLTmxMap* map_ = NLLoadTmxMap(map_filename);
 
 	// create vector of tile textures which will be used to create sprites
 	//std::vector<bool> tiles_used(map_->totalTileCount, false);
@@ -416,7 +510,7 @@ void LevelState::SpawnSpike(b2Vec2 _position, b2Vec2 _dimensions)
 
 }
 
-void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, abfw::Texture* _texture)
+void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp::PICKUPTYPE _pickup_type)
 {
 	float x_pos = _spawn_position.x;
 	float y_pos = _spawn_position.y;
@@ -424,12 +518,13 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, abfw::T
 	float width = _dimensions.x;
 	float height = _dimensions.y;
 
-	GameObject pickup = GameObject();
+	PickUp pickup = PickUp();
 
 	// Define and add box2d body
 	b2BodyDef body;
 	body.type = b2_staticBody;
 	body.position = b2Vec2(GFX_BOX2D_POS_X(x_pos), GFX_BOX2D_POS_Y(y_pos));
+	body.fixedRotation = true;
 	pickup.AddBody(world_, body); // this also changes this object to use box2d physics in all its functions
 
 	// Define and add box2d fixture
@@ -440,22 +535,30 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, abfw::T
 	fixture.density = 0.0f;
 	pickup.AddFixture(fixture);
 
+	abfw::Texture* texture;
+	
+	switch(_pickup_type)
+	{
+	case PickUp::RED:
+		texture = red_pickup_texture_;
+		break;
+	case PickUp::BLUE:
+		texture = blue_pickup_texture_;
+		break;
+	case PickUp::YELLOW:
+		texture = yellow_pickup_texture_;
+		break;
+	case PickUp::GREEN:
+		texture = green_pickup_texture_;
+		break;
+	}
+
 	// Initialize all the gameobject related things for this pickup
-	pickup.InitSprite(width, height, abfw::Vector3(x_pos, y_pos, 0.0f), _texture); // init sprite properties
+	pickup.InitSprite(width, height, abfw::Vector3(x_pos, y_pos, 0.0f), texture); // init sprite properties
 	pickup.setType(GameObject::PICKUP);
-	pickup.set_visibility(true);			// Makes projectile visible
+	pickup.set_visibility(true);
 
 	pickups_.push_back(pickup);
-}
-
-void LevelState::SpawnBullet(b2Vec2 spawn_position)
-{
-
-}
-
-void LevelState::SpawnEnemy(b2Vec2 spawn_point)
-{
-
 }
 
 void LevelState::Destroy(GameObject &object)

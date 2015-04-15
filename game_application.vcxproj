@@ -60,6 +60,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalIncludeDirectories>..\abertay_framework;..\abertay_framework\external</AdditionalIncludeDirectories>
       <CppLanguageStd>Cpp11</CppLanguageStd>
+      <CppExceptions>true</CppExceptions>
+      <InlineFunctionDebug>false</InlineFunctionDebug>
+      <MsErrors>false</MsErrors>
     </ClCompile>
     <Link>
       <AdditionalDependencies>-lSceFios2_stub;-lSceDbg_stub;-lSceGxm_stub;-lSceDisplay_stub;-lSceCtrl_stub;-lSceSysmodule_stub;-lSceNgs_stub_weak;-lSceAudio_stub;-lSceTouch_stub</AdditionalDependencies>
@@ -72,6 +75,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalIncludeDirectories>..\abertay_framework;../abertay_framework\external</AdditionalIncludeDirectories>
       <CppLanguageStd>Cpp11</CppLanguageStd>
+      <CppExceptions>true</CppExceptions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>-lSceFios2_stub;-lSceGxm_stub;-lSceDisplay_stub;-lSceCtrl_stub;-lSceSysmodule_stub;-lSceNgs_stub_weak;-lSceAudio_stub;-lSceTouch_stub</AdditionalDependencies>
@@ -119,7 +123,7 @@
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="collectible.cpp" />
+    <ClCompile Include="pickup.cpp" />
     <ClCompile Include="CollisionTile.cpp" />
     <ClCompile Include="contact_listener.cpp" />
     <ClCompile Include="enemy.cpp" />
@@ -150,7 +154,7 @@
     <ClInclude Include="bullet.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="camera.h" />
-    <ClInclude Include="collectible.h" />
+    <ClInclude Include="pickup.h" />
     <ClInclude Include="CollisionTile.h" />
     <ClInclude Include="Contact_listener.h" />
     <ClInclude Include="enemy.h" />

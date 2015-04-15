@@ -3,7 +3,7 @@
 #include "game_object.h"
 #include "player.h"
 #include "enemy.h"
-#include "collectible.h"
+#include "pickup.h"
 #include "blade.h"
 #include "bullet.h"
 

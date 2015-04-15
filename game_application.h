@@ -8,7 +8,6 @@
 #include "game_settings.h"
 #include "game_object.h"
 #include "camera.h"
-#include <vector>
 
 namespace abfw
 {
@@ -20,10 +19,9 @@ namespace abfw
 class IntroState;
 class Level_1;
 class Level_2;
-class Level_3;
+//class Level_3;
 class MenuState;
-class LevelSelect;
-class ScoreScreen;
+//class ScoreScreen;
 
 class GameApplication : public abfw::Application
 {
@@ -64,11 +62,10 @@ private:
 	AppState* pCurrentState;	// pointer to current appstate class
 	IntroState* pIntro;			// pointer to each possible state
 	MenuState* pMenu;
-	LevelSelect* pLevelSelect; // NYI
 	Level_1* pLevel_1;
 	Level_2* pLevel_2;
-	Level_3* pLevel_3;	// NYI
-	ScoreScreen* pScoreScreen;	// NYI
+	//Level_3* pLevel_3;	// NYI
+	//ScoreScreen* pScoreScreen;	// NYI
 
 	APPSTATE gamestate_;		// tracks current state
 	APPSTATE updated_state_;	// tracks state to change to (for comparing with current state)

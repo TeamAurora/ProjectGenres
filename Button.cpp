@@ -1,6 +1,13 @@
 #include "Button.h"
 #include <cstddef> // For NULL definition
+#include <graphics\texture.h>
 
+Button::Button() :
+selected_(false)
+{
+	textures[0] = NULL;
+	textures[1] = NULL;
+}
 
 Button::Button(abfw::Texture* default_texture, abfw::Texture* highlighted_texture) :
 selected_(false)

@@ -5,11 +5,12 @@
 class Button : public Sprite
 {
 public:
+
+	Button();
 	Button(abfw::Texture* default_texture, abfw::Texture* highlighted_texture);
-	~Button();
+	virtual ~Button();
 
 	void Select(bool state);
-	bool Selected() const { return selected_; }
 
 private:
 
