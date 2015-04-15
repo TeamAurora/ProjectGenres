@@ -11,11 +11,20 @@ Camera::Camera(abfw::SpriteRenderer* renderer, abfw::Platform& platform) :
 	rotation_ = 0.0f;
 	scale_ = abfw::Vector2(1.0f, 1.0f);
 	changed_ = false;
+
+	shaking_intensity_ = 1;
+	shaking_remaining_time_ = 0.0f;
 }
 
 
 Camera::~Camera(void)
 {
+}
+
+void Camera::TendTowards(abfw::Vector2 target, float velocity)
+{
+	target_ = target;
+	velocity_ = velocity;
 }
 
 void Camera::MoveBy(abfw::Vector2 translation)
@@ -43,8 +52,26 @@ void Camera::Scale(abfw::Vector2 scalefactor)
 	changed_ = true;
 }*/
 
-void Camera::ApplyCameraTransforms()
+void Camera::ScreenShake(int intensity, float duration)
 {
+	shaking_remaining_time_ = duration;
+	shaking_intensity_ = intensity;
+}
+
+void Camera::ApplyCameraTransforms(const float& ticks)
+{
+	if (shaking_remaining_time_ > 0.0f)
+	{
+		shaking_remaining_time_ -= ticks;
+		MoveBy(abfw::Vector2((2 * rand() % shaking_intensity_) - shaking_intensity_, (2 * rand() % shaking_intensity_) - shaking_intensity_));
+		changed_ = true;
+	}
+
+	if ((translation_.x != target_.x) && (translation_.y != target_.y))
+	{
+		//translation_ += velocity_;
+	}
+
 	if(changed_) // only update the matrix on frames that it has changed
 	{
 		abfw::Matrix44 result;
@@ -64,6 +91,8 @@ void Camera::ApplyCameraTransforms()
 
 		// push transformed frustrum to gfx renderer
 		renderer_->set_projection_matrix(result);
+
+		changed_ = false;
 	}
 }
 
@@ -72,5 +101,6 @@ void Camera::ResetCamera()
 	translation_ = abfw::Vector2(0.0f, 0.0f);
 	rotation_ = 0.0f;
 	scale_ = abfw::Vector2(1.0f, 1.0f);
+	shaking_remaining_time_ = 0.0f;
 	changed_ = true;
 }

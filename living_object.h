@@ -28,6 +28,7 @@ public:
 	void drawHealthBar(abfw::SpriteRenderer* sprite_renderer_, abfw::Font& font_); // Draws a thin health bar and health text above the parameter object
 
 private:
+
 	float health_;
 	float max_health_;
 	float health_percent_;

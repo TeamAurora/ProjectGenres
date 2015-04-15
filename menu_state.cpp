@@ -1,14 +1,40 @@
 #include "menu_state.h"
-#include <graphics/sprite_renderer.h>
-#include <audio/vita/audio_manager_vita.h>
-#include <system/platform.h>
-#include <graphics/texture.h>
 #include "game_application.h"
+#include <graphics\sprite_renderer.h>
+#include <graphics\texture.h>
+#include <sstream>
 
 
 MenuState::MenuState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
-	AppState(platform, application, audio_manager)
+	AppState(platform, application, audio_manager),
+	main_menu_selection_(START),
+	menustate_(MAIN_MENU),
+	level_selection_(1),
+	options_selection_(MUSIC),
+	start_button_(application_->LoadTextureFromPNG("start_button.png"), application_->LoadTextureFromPNG("start_button_highlighted.png")),
+	help_button_(application_->LoadTextureFromPNG("help_button.png"), application_->LoadTextureFromPNG("help_button_highlighted.png")),
+	options_button_(application_->LoadTextureFromPNG("options_button.png"), application_->LoadTextureFromPNG("options_button_highlighted.png"))
 {
+	start_button_.set_position(abfw::Vector3(750.0f, 190.0f, 0.0f));
+	help_button_.set_position(abfw::Vector3(783.0f, 290.0f, 0.0f));
+	options_button_.set_position(abfw::Vector3(717.0f, 400.0f, 0.0f));
+
+	options_buttons_[0] = Button(application_->LoadTextureFromPNG("music_button.png"), application_->LoadTextureFromPNG("music_button_highlighted.png"));
+	options_buttons_[1] = Button(application_->LoadTextureFromPNG("sfx_button.png"), application_->LoadTextureFromPNG("sfx_button_highlighted.png"));
+
+	for (int buttonindex = 0; buttonindex < options_buttons_.size(); buttonindex++)
+	{
+		options_buttons_[buttonindex].set_position(470.0f, (platform_.height() / options_buttons_.size() + 2) * buttonindex + 1, 0.0f);
+	}
+
+	for (int buttonindex = 0; buttonindex < level_buttons_.size(); buttonindex++)
+	{
+		std::stringstream default_texture, highlighted_texture;
+		default_texture << "level_" << buttonindex << "_button.png";
+		highlighted_texture << "level_" << buttonindex << "_button_highlighted.png";
+		level_buttons_[buttonindex] = Button(application_->LoadTextureFromPNG(default_texture.str().c_str()), application_->LoadTextureFromPNG(highlighted_texture.str().c_str()));
+		level_buttons_[buttonindex].set_position((platform_.width() / level_buttons_.size() + 2) * buttonindex + 1, (platform_.height() / 2.0f), 0.0f);
+	}
 }
 
 
@@ -18,293 +44,216 @@ MenuState::~MenuState()
 
 void MenuState::InitializeState()
 {
-	/*LoadTextures();
+	LoadTextures();
 
 	abfw::Vector3 screen_centre(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f);
 	
-	// Start Button
-	start_button_ = GameObject();	// construct start button
-	start_button_.InitSprite(256.0f, 128.0f, screen_centre, start_texture_);
-	
-	// Sound Controls
-	float sound_button_spacing = platform_.width() * 0.2f;
-	music_button_ = GameObject();	// construct music button
-	music_button_.InitSprite(38.0f, 36.0f, screen_centre, music_on_texture_);
-	music_button_.MoveBy(-0.5f * sound_button_spacing, -(platform_.height() * 0.2f)); // moves left by half the button spacing and up by 1/5th the platform height
-	sound_effects_button_ = GameObject();	// construct sound effects button
-	sound_effects_button_.InitSprite(38.0f, 36.0f, music_button_.position(), sound_on_texture_);
-	sound_effects_button_.MoveBy(sound_button_spacing, 0.0f);
-	
-	// Difficulty Buttons
-	// Each buttons position is relative to the last buttons with the exception
-	// of the first which is moved to position relative to the centre of the screen.
-	float diff_button_spacing = (platform_.width() * 0.5f) / (float)kDifficultySettings;
-	difficulty_button[0] = GameObject();	// construct first difficulty button
-	difficulty_button[0].InitSprite(48.0f, 36.0f, screen_centre, green_square_);
-	difficulty_button[0].MoveBy(-((float)kDifficultySettings / 2.5f) * diff_button_spacing, platform_.height() * 0.3f); // moves left by half the number of buttons times spacing and down by 1/5th the platform height
-	for(int i = 1; i < kDifficultySettings; i++)
-	{
-		difficulty_button[i] = GameObject();
-		difficulty_button[i].InitSprite(48.0f, 36.0f, difficulty_button[i-1].position(), blue_square_);
-		difficulty_button[i].MoveBy(diff_button_spacing, 0.0f);
-	}
-	difficulty_button[2].set_texture(yellow_diamond_); // set textures to correct textures (2nd button texture is used initially for all buttons after first)
-	difficulty_button[3].set_texture(red_diamond_);
-	difficulty_button[4].set_texture(purple_polygon_);
-	
-	// Selection Pointer
-	// Initialized to screen centre position(irrelevant as it gets changed to correct position in update loop before render)
-	selection_pointer_ = GameObject();
-	selection_pointer_.InitSprite(64.0f, 64.0f, screen_centre, selector_);
-	
-	// Dpad
-	dpad_ = GameObject();
-	dpad_.InitSprite(128.0f, 128.0f, abfw::Vector3(platform_.width() * 0.1f, platform_.height() * 0.8f, 0.0f), dpad_texture_);
-	
-	// Cross
-	cross_ = GameObject();
-	cross_.InitSprite(128.0f, 128.0f, abfw::Vector3(platform_.width() * 0.9f, platform_.height() * 0.8f, 0.0f), cross_texture_);
+	background_ = Sprite();
+	background_.InitSprite(platform_.width(), platform_.height(), screen_centre, menu_background_texture_);
 
-	selection_ = STARTGAME; // starts selection as startgame button*/
-
-	// NOTE - Visibility is not set to true for any sprites (it's default initialized to false) as the render function of
-	// this state won't check for visibility before rendering anyway because the whole menu will be rendered every frame.
+	background_overlay_ = Sprite();
+	background_overlay_.InitSprite(platform_.width(), platform_.height(), screen_centre, main_menu_texture_);
 }
+
 void MenuState::TerminateState()
 {
-	/*delete start_texture_;
-	start_texture_ = NULL;
-	delete cross_texture_;
-	cross_texture_ = NULL;
-	delete music_on_texture_;
-	music_on_texture_ = NULL;
-	delete music_off_texture_;
-	music_off_texture_ = NULL;
-	delete sound_on_texture_;
-	sound_on_texture_ = NULL;
-	delete sound_off_texture_;
-	sound_off_texture_ = NULL;
-	delete dpad_texture_;
-	dpad_texture_ = NULL;
-	delete blue_square_;
-	blue_square_ = NULL;
-	delete green_square_;
-	green_square_ = NULL;
-	delete yellow_diamond_;
-	yellow_diamond_ = NULL;
-	delete red_diamond_;
-	red_diamond_ = NULL;
-	delete purple_polygon_;
-	purple_polygon_ = NULL;
-	delete selector_;
-	selector_ = NULL;*/
+	DeleteNull(menu_background_texture_);
+	DeleteNull(main_menu_texture_);
+	DeleteNull(help_screen_texture_);
+	DeleteNull(options_screen_texture_);
+	DeleteNull(level_select_texture_);
 }
-GAMESTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
+
+APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
 {
-	/*const abfw::SonyController* controller = controller_manager_.GetController(0); // get the platform specific controller from controller_manager
-	if(controller) // if controller isn't null
+	const abfw::SonyController* controller = controller_manager_.GetController(0); // get the platform specific controller from controller_manager
+	if (controller) // if controller isn't null
 	{
-		switch(selection_) // do input based on what button is currently selected
+		switch (menustate_)
 		{
-		case STARTGAME:
-			if(controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)	// if cross is pressed while startgame is selected
+		case MAIN_MENU:
+			switch (main_menu_selection_)
 			{
-				return GAME;											// return state to change to as GAME
+			case START:
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
+				{
+					menustate_ = LEVEL_SELECT;
+					background_overlay_.set_texture(level_select_texture_);
+				}
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
+				{
+					main_menu_selection_ = HELP;
+					help_button_.Select(true);
+					start_button_.Select(false);
+				}
+				break;
+			case HELP:
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
+				{
+					main_menu_selection_ = START;
+					start_button_.Select(true);
+					help_button_.Select(false);
+				}
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
+				{
+					menustate_ = HELP_SCREEN;
+					background_overlay_.set_texture(help_screen_texture_);
+				}
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
+				{
+					main_menu_selection_ = OPTIONS;
+					options_button_.Select(true);
+					help_button_.Select(false);
+				}
+				break;
+			case OPTIONS:
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
+				{
+					main_menu_selection_ = HELP;
+					help_button_.Select(true);
+					options_button_.Select(false);
+				}
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
+				{
+					menustate_ = OPTIONS_SCREEN;
+					background_overlay_.set_texture(options_screen_texture_);
+				}
+				break;
 			}
-			if(controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)	// if down is pressed while startgame is selected
-			{
-				selection_ = DIFFICULTY;								// change selection to difficulty
-			}
-			if(controller->buttons_pressed() & ABFW_SONY_CTRL_UP)		// if up is pressed while startgame is selected
-			{
-				selection_ = MUSIC;										// change selection to music
-			}
-			selection_pointer_.MoveTo(start_button_.position().x, start_button_.position().y);
-			selection_pointer_.set_width(start_button_.width());
-			selection_pointer_.set_height(start_button_.height());
 			break;
-		case MUSIC:
-			if(controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)	// if cross is pressed while music is selected
+		case HELP_SCREEN:
+			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
 			{
-				switch(application_->settings_.music_)
-				{
-				case true:
-					application_->settings_.music_ = false;				// set music to false if true
-					music_button_.set_texture(music_off_texture_);
-					break;
-				case false:
-					application_->settings_.music_ = true;				// set music to true if false
-					music_button_.set_texture(music_on_texture_);
-					break;
-				}
+				menustate_ = MAIN_MENU;
+				background_overlay_.set_texture(main_menu_texture_);
 			}
-			if(controller->buttons_pressed() & ABFW_SONY_CTRL_RIGHT)	// if right is pressed while music is selected
-			{
-				selection_ = SOUNDEFFECTS;								// change selection to soundeffects
-			}
-			if(controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)	// if down is pressed while music is selected
-			{
-				selection_ = STARTGAME;									// change selection to startgame
-			}
-			selection_pointer_.MoveTo(music_button_.position().x, music_button_.position().y);
-			selection_pointer_.set_width(music_button_.width());
-			selection_pointer_.set_height(music_button_.height());
 			break;
-		case SOUNDEFFECTS:
-			if(controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)	// if cross is pressed while soundeffects is selected
+		case OPTIONS_SCREEN:
+			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
 			{
-				switch(application_->settings_.sound_effects_)
+				menustate_ = MAIN_MENU;
+				background_overlay_.set_texture(main_menu_texture_);
+			}
+			switch (options_selection_)
+			{
+			case MUSIC:
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
-				case true:
-					application_->settings_.sound_effects_ = false;		// set sound_effects_ to false if true
-					sound_effects_button_.set_texture(sound_off_texture_);
-					break;
-				case false:
-					application_->settings_.sound_effects_ = true;		// set sound_effects_ to true if false
-					sound_effects_button_.set_texture(sound_on_texture_);
-					break;
+					switch (application_->settings_.music_)
+					{
+					case true:
+						application_->settings_.music_ = false;
+						break;
+					case false:
+						application_->settings_.music_ = true;
+						break;
+					}
 				}
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
+				{
+					options_selection_ = SFX;
+					options_buttons_[1].Select(true);
+					options_buttons_[0].Select(false);
+				}
+				break;
+			case SFX:
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
+				{
+					options_selection_ = MUSIC;
+					options_buttons_[0].Select(true);
+					options_buttons_[1].Select(false);
+				}
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
+				{
+					switch (application_->settings_.sound_effects_)
+					{
+					case true:
+						application_->settings_.sound_effects_ = false;
+						break;
+					case false:
+						application_->settings_.sound_effects_ = true;
+						break;
+					}
+				}
+				break;
 			}
-			if(controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)	// if down is pressed while soundeffects is selected
-			{
-				selection_ = STARTGAME;									// change selection to startgame
-			}
-			if(controller->buttons_pressed() & ABFW_SONY_CTRL_LEFT)	// if left is pressed while soundeffects is selected
-			{
-				selection_ = MUSIC;										// change selection to music
-			}
-			selection_pointer_.MoveTo(sound_effects_button_.position().x, sound_effects_button_.position().y);
-			selection_pointer_.set_width(sound_effects_button_.width());
-			selection_pointer_.set_height(sound_effects_button_.height());
 			break;
-		case DIFFICULTY:
-			switch(application_->settings_.difficulty_) // do input based on which difficulty is selected
+		case LEVEL_SELECT:
+			if (level_selection_ > 1)
 			{
-			case GameSettings::EASY:
-				if(controller->buttons_pressed() & ABFW_SONY_CTRL_RIGHT)
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_LEFT)
 				{
-					application_->settings_.difficulty_ = GameSettings::MEDIUM;
+					level_buttons_[level_selection_].Select(false);
+					level_selection_--;
+					level_buttons_[level_selection_].Select(true);
 				}
-				selection_pointer_.MoveTo(difficulty_button[0].position().x, difficulty_button[0].position().y);
-				selection_pointer_.set_width(difficulty_button[0].width());
-				selection_pointer_.set_height(difficulty_button[0].height());
-				break;
-			case GameSettings::MEDIUM:
-				if(controller->buttons_pressed() & ABFW_SONY_CTRL_LEFT)
-				{
-					application_->settings_.difficulty_ = GameSettings::EASY;
-				}
-				if(controller->buttons_pressed() & ABFW_SONY_CTRL_RIGHT)
-				{
-					application_->settings_.difficulty_ = GameSettings::HARD;
-				}
-				selection_pointer_.MoveTo(difficulty_button[1].position().x, difficulty_button[1].position().y);
-				selection_pointer_.set_width(difficulty_button[1].width());
-				selection_pointer_.set_height(difficulty_button[1].height());
-				break;
-			case GameSettings::HARD:
-				if(controller->buttons_pressed() & ABFW_SONY_CTRL_LEFT)
-				{
-					application_->settings_.difficulty_ = GameSettings::MEDIUM;
-				}
-				if(controller->buttons_pressed() & ABFW_SONY_CTRL_RIGHT)
-				{
-					application_->settings_.difficulty_ = GameSettings::EXTREME;
-				}
-				selection_pointer_.MoveTo(difficulty_button[2].position().x, difficulty_button[2].position().y);
-				selection_pointer_.set_width(difficulty_button[2].width());
-				selection_pointer_.set_height(difficulty_button[2].height());
-				break;
-			case GameSettings::EXTREME:
-				if(controller->buttons_pressed() & ABFW_SONY_CTRL_LEFT)
-				{
-					application_->settings_.difficulty_ = GameSettings::HARD;
-				}
-				if(controller->buttons_pressed() & ABFW_SONY_CTRL_RIGHT)
-				{
-					application_->settings_.difficulty_ = GameSettings::TRANSCENDENT;
-				}
-				selection_pointer_.MoveTo(difficulty_button[3].position().x, difficulty_button[3].position().y);
-				selection_pointer_.set_width(difficulty_button[3].width());
-				selection_pointer_.set_height(difficulty_button[3].height());
-				break;
-			case GameSettings::TRANSCENDENT:
-				if(controller->buttons_pressed() & ABFW_SONY_CTRL_LEFT)
-				{
-					application_->settings_.difficulty_ = GameSettings::EXTREME;
-				}
-				selection_pointer_.MoveTo(difficulty_button[4].position().x, difficulty_button[4].position().y);
-				selection_pointer_.set_width(difficulty_button[4].width());
-				selection_pointer_.set_height(difficulty_button[4].height());
-				break;
 			}
-			if(controller->buttons_pressed() & ABFW_SONY_CTRL_UP)		// if up is pressed while difficulty is selected
+
+			if (level_selection_ < level_buttons_.size())
 			{
-				selection_ = STARTGAME;									// change selection to gamestart
+				if (controller->buttons_pressed() & ABFW_SONY_CTRL_RIGHT)
+				{
+					level_buttons_[level_selection_].Select(true);
+					level_selection_++;
+					level_buttons_[level_selection_].Select(false);
+				}
+			}
+
+			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
+			{
+				switch (level_selection_)
+				{
+				case 1:
+					return LEVEL_1;
+				case 2:
+					return LEVEL_2;
+				case 3:
+					return LEVEL_3;
+				}
+			}
+
+			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
+			{
+				menustate_ = MAIN_MENU;
+				background_overlay_.set_texture(main_menu_texture_);
 			}
 			break;
 		}
-	}*/
+	}
 	return MENU;
 }
+
 void MenuState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
-	/*// Start Button
-	sprite_renderer_->DrawSprite(start_button_);
-
-	// Sound Buttons
-	sprite_renderer_->DrawSprite(music_button_);
-	font_.RenderText(sprite_renderer_, abfw::Vector3(music_button_.position().x, music_button_.position().y - 2.0f * music_button_.height(), -0.9f), 1.0f, 0xffffffff, abfw::TJ_CENTRE, "Music:");
-	sprite_renderer_->DrawSprite(sound_effects_button_);
-	font_.RenderText(sprite_renderer_, abfw::Vector3(sound_effects_button_.position().x, sound_effects_button_.position().y - 2.0f * sound_effects_button_.height(), -0.9f), 1.0f, 0xffffffff, abfw::TJ_CENTRE, "Sound Effects:");
-
-	// Difficulty Buttons
-	for(int i = 0; i < kDifficultySettings; i++)
+	sprite_renderer_->DrawSprite(background_);
+	sprite_renderer_->DrawSprite(background_overlay_);
+	switch (menustate_)
 	{
-		sprite_renderer_->DrawSprite(difficulty_button[i]);
-	}
-	// Difficulty Text
-	switch(application_->settings_.difficulty_)
-	{
-	case GameSettings::EASY:
-		font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() * 0.5f, difficulty_button[0].position().y - 2.0f * difficulty_button[0].height(), -0.9f), 1.0f, 0xff00ff00, abfw::TJ_CENTRE, "Current Difficulty: Easy");
+	case MAIN_MENU:
+		sprite_renderer_->DrawSprite(start_button_);
+		sprite_renderer_->DrawSprite(help_button_);
+		sprite_renderer_->DrawSprite(options_button_);
 		break;
-	case GameSettings::MEDIUM:
-		font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() * 0.5f, difficulty_button[0].position().y - 2.0f * difficulty_button[0].height(), -0.9f), 1.0f, 0xffff0000, abfw::TJ_CENTRE, "Current Difficulty: Medium");
+	case LEVEL_SELECT:
+		for (int buttonindex = 0; buttonindex < level_buttons_.size(); buttonindex++)
+		{
+			sprite_renderer_->DrawSprite(level_buttons_[buttonindex]);
+		}
 		break;
-	case GameSettings::HARD:
-		font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() * 0.5f, difficulty_button[0].position().y - 2.0f * difficulty_button[0].height(), -0.9f), 1.0f, 0xff00ffff, abfw::TJ_CENTRE, "Current Difficulty: Hard");
-		break;
-	case GameSettings::EXTREME:
-		font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() * 0.5f, difficulty_button[0].position().y - 2.0f * difficulty_button[0].height(), -0.9f), 1.0f, 0xff0000ff, abfw::TJ_CENTRE, "Current Difficulty: Extreme");
-		break;
-	case GameSettings::TRANSCENDENT:
-		font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() * 0.5f, difficulty_button[0].position().y - 2.0f * difficulty_button[0].height(), -0.9f), 1.0f, 0xffff00ff, abfw::TJ_CENTRE, "Current Difficulty: Transcendent");
+	case OPTIONS:
+		for (int buttonindex = 0; buttonindex < options_buttons_.size(); buttonindex++)
+		{
+			sprite_renderer_->DrawSprite(options_buttons_[buttonindex]);
+		}
 		break;
 	}
-
-	// Selection Pointer
-	sprite_renderer_->DrawSprite(selection_pointer_);
-	
-	// Dpad
-	sprite_renderer_->DrawSprite(dpad_);
-	
-	// Cross
-	sprite_renderer_->DrawSprite(cross_);*/
 }
+
 void MenuState::LoadTextures()
 {
-	/*start_texture_ = application_->LoadTextureFromPNG("transparent_start.png");
-	cross_texture_ = application_->LoadTextureFromPNG("transparent_cross.png");
-	music_on_texture_ = application_->LoadTextureFromPNG("transparent_music_on.png");
-	music_off_texture_ = application_->LoadTextureFromPNG("transparent_music_off.png");
-	sound_on_texture_ = application_->LoadTextureFromPNG("transparent_sound_on.png");
-	sound_off_texture_ = application_->LoadTextureFromPNG("transparent_sound_off.png");
-	dpad_texture_ = application_->LoadTextureFromPNG("transparent_dpad.png");
-	blue_square_ = application_->LoadTextureFromPNG("element_blue_square.png");
-	green_square_ = application_->LoadTextureFromPNG("element_green_square.png");
-	yellow_diamond_ = application_->LoadTextureFromPNG("element_yellow_diamond.png");
-	red_diamond_ = application_->LoadTextureFromPNG("element_red_diamond.png");
-	purple_polygon_ = application_->LoadTextureFromPNG("element_purple_polygon.png");
-	selector_ = application_->LoadTextureFromPNG("selector.png");*/
+	menu_background_texture_ = application_->LoadTextureFromPNG("menu_background.png");
+	main_menu_texture_ = application_->LoadTextureFromPNG("main_menu_background.png");
+	help_screen_texture_ = application_->LoadTextureFromPNG("help_menu_background.png");
+	options_screen_texture_ = application_->LoadTextureFromPNG("options_menu_background.png");
+	level_select_texture_ = application_->LoadTextureFromPNG("level_select_background.png");
 }

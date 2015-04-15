@@ -13,6 +13,7 @@ class Blade : public GameObject
 		void alignFace(const Player &player);
 
 		bool created;//stop multiple spawns of the object
+
 	private:
 		float xOffset,yOffset;//place blade outside of player
 		float armLength;//put the blade a distance from player

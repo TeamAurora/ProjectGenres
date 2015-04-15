@@ -1,21 +1,22 @@
 #include "game_application.h"
 #include <graphics/sprite_renderer.h>
 #include <audio/vita/audio_manager_vita.h>
-#include <system/platform.h>
 #include <assets/png_loader.h>
 #include <graphics/image_data.h>
 #include <graphics/texture.h>
 #include <iostream>
-#include "game_state.h"
 #include "intro_state.h"
 #include "menu_state.h"
-#include "level2State.h"
+#include "level_1.h"
+#include "level_2.h"
 
 
 GameApplication::GameApplication(abfw::Platform& platform) :
 	abfw::Application(platform),
 	sprite_renderer_(NULL),
-	controller_manager_(NULL)
+	controller_manager_(NULL),
+	pCurrentState(NULL),
+	change_state_(false)
 {
 }
 
@@ -25,77 +26,51 @@ GameApplication::~GameApplication()
 
 void GameApplication::Init()
 {
-
 	// load the font to draw the on-screen text
-	bool font_loaded = font_.Load("comic_sans", platform_);
+	bool font_loaded = font_.Load("vermin_vibes_2", platform_);
 	if(!font_loaded)
 	{
 		std::cout << "Font failed to load." << std::endl;
 		exit(-1);
 	}
 
-	// Create sprite renderer
+	// Initialize platform-specific systems
 	sprite_renderer_ = platform_.CreateSpriteRenderer();
-
-	// Create controller manager
 	controller_manager_ = platform_.CreateSonyControllerInputManager();
-
-	// Create audio manager
 	audio_manager_ = new abfw::AudioManagerVita;
-	
-	// Create camera
 	camera_ = new Camera(sprite_renderer_, platform_);
 	
 	// Seed RNG
-	srand (5189023);
+	srand(time(NULL));
 	
-	//// Loading Screen Initialization
-	//loading_texture_ = LoadTextureFromPNG("Load Screen.png");
-	//loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f), loading_texture_);
-	//
-	// Initializes game settings
-	settings_.music_ = true;
-	settings_.sound_effects_ = true;
-	
-	// Initializes state machine to INTRO state (changestate also renders a loading screen)
-	pCurrentState = NULL;
-	ChangeState(INTRO);
-	change_state_ = false;
-	
-/////don't have these assets
-	// Background Initialization
-	//background_texture_ = LoadTextureFromPNG("background_black.png");
-	//background_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width()/2.0f, platform_.height()/2.0f, 0.0f), background_texture_);
+	// Initialize state-shared resources
+	loading_texture_ = LoadTextureFromPNG("loading_background.png");
+	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width() / 2.0f, platform_.height() / 2.0f, 0.0f), loading_texture_);
+	audio_manager_->LoadMusic("Main_Menu_Music.wav", platform_);
 
-	//// Load Music
-	//audio_manager_->LoadMusic("Electric_Quake.wav", platform_); // http://opengameart.org/content/electric-quake
-	//audio_manager_->PlayMusic();
+	ChangeState(INTRO);
 }
 
 void GameApplication::CleanUp()
 {
-	// Application Cleanup
+	// Resources cleanup
+	DeleteNull(loading_texture_);
+	audio_manager_->UnloadMusic();
+	
+	// State machine cleanup
+	DeleteNull(pIntro);
+	DeleteNull(pMenu);
+	DeleteNull(pLevel_1);
+	DeleteNull(pLevel_2);
+	//DeleteNull(pLevel_3);
+	//DeleteNull(pScoreScreen);
+	pCurrentState = NULL; // Cannot delete the interface pointer (it is never instantiated)
+
+	// Application cleanup
+	DeleteNull(camera_);
 	DeleteNull(controller_manager_);
 	DeleteNull(sprite_renderer_);
-	audio_manager_->UnloadMusic();
-	audio_manager_ = NULL;
-	DeleteNull(camera_);
-	
-	// Textures
-	DeleteNull(background_texture_);
-	DeleteNull(loading_texture_);
-	loading_texture_ = NULL;
-	
-	// State Machine
-	if(pIntro != NULL)
-		DeleteNull(pIntro);
-	if(pMenu != NULL)
-		DeleteNull(pMenu);
-	if(pGame != NULL)
-		DeleteNull(pGame);
-	if(pLevel2 != NULL)
-		DeleteNull(pLevel2);
-	pCurrentState = NULL;
+	DeleteNull(audio_manager_);
 }
 
 bool GameApplication::Update(float ticks)
@@ -126,18 +101,17 @@ bool GameApplication::Update(float ticks)
 
 	if(settings_.music_ != music_playing_)	// if last frames music setting isn't equal to this frames
 	{
-		switch(settings_.music_)			// start or stop music appropriately
+		if(settings_.music_)				// then if music has changed to true
 		{
-		case true:
-			audio_manager_->PlayMusic();
-			break;
-		case false:
-			audio_manager_->StopMusic();
-			break;
+			audio_manager_->PlayMusic();	// start playing
+		}
+		else								// else it has changed to not playing
+		{
+			audio_manager_->StopMusic();	// stop playing
 		}
 	}
 
-	camera_->ApplyCameraTransforms();
+	camera_->ApplyCameraTransforms(ticks);
 
 	return true;
 }
@@ -147,16 +121,13 @@ void GameApplication::Render()
 	// set up sprite renderer for drawing
 	sprite_renderer_->Begin();
 
-	switch(change_state_)
+	if(change_state_)
 	{
-	case true:
-		//sprite_renderer_->DrawSprite(loading_); // draw load screen if state changes this frame
-		break;
-	case false:
-		// Background
-		//sprite_renderer_->DrawSprite(background_);
-		pCurrentState->Render(frame_rate_, font_, sprite_renderer_); // don't need to do state specific rendering if we're going to change state next frame - loading screen gets drawn instead
-		break;
+		sprite_renderer_->DrawSprite(loading_); // draw load screen if state changes next frame
+	}
+	else
+	{
+		pCurrentState->Render(frame_rate_, font_, sprite_renderer_); // else do state-specific rendering
 	}
 
 	// tell sprite renderer that all sprites have been drawn
@@ -181,42 +152,48 @@ abfw::Texture* GameApplication::LoadTextureFromPNG(const char* filename) const
 	}
 }
 
-void GameApplication::ChangeState(GAMESTATE next_state)
+void GameApplication::ChangeState(APPSTATE next_state)
 {
 	if(pCurrentState != NULL) 				// if pCurrentState points somewhere
 	{
 		pCurrentState->TerminateState(); 	// terminates previous state
 		switch(gamestate_)					// destructs and deallocates memory for previous state, sets pointer of previous state to NULL
 		{
-			case INTRO: delete pIntro;
-						pIntro = NULL;
+			case INTRO: DeleteNull(pIntro);
 						break;
-			case MENU: 	delete pMenu;
-						pMenu = NULL;
+			case MENU: 	DeleteNull(pMenu);
 						break;
-			case GAME: 	delete pGame;
-						pGame = NULL;
-						break;
-			case LEVEL2: delete pLevel2;
-						pLevel2 = NULL;
-						break;
+			case LEVEL_1: 	DeleteNull(pLevel_1);
+							break;
+			case LEVEL_2: 	DeleteNull(pLevel_2);
+							break;
+			/*case LEVEL_3: 	DeleteNull(pLevel_3);
+							break;
+			case SCORE_SCREEN: 	DeleteNull(pScoreScreen);
+								break;*/
 		}
 	}
 	
-	switch(next_state)						// construct and allocate memory for new state, sets current state pointer to new state
+	switch(next_state)	// construct and allocate memory for new state, sets current state pointer to new state
 	{
-		case INTRO:  pIntro = new IntroState(platform_, this, audio_manager_);
-					 pCurrentState = pIntro;
-					 break;
-		case MENU:   pMenu = new MenuState(platform_, this, audio_manager_);
-					 pCurrentState = pMenu;
-					 break;
-		case GAME:   pGame = new GameState(platform_, this, audio_manager_);
-					 pCurrentState = pGame;
-					 break;
-		case LEVEL2: pLevel2 = new Level2State(platform_, this, audio_manager_);
-					 pCurrentState = pLevel2;
-					 break;
+		case INTRO: pIntro = new IntroState(platform_, this, audio_manager_);
+					pCurrentState = pIntro;
+					break;
+		case MENU: 	pMenu = new MenuState(platform_, this, audio_manager_);
+					pCurrentState = pMenu;
+					break;
+		case LEVEL_1: 	pLevel_1 = new Level_1(platform_, this, audio_manager_);
+						pCurrentState = pLevel_1;
+						break;
+		case LEVEL_2: 	pLevel_2 = new Level_2(platform_, this, audio_manager_); // NYI
+						pCurrentState = pLevel_2;
+						break;
+		/*case LEVEL_3: 	//pLevel_3 = new Level_3(platform_, this, audio_manager_); NYI
+						//pCurrentState = pLevel_3;
+						break;
+		case SCORE_SCREEN: 	//pScoreScreen = new ScoreScreen(platform_, this, audio_manager_); NYI
+							//pCurrentState = pScoreScreen;
+							break;*/
 	}
 
 	pCurrentState->InitializeState();		// initialize new state

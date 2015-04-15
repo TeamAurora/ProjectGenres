@@ -3,7 +3,7 @@
 #include "game_object.h"
 #include "player.h"
 #include "enemy.h"
-#include "collectible.h"
+#include "pickup.h"
 #include "blade.h"
 #include "bullet.h"
 
@@ -87,87 +87,29 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 			((PickUp *)game_object)->dead = true;
 		}
 
-///////////Platform check/////Rebecca & John
-		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::PLATFORM)
+///////////Platform check///// Craig
+		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::COLLISIONTILE)
 		{
-			//hit horizontal edge
-			if(game_object->position().x > (game_object_b->position().x - game_object_b->width()/2) 
-				&& game_object->position().x < (game_object_b->position().x + game_object_b->width()/2))
-			{
-				if (game_object->position().y - game_object_b->position().y > 0)//up
-				{
-					((Player *)game_object)->setGravity(2);
-				}
-				else if (game_object->position().y - game_object_b->position().y < 0)//down
-				{
-					((Player *)game_object)->setGravity(0);
-				}
-			}
-
-			//hit vertical edge
-			if(game_object->position().y > (game_object_b->position().y - game_object_b->height()/2) 
-				&& game_object->position().y < (game_object_b->position().y + game_object_b->height()/2))
-			{
-
-				if (game_object->position().x - game_object_b->position().x > 0)//left
-				{ 
-					((Player *)game_object)->setGravity(3);
-				}
-				else if (game_object->position().x - game_object_b->position().x < 0)//right
-				{
-					((Player *)game_object)->setGravity(1);
-				}
-			}
-
-			((Player *)game_object)->grounded = true;
+			static_cast<Player*>(game_object)->DetermineOrientation(static_cast<CollisionTile*>(game_object_b));
 		}
 
-			
-		if (game_object->getType() == GameObject::PLATFORM && game_object_b->getType() == GameObject::PLAYER)
+		if (game_object->getType() == GameObject::COLLISIONTILE && game_object_b->getType() == GameObject::PLAYER)
 		{
-			//hit horizontal edge
-			if(game_object_b->position().x > (game_object->position().x - game_object->width()/2) 
-				&& game_object_b->position().x < (game_object->position().x + game_object->width()/2))
-			{
-				if (game_object_b->position().y - game_object->position().y > 0)//up
-				{
-					((Player *)game_object_b)->setGravity(2);
-				}
-				else if (game_object_b->position().y - game_object->position().y < 0)//down
-				{
-					((Player *)game_object_b)->setGravity(0);
-				}
-			}
-
-			//hit vertical edge
-			if(game_object_b->position().y > (game_object->position().y - game_object->height()/2) 
-				&& game_object_b->position().y < (game_object->position().y + game_object->height()/2))
-			{
-				if (game_object_b->position().x - game_object->position().x > 0)//left
-				{
-					((Player *)game_object_b)->setGravity(3);
-				}
-				else if (game_object_b->position().x - game_object->position().x < 0)//right
-				{
-					((Player *)game_object_b)->setGravity(1);
-				}	
-			}
-
-			((Player *)game_object_b)->grounded = true;
+			static_cast<Player*>(game_object_b)->DetermineOrientation(static_cast<CollisionTile*>(game_object));
 		}
 	
 //////////Bullets///////////////////////
 		//destroy bullets if it hits platfrom
-		if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::PLATFORM)
+		if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::COLLISIONTILE)
 		{
 			((Bullet* )game_object)->dead = true;
 		}
-		else if (game_object->getType() == GameObject::PLATFORM && game_object_b->getType() == GameObject::BULLET)
+		else if (game_object->getType() == GameObject::COLLISIONTILE && game_object_b->getType() == GameObject::BULLET)
 		{
 			((Bullet* )game_object_b)->dead = true;
 		}
 
-		//destroy bullets if it hits colllectible
+		//destroy bullets if it hits collectible
 		if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::PICKUP)
 		{
 			((Bullet* )game_object)->dead = true;
@@ -224,14 +166,14 @@ void Contact_Listener::EndContact(b2Contact* contact)
 			((Player *)game_object_b)->hurting = false;
 		}
 
-		//touching platform
-		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::PLATFORM)
+		//stop touching platform
+		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::COLLISIONTILE)
 		{
-			((Player *)game_object)->grounded = false;
+			//((Player *)game_object)->state_ = Player::JUMPING;
 		}
-		else if (game_object->getType() == GameObject::PLATFORM && game_object_b->getType() == GameObject::PLAYER)
+		else if (game_object->getType() == GameObject::COLLISIONTILE && game_object_b->getType() == GameObject::PLAYER)
 		{
-			((Player *)game_object_b)->grounded = false;
+			//((Player *)game_object_b)->state_ = Player::JUMPING;
 		}
 	}
 }

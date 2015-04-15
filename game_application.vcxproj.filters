@@ -16,30 +16,30 @@
     <Filter Include="Application\Graphics">
       <UniqueIdentifier>{8c095148-1ca0-40bd-910c-6ef29889e25d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Application\Graphics\Sprite Hierarchy">
-      <UniqueIdentifier>{4a769a98-317b-4168-8f8d-195b896e8a6e}</UniqueIdentifier>
+    <Filter Include="Application\Misc\RapidXML">
+      <UniqueIdentifier>{dd788dec-a36b-49c1-8605-356a0fe94959}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Application\Graphics\Sprite Hierarchy\GameObjects">
-      <UniqueIdentifier>{eed8d3e1-63f9-4286-9c5f-0b768bc7fc1d}</UniqueIdentifier>
+    <Filter Include="Application\States\Levels">
+      <UniqueIdentifier>{a8fc8cc7-ec8a-4c73-87f0-a0d75a3c3059}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\GameObjects">
+      <UniqueIdentifier>{c95253f4-5db9-4b6a-8843-4facfd6d67d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\GameObjects\Sprite Hierarchy">
+      <UniqueIdentifier>{4a769a98-317b-4168-8f8d-195b896e8a6e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game_object.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
+      <Filter>Application\GameObjects\Sprite Hierarchy</Filter>
     </ClCompile>
     <ClCompile Include="living_object.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
-    </ClCompile>
-    <ClCompile Include="sprite.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
+      <Filter>Application\GameObjects\Sprite Hierarchy</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>Application\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="menu_state.cpp">
-      <Filter>Application\States</Filter>
-    </ClCompile>
-    <ClCompile Include="game_state.cpp">
       <Filter>Application\States</Filter>
     </ClCompile>
     <ClCompile Include="intro_state.cpp">
@@ -57,34 +57,49 @@
     <ClCompile Include="main_d3d11.cpp">
       <Filter>Application</Filter>
     </ClCompile>
-    <ClCompile Include="level2State.cpp">
-      <Filter>Application\States</Filter>
-    </ClCompile>
     <ClCompile Include="blade.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="collectible.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+      <Filter>Application\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="bullet.cpp">
-      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+      <Filter>Application\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>Application\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Application\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Application\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="NLTmxMap.cpp">
+      <Filter>Application\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="level_1.cpp">
+      <Filter>Application\States\Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="level_2.cpp">
+      <Filter>Application\States\Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="level_state.cpp">
+      <Filter>Application\States</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionTile.cpp">
+      <Filter>Application\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite.cpp">
+      <Filter>Application\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="pickup.cpp">
+      <Filter>Application\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sprite.h">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
-    </ClInclude>
     <ClInclude Include="living_object.h">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
+      <Filter>Application\GameObjects\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="game_object.h">
-      <Filter>Application\Graphics\Sprite Hierarchy</Filter>
+      <Filter>Application\GameObjects\Sprite Hierarchy</Filter>
     </ClInclude>
     <ClInclude Include="Contact_listener.h">
       <Filter>Application\Physics</Filter>
@@ -93,9 +108,6 @@
       <Filter>Application\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="appstate.h">
-      <Filter>Application\States</Filter>
-    </ClInclude>
-    <ClInclude Include="game_state.h">
       <Filter>Application\States</Filter>
     </ClInclude>
     <ClInclude Include="intro_state.h">
@@ -113,23 +125,53 @@
     <ClInclude Include="game_application.h">
       <Filter>Application</Filter>
     </ClInclude>
-    <ClInclude Include="level2State.h">
-      <Filter>Application\States</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy.h">
-      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+    <ClInclude Include="Player.h">
+      <Filter>Application\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="blade.h">
-      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="collectible.h">
-      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+      <Filter>Application\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="bullet.h">
-      <Filter>Application\Graphics\Sprite Hierarchy\GameObjects</Filter>
+      <Filter>Application\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>Application\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Application\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="NLTmxMap.h">
+      <Filter>Application\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidXML\rapidxml_utils.hpp">
+      <Filter>Application\Misc\RapidXML</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidXML\rapidxml.hpp">
+      <Filter>Application\Misc\RapidXML</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidXML\rapidxml_iterators.hpp">
+      <Filter>Application\Misc\RapidXML</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidXML\rapidxml_print.hpp">
+      <Filter>Application\Misc\RapidXML</Filter>
+    </ClInclude>
+    <ClInclude Include="level_2.h">
+      <Filter>Application\States\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="level_1.h">
+      <Filter>Application\States\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="level_state.h">
+      <Filter>Application\States</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionTile.h">
+      <Filter>Application\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="sprite.h">
+      <Filter>Application\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="pickup.h">
+      <Filter>Application\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

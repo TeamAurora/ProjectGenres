@@ -1,4 +1,4 @@
-#include "collectible.h"
+#include "pickup.h"
 
 PickUp::PickUp()
 {
@@ -51,16 +51,8 @@ void PickUp::Create_pickup(b2World* world_, float x, float y)
 	
 	body_->SetUserData(this);
 
+	// updates gameobject position with box2d body
+	UpdatePosition();
+
 	set_position(abfw::Vector3(sprite_x,sprite_y,1));
-}
-
-
-void PickUp::Update(float ticks)
-{
-	//update sprite position to match body
-	float new_x = BOX2D_GFX_POS_X(body_->GetPosition().x);
-	float new_y = BOX2D_GFX_POS_Y(body_->GetPosition().y);
-
-	set_position(abfw::Vector3(new_x,new_y,0.f));
-	set_rotation(-body_->GetAngle());
 }

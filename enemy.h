@@ -3,14 +3,11 @@
 #define ENEMY_H
 
 #include "game_object.h"
-#include <iostream>
-
-using namespace std;
 
 class Enemy : public GameObject
 {
 	public:
-		Enemy();//constructor
+		Enemy();
 		void Create_Enemy(b2World* world_, float x, float y);// create enemy at inputted position
 		void Update_Enemy(float ticks, b2Vec2 playerPos, bool patrol);//update enemy
 		void Attack(b2Vec2 playerPos,float enemyX,float enemyY);//check player position and if within range move to attack
@@ -18,7 +15,24 @@ class Enemy : public GameObject
 
 		b2Vec2 gravity;//keep the enemy on a surface
 		float x,y;
+
+		// Enumerated states enemy can be in
+		enum OBJECTSTATE {IDLE, MOVING, ATTACKING, DEAD, SHOOTING };
+		OBJECTSTATE meleeState_;
+		OBJECTSTATE shooterState_;
+
+		bool shotFired;
+		bool shooting;
 private:
+		//updates for each enemy type
+		void MeleeUpdate(float ticks, b2Vec2 playerPos);
+		void ShooterUpdate(float ticks);
+
+		//set up for said animations
+		void moveAnimation();
+		void deathAnimation(bool);
+		void shootAnimation();
+
 		float threshold_;//check player is on same level
 		float range_;//range on enemy attack
 		bool patrol_;

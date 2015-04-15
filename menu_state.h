@@ -1,6 +1,7 @@
 #pragma once
 #include "appstate.h"
-#include "game_object.h"
+#include "Button.h"
+#include <array>
 
 class MenuState :
 	public AppState
@@ -11,35 +12,34 @@ public:
 	
 	void InitializeState();
 	void TerminateState();
-	GAMESTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_);
+	APPSTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_);
 	void Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_);
 	
 private:
+
+	enum MAINMENUBUTTONSELECTION { START, HELP, OPTIONS };
+	MAINMENUBUTTONSELECTION main_menu_selection_;
+
+	enum OPTIONSBUTTONSELECTION { MUSIC, SFX };
+	OPTIONSBUTTONSELECTION options_selection_;
+
+	int level_selection_;
+
+	enum MENUSTATE { MAIN_MENU, HELP_SCREEN, OPTIONS_SCREEN, LEVEL_SELECT };
+	MENUSTATE menustate_;
 	
 	void LoadTextures();
-
-	enum SELECTION { STARTGAME, MUSIC, SOUNDEFFECTS, DIFFICULTY}; // possible menu selections
-	SELECTION selection_;	// current menu selection
-	
-	abfw::Texture* start_texture_;
-	abfw::Texture* cross_texture_;
-	abfw::Texture* music_on_texture_;
-	abfw::Texture* music_off_texture_;
-	abfw::Texture* sound_on_texture_;
-	abfw::Texture* sound_off_texture_;
-	abfw::Texture* dpad_texture_;
-	abfw::Texture* blue_square_;
-	abfw::Texture* green_square_;
-	abfw::Texture* yellow_diamond_;
-	abfw::Texture* red_diamond_;
-	abfw::Texture* purple_polygon_;
-	abfw::Texture* selector_;
-	GameObject start_button_;
-	GameObject music_button_;
-	GameObject sound_effects_button_;
-	//GameObject difficulty_button[kDifficultySettings];
-	GameObject selection_pointer_;
-	GameObject dpad_;
-	GameObject cross_;
+	abfw::Texture* menu_background_texture_;
+	abfw::Texture* main_menu_texture_;
+	abfw::Texture* help_screen_texture_;
+	abfw::Texture* options_screen_texture_;
+	abfw::Texture* level_select_texture_;
+	Sprite background_;
+	Sprite background_overlay_;
+	Button start_button_;
+	Button help_button_;
+	Button options_button_;
+	std::array<Button, 2> options_buttons_;
+	std::array<Button, 3> level_buttons_;
 };
 
