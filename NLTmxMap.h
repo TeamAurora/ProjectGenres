@@ -55,7 +55,8 @@ public:
     
     ~NLTmxMapObject() {
         for ( int propertyindex = 0; propertyindex < properties.size(); propertyindex++ ) {
-            DeleteNull(properties[propertyindex]);
+            delete properties[propertyindex];
+			properties[propertyindex] = nullptr;
         }
     }
 };
@@ -72,7 +73,8 @@ public:
     
     ~NLTmxMapObjectGroup() {
         for ( int objectindex = 0; objectindex < objects.size(); objectindex++ ) {
-            DeleteNull(objects[objectindex]);
+            delete objects[objectindex];
+			objects[objectindex] = nullptr;
         }
     }
 };
@@ -93,15 +95,18 @@ public:
     
     ~NLTmxMap() {
         for ( int groupindex = 0; groupindex < groups.size(); groupindex++ ) {
-            DeleteNull(groups[groupindex]);
+			delete groups[groupindex];
+			groups[groupindex] = nullptr;
         }
         
         for ( int layerindex = 0; layerindex < layers.size(); layerindex++ ) {
-            DeleteNull(layers[layerindex]);
+			delete layers[layerindex];
+			layers[layerindex] = nullptr;
         }
         
         for ( int tilesetindex = 0; tilesetindex < tilesets.size(); tilesetindex++ ) {
-            DeleteNull(tilesets[tilesetindex]);
+			delete tilesets[tilesetindex];
+			tilesets[tilesetindex] = nullptr;
         }
     }
 };

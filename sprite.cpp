@@ -15,7 +15,6 @@ Sprite::Sprite() :
 
 Sprite::~Sprite()
 {
-	DeleteNull(texture_);
 }
 
 const bool Sprite::Animate(float ticks, bool facing)

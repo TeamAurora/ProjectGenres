@@ -21,6 +21,12 @@ Camera::~Camera(void)
 {
 }
 
+void Camera::TendTowards(abfw::Vector2 target, float velocity)
+{
+	target_ = target;
+	velocity_ = velocity;
+}
+
 void Camera::MoveBy(abfw::Vector2 translation)
 {
 	abfw::Vector2 current_pos = translation_;
@@ -58,6 +64,12 @@ void Camera::ApplyCameraTransforms(const float& ticks)
 	{
 		shaking_remaining_time_ -= ticks;
 		MoveBy(abfw::Vector2((2 * rand() % shaking_intensity_) - shaking_intensity_, (2 * rand() % shaking_intensity_) - shaking_intensity_));
+		changed_ = true;
+	}
+
+	if ((translation_.x != target_.x) && (translation_.y != target_.y))
+	{
+		//translation_ += velocity_;
 	}
 
 	if(changed_) // only update the matrix on frames that it has changed
@@ -79,6 +91,8 @@ void Camera::ApplyCameraTransforms(const float& ticks)
 
 		// push transformed frustrum to gfx renderer
 		renderer_->set_projection_matrix(result);
+
+		changed_ = false;
 	}
 }
 

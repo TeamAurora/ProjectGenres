@@ -51,6 +51,8 @@ public:
 	void ForceToCentre(const b2Vec2& force);						// applies a force to the centre of the body associated with the gameobject
 	void LinearImpulse(const b2Vec2& impulse, const b2Vec2& point);	// applies an impulse to the body associated with the gameobject
 
+	b2Body* body_; // pointer to a box2d body
+
 /////John// 
 	void CreateStaticBody(b2World* world_, float x , float y, float width, float height);//create Static body at (x,y) with that width & height
 	void Knockback(b2Vec2, b2Vec2);//knock object back when they take damage
@@ -65,8 +67,6 @@ public:
 //////////
 protected:
 	enum PHYSICSENGINE { DEFAULT, BOX2D }; // used to keep same functions being usable independent of physics engine (switch statement in each function handles switching between functionality)
-	
-	b2Body* body_; // pointer to a box2d body
 
 	TYPE type_;
 	PHYSICSENGINE physicsengine_;

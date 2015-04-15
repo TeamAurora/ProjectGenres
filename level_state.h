@@ -39,12 +39,8 @@ private:
 	virtual APPSTATE InputLoop(const abfw::SonyController* controller) = 0; // force an inputloop that returns a state for next frame
 	
 	void CreateObjects();//call create functions for all gameobjects
-	void PlantPickUps();//spawn pickups from plants when they are destroyed
-
-	void Destroy(GameObject &object);//will destroy non-destroyed body thats been passed in
 
 	APPSTATE current_state_;
-	b2World* world_;
 	Contact_Listener contact_listener_;
 
 	// Background layers
@@ -66,13 +62,15 @@ protected:
 
 	void LoadMap(string map_filename);
 
+	b2World* world_;
+
 	// Spawn functions
 	void SpawnSpike(b2Vec2 spawn_position, b2Vec2 dimensions);
 	void SpawnPickup(b2Vec2 spawn_position,  b2Vec2 dimensions, abfw::Texture* texture);
 	void SpawnBullet(b2Vec2 spawn_position);
 	void SpawnEnemy(b2Vec2 spawn_point);
 
-	void Restart();//resets and respawns everything to it's orginal position
+	void Destroy(GameObject &object);//will destroy non-destroyed body thats been passed in
 
 	// SHARED Textures
 	abfw::Texture* red_pickup_texture_;

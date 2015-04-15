@@ -17,16 +17,19 @@ public:
 	
 private:
 
-	enum BUTTONSELECTION { START, HELP, OPTIONS };
-	BUTTONSELECTION selection_;
+	enum MAINMENUBUTTONSELECTION { START, HELP, OPTIONS };
+	MAINMENUBUTTONSELECTION main_menu_selection_;
+
+	enum OPTIONSBUTTONSELECTION { MUSIC, SFX };
+	OPTIONSBUTTONSELECTION options_selection_;
 
 	int level_selection_;
 
-	enum RENDERSTATE { MAIN_MENU, HELP_SCREEN, OPTIONS_SCREEN, LEVEL_SELECT };
-	RENDERSTATE render_;
+	enum MENUSTATE { MAIN_MENU, HELP_SCREEN, OPTIONS_SCREEN, LEVEL_SELECT };
+	MENUSTATE menustate_;
 	
 	void LoadTextures();
-	
+	abfw::Texture* menu_background_texture_;
 	abfw::Texture* main_menu_texture_;
 	abfw::Texture* help_screen_texture_;
 	abfw::Texture* options_screen_texture_;
@@ -36,6 +39,7 @@ private:
 	Button start_button_;
 	Button help_button_;
 	Button options_button_;
-	std::array<Button, 3> level_buttons
+	std::array<Button, 2> options_buttons_;
+	std::array<Button, 3> level_buttons_;
 };
 

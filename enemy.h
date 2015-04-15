@@ -3,9 +3,6 @@
 #define ENEMY_H
 
 #include "game_object.h"
-#include <iostream>
-
-using namespace std;
 
 class Enemy : public GameObject
 {

@@ -78,16 +78,17 @@ void Level_1::CreateObjects()
 	//set game objects' textures
 	player_.set_texture(playerTex);
 
-	Enemy enemy_ = new Enemy();
+	// Enemies
+	/*Enemy enemy = Enemy();
 	enemy.Create_Enemy(world_, GFX_BOX2D_POS_X(platform_.width()*0.25f),GFX_BOX2D_POS_Y(platform_.height()*0.2));
 	enemy.gravity = b2Vec2(0,-10);
 
 	enemies_.push_back(enemy);
-
+	
 	for(int enemyindex = 0; enemyindex < enemies_.size(); enemyindex++)
 	{
 		enemies_[enemyindex].set_texture(enemyMove);
-	}
+	}*/
 
 
 	//make non moving objects

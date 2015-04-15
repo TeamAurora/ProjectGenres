@@ -2,9 +2,6 @@
 #define BULLET_H
 
 #include "game_object.h"
-#include <iostream>
-
-using namespace::std;
 
 class Bullet : public GameObject
 {

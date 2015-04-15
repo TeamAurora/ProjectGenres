@@ -352,7 +352,7 @@ void Player::DetermineOrientation(CollisionTile* collisiontile)
 	switch(collisiontile->shapetype_)
 	{
 	case CollisionTile::BOX:
-		// Ising collisiontile hints to determine which edge of tile is being collided with:
+		// Using collisiontile hints to determine which edge of tile is being collided with:
 		//		Checking each edge to see if the centre of player is beyond that edge
 		//		If true, then that edge is being collided with
 		//		NOTE: it's possible to be colliding with multiple edges
@@ -381,6 +381,7 @@ void Player::DetermineOrientation(CollisionTile* collisiontile)
 		break;
 	case CollisionTile::DIAGONAL:
 		// all diagonals are currently harmful
+		this->dead = true;
 		break;
 	}
 }
