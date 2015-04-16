@@ -6,7 +6,6 @@ class Button : public Sprite
 {
 public:
 
-	Button();
 	Button(abfw::Texture* default_texture, abfw::Texture* highlighted_texture);
 	virtual ~Button();
 
@@ -14,6 +13,6 @@ public:
 
 private:
 
-	const abfw::Texture* textures[2];
+	abfw::Texture* textures[2];
 	bool selected_;
 };

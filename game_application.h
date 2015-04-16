@@ -4,7 +4,7 @@
 #include <graphics/sprite.h>
 #include <graphics/font.h>
 #include <input/sony_controller_input_manager.h>
-#include "appstate.h"				// include required for GAMESTATE to be defined
+#include "appstate.h"				// include required for APPSTATE to be defined
 #include "game_settings.h"
 #include "game_object.h"
 #include "camera.h"

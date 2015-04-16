@@ -14,7 +14,7 @@ void Level_1::LoadAssets()
 {
 	//Load textures using application_->LoadTextureFromPNG("texturename.png")
 
-	LoadMap("LEVEL_ONE.tmx");
+	LoadMap("level1.tmx");
 
 	// single object texture loaded directly into objects
 	playerArrow = application_->LoadTextureFromPNG("arrow.png");

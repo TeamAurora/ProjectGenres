@@ -10,31 +10,45 @@ MenuState::MenuState(abfw::Platform& platform, const GameApplication* applicatio
 	main_menu_selection_(START),
 	menustate_(MAIN_MENU),
 	level_selection_(1),
-	options_selection_(MUSIC),
-	start_button_(application_->LoadTextureFromPNG("start_button.png"), application_->LoadTextureFromPNG("start_button_highlighted.png")),
-	help_button_(application_->LoadTextureFromPNG("help_button.png"), application_->LoadTextureFromPNG("help_button_highlighted.png")),
-	options_button_(application_->LoadTextureFromPNG("options_button.png"), application_->LoadTextureFromPNG("options_button_highlighted.png"))
+	options_selection_(MUSIC)
 {
-	start_button_.set_position(abfw::Vector3(750.0f, 190.0f, 0.0f));
-	help_button_.set_position(abfw::Vector3(783.0f, 290.0f, 0.0f));
-	options_button_.set_position(abfw::Vector3(717.0f, 400.0f, 0.0f));
+	start_button_ = new Button(application_->LoadTextureFromPNG("start_button.png"), application_->LoadTextureFromPNG("start_button_highlighted.png"));
+	help_button_ = new Button(application_->LoadTextureFromPNG("help_button.png"), application_->LoadTextureFromPNG("help_button_highlighted.png"));
+	options_button_ = new Button(application_->LoadTextureFromPNG("options_button.png"), application_->LoadTextureFromPNG("options_button_highlighted.png"));
+	start_button_->set_width(256.0f);
+	start_button_->set_height(64.0f);
+	start_button_->set_position(abfw::Vector3(750.0f, 190.0f, 0.0f));
+	help_button_->set_width(256.0f);
+	help_button_->set_height(64.0f);
+	help_button_->set_position(abfw::Vector3(783.0f, 290.0f, 0.0f));
+	options_button_->set_width(256.0f);
+	options_button_->set_height(64.0f);
+	options_button_->set_position(abfw::Vector3(717.0f, 400.0f, 0.0f));
 
-	options_buttons_[0] = Button(application_->LoadTextureFromPNG("music_button.png"), application_->LoadTextureFromPNG("music_button_highlighted.png"));
-	options_buttons_[1] = Button(application_->LoadTextureFromPNG("sfx_button.png"), application_->LoadTextureFromPNG("sfx_button_highlighted.png"));
+	start_button_->Select(true);
+
+	options_buttons_[0] = new Button(application_->LoadTextureFromPNG("music_button.png"), application_->LoadTextureFromPNG("music_button_highlighted.png"));
+	options_buttons_[1] = new Button(application_->LoadTextureFromPNG("sfx_button.png"), application_->LoadTextureFromPNG("sfx_button_highlighted.png"));
 
 	for (int buttonindex = 0; buttonindex < options_buttons_.size(); buttonindex++)
 	{
-		options_buttons_[buttonindex].set_position(470.0f, (platform_.height() / options_buttons_.size() + 2) * buttonindex + 1, 0.0f);
+		options_buttons_[buttonindex]->set_width(256.0f);
+		options_buttons_[buttonindex]->set_height(128.0f);
+		options_buttons_[buttonindex]->set_position(470.0f, (platform_.height() / (options_buttons_.size() + 1)) * (buttonindex + 1), 0.0f);
 	}
+	options_buttons_[0]->Select(true);
 
 	for (int buttonindex = 0; buttonindex < level_buttons_.size(); buttonindex++)
 	{
 		std::stringstream default_texture, highlighted_texture;
-		default_texture << "level_" << buttonindex << "_button.png";
-		highlighted_texture << "level_" << buttonindex << "_button_highlighted.png";
-		level_buttons_[buttonindex] = Button(application_->LoadTextureFromPNG(default_texture.str().c_str()), application_->LoadTextureFromPNG(highlighted_texture.str().c_str()));
-		level_buttons_[buttonindex].set_position((platform_.width() / level_buttons_.size() + 2) * buttonindex + 1, (platform_.height() / 2.0f), 0.0f);
+		default_texture << "level_" << buttonindex + 1 << "_button.png";
+		highlighted_texture << "level_" << buttonindex + 1 << "_button_highlighted.png";
+		level_buttons_[buttonindex] = new Button(application_->LoadTextureFromPNG(default_texture.str().c_str()), application_->LoadTextureFromPNG(highlighted_texture.str().c_str()));
+		level_buttons_[buttonindex]->set_width(128.0f);
+		level_buttons_[buttonindex]->set_height(128.0f);
+		level_buttons_[buttonindex]->set_position((platform_.width() / (level_buttons_.size() + 1)) * (buttonindex + 1), (platform_.height() / 2.0f), 0.0f);
 	}
+	level_buttons_[0]->Select(true);
 }
 
 
@@ -83,16 +97,16 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 				{
 					main_menu_selection_ = HELP;
-					help_button_.Select(true);
-					start_button_.Select(false);
+					help_button_->Select(true);
+					start_button_->Select(false);
 				}
 				break;
 			case HELP:
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
 				{
 					main_menu_selection_ = START;
-					start_button_.Select(true);
-					help_button_.Select(false);
+					start_button_->Select(true);
+					help_button_->Select(false);
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
@@ -102,16 +116,16 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 				{
 					main_menu_selection_ = OPTIONS;
-					options_button_.Select(true);
-					help_button_.Select(false);
+					options_button_->Select(true);
+					help_button_->Select(false);
 				}
 				break;
 			case OPTIONS:
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
 				{
 					main_menu_selection_ = HELP;
-					help_button_.Select(true);
-					options_button_.Select(false);
+					help_button_->Select(true);
+					options_button_->Select(false);
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
@@ -152,16 +166,16 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 				{
 					options_selection_ = SFX;
-					options_buttons_[1].Select(true);
-					options_buttons_[0].Select(false);
+					options_buttons_[1]->Select(true);
+					options_buttons_[0]->Select(false);
 				}
 				break;
 			case SFX:
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
 				{
 					options_selection_ = MUSIC;
-					options_buttons_[0].Select(true);
-					options_buttons_[1].Select(false);
+					options_buttons_[0]->Select(true);
+					options_buttons_[1]->Select(false);
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
@@ -183,9 +197,9 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 			{
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_LEFT)
 				{
-					level_buttons_[level_selection_].Select(false);
+					level_buttons_[level_selection_-1]->Select(false);
 					level_selection_--;
-					level_buttons_[level_selection_].Select(true);
+					level_buttons_[level_selection_-1]->Select(true);
 				}
 			}
 
@@ -193,9 +207,9 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 			{
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_RIGHT)
 				{
-					level_buttons_[level_selection_].Select(true);
+					level_buttons_[level_selection_-1]->Select(false);
 					level_selection_++;
-					level_buttons_[level_selection_].Select(false);
+					level_buttons_[level_selection_-1]->Select(true);
 				}
 			}
 
@@ -230,20 +244,20 @@ void MenuState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 	switch (menustate_)
 	{
 	case MAIN_MENU:
-		sprite_renderer_->DrawSprite(start_button_);
-		sprite_renderer_->DrawSprite(help_button_);
-		sprite_renderer_->DrawSprite(options_button_);
+		sprite_renderer_->DrawSprite(*start_button_);
+		sprite_renderer_->DrawSprite(*help_button_);
+		sprite_renderer_->DrawSprite(*options_button_);
 		break;
 	case LEVEL_SELECT:
 		for (int buttonindex = 0; buttonindex < level_buttons_.size(); buttonindex++)
 		{
-			sprite_renderer_->DrawSprite(level_buttons_[buttonindex]);
+			sprite_renderer_->DrawSprite(*level_buttons_[buttonindex]);
 		}
 		break;
 	case OPTIONS:
 		for (int buttonindex = 0; buttonindex < options_buttons_.size(); buttonindex++)
 		{
-			sprite_renderer_->DrawSprite(options_buttons_[buttonindex]);
+			sprite_renderer_->DrawSprite(*options_buttons_[buttonindex]);
 		}
 		break;
 	}

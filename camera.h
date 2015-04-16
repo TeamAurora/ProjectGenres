@@ -1,7 +1,6 @@
 #pragma once
 #include "maths/matrix44.h"
 #include "maths/vector2.h"
-#include "maths/vector3.h"
 
 namespace abfw
 {

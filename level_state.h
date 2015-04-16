@@ -2,16 +2,16 @@
 #include "appstate.h"
 
 #include "Contact_listener.h"
-#include "NLTmxMap.h"
 
 #include "Button.h"
+#include "living_object.h"
 #include "game_object.h"
 #include "Player.h"
 #include "enemy.h"
 #include "pickup.h"
 #include "blade.h"
 #include "bullet.h"
-#include "living_object.h"
+
 #include "CollisionTile.h"
 
 #include <vector>
@@ -23,10 +23,10 @@ public:
 
 	virtual ~LevelState();
 
-	void InitializeState() final;
-	void TerminateState() final;
-	APPSTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_) final;
-	void Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_) final;
+	void InitializeState();
+	void TerminateState();
+	APPSTATE Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_);
+	void Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_);
 
 private:
 
@@ -52,7 +52,7 @@ private:
 	LevelMap level_map_;
 
 	Sprite pause_background_;
-	std::array<Button, 3> pause_buttons_;
+	std::array<Button*, 3> pause_buttons_;
 	enum PAUSEBUTTONSELECTION { RESUME, RESTART, QUIT };
 	PAUSEBUTTONSELECTION pause_selection_;
 	bool paused_;
@@ -116,7 +116,7 @@ protected:
 	Sprite arrow_; //arrow showing where player wants to jump
 
 	// STATE-SPECIFIC Variables
-	float score_;		// Score for this level
+	int score_;		// Score for this level
 	bool gameOver_;		// Track current level status
 	float attackTime;	// Amount of time between when attack can be pressed
 	float reloadTime;	// Time between shots from the enemy

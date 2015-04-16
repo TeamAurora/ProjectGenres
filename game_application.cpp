@@ -47,6 +47,7 @@ void GameApplication::Init()
 	loading_texture_ = LoadTextureFromPNG("loading_background.png");
 	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width() / 2.0f, platform_.height() / 2.0f, 0.0f), loading_texture_);
 	audio_manager_->LoadMusic("Main_Menu_Music.wav", platform_);
+	audio_manager_->PlayMusic();
 
 	ChangeState(INTRO);
 }

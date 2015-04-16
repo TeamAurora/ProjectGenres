@@ -1,30 +1,39 @@
 #include "level_state.h"
 #include <graphics/sprite_renderer.h>
 #include <audio/vita/audio_manager_vita.h>
+#include <system/vita/file_vita.h>
 #include <graphics/texture.h>
 #include <iostream>
 #include "game_application.h"
 #include "box2d_helpers.h"
+#include "NLTmxMap.h"
 
 LevelState::LevelState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager, APPSTATE state) :
 	AppState(platform, application, audio_manager),
 	paused_(false),
 	current_state_(state),
-	pause_selection_(RESUME)
+	pause_selection_(RESUME),
+	score_(0),
+	gameOver_(false),
+	reloadTime(0)
 {
 	world_ = new b2World(b2Vec2_zero);
 	world_->SetAllowSleeping(true);
 	world_->SetContinuousPhysics(true);
 	world_->SetContactListener(&contact_listener_);
 
-	pause_buttons_[0] = Button(application_->LoadTextureFromPNG("pause_resume.png"), application_->LoadTextureFromPNG("pause_resume_highlighted.png"));
-	pause_buttons_[1] = Button(application_->LoadTextureFromPNG("pause_restart.png"), application_->LoadTextureFromPNG("pause_restart_highlighted.png"));
-	pause_buttons_[2] = Button(application_->LoadTextureFromPNG("pause_quit.png"), application_->LoadTextureFromPNG("pause_quit_highlighted.png"));
+	pause_buttons_[0] = new Button(application_->LoadTextureFromPNG("pause_resume.png"), application_->LoadTextureFromPNG("pause_resume_highlighted.png"));
+	pause_buttons_[1] = new Button(application_->LoadTextureFromPNG("pause_restart.png"), application_->LoadTextureFromPNG("pause_restart_highlighted.png"));
+	pause_buttons_[2] = new Button(application_->LoadTextureFromPNG("pause_quit.png"), application_->LoadTextureFromPNG("pause_quit_highlighted.png"));
 
 	for (int buttonindex = 0; buttonindex < pause_buttons_.size(); buttonindex++)
 	{
-		pause_buttons_[buttonindex].set_position(470.0f, (platform_.height() / pause_buttons_.size() + 2) * buttonindex + 1, 0.0f);
+		pause_buttons_[buttonindex]->set_width(256.0f);
+		pause_buttons_[buttonindex]->set_height(64.0f);
+		pause_buttons_[buttonindex]->set_position(470.0f, (platform_.height() / (pause_buttons_.size() + 1)) * (buttonindex + 1), 0.0f);
 	}
+
+	pause_buttons_[0]->Select(true);
 }
 
 
@@ -36,10 +45,6 @@ void LevelState::InitializeState()
 {
 	LoadAssets();
 	CreateObjects();
-
-	score_ = 0;
-	gameOver_ = false;
-	reloadTime = 0;
 }
 
 void LevelState::TerminateState()
@@ -57,8 +62,8 @@ void LevelState::TerminateState()
 	DeleteNull(green_pickup_texture_);
 
 	// Plant Textures
-	DeleteNull(plant_wall_texture_);
-	DeleteNull(plant_block_texture_);
+	//DeleteNull(plant_wall_texture_);
+	//DeleteNull(plant_block_texture_);
 
 	// Spike Texture
 	DeleteNull(spike_texture_);
@@ -77,15 +82,21 @@ void LevelState::TerminateState()
 	// Enemy Textures
 	DeleteNull(enemyMove);
 	DeleteNull(enemyDeath);
-	DeleteNull(enemyAttack);
-	DeleteNull(enemyHit);
-	DeleteNull(enemyIdle);
+	//DeleteNull(enemyAttack);
+	//DeleteNull(enemyHit);
+	//DeleteNull(enemyIdle);
 
 	// delete all collision layer bodies
 	for (int collisiontileindex = 0 ; collisiontileindex < level_map_.collision_layer.size(); collisiontileindex++)
 	{
 		DeleteNull(level_map_.collision_layer[collisiontileindex]);
 	}
+
+	for (int buttonindex = 0; buttonindex < pause_buttons_.size(); buttonindex++)
+	{
+		DeleteNull(pause_buttons_[buttonindex]);
+	}
+
 	DeleteNull(world_);
 }
 
@@ -120,6 +131,11 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 		{
 			return InputLoop(controller);
 		}
+	}
+	else
+	{
+		std::cout << "Controller invalid." << endl;
+		exit(-1);
 	}
 
 	return current_state_;
@@ -177,17 +193,17 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 	}
 
 	// UI
-	font_.RenderText(sprite_renderer_, abfw::Vector3(10.0f, 5.0f, -0.9f), 1.0f, 0xff00ff00, abfw::TJ_LEFT, "Galaxea");
-	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 40.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "health  : %.0f", player_.health());	//display player health
-	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 5.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "Score : %.0f", score_);//display player score
-	font_.RenderText(sprite_renderer_, abfw::Vector3(850.0f, 510.0f, -0.9f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "FPS: %.1f", frame_rate_);
+	font_.RenderText(sprite_renderer_, abfw::Vector3(10.0f, 5.0f, 0.0f), 1.0f, 0xff00ff00, abfw::TJ_LEFT, "Galaxea");
+	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 40.0f, 0.0f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "health  : %.0f", player_.health());	//display player health
+	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 5.0f, 0.0f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "Score : %.0f", score_);//display player score
+	font_.RenderText(sprite_renderer_, abfw::Vector3(850.0f, 510.0f, 0.0f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "FPS: %.1f", frame_rate_);
 
 	if (paused_)
 	{
 		sprite_renderer_->DrawSprite(pause_background_);
 		for ( int button = 0 ; button < pause_buttons_.size(); button++)
 		{
-			sprite_renderer_->DrawSprite(pause_buttons_[button]);
+			sprite_renderer_->DrawSprite(*pause_buttons_[button]);
 		}
 	}
 }
@@ -209,16 +225,16 @@ APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 		{
 			pause_selection_ = RESTART;
-			pause_buttons_[1].Select(true);
-			pause_buttons_[0].Select(false);
+			pause_buttons_[1]->Select(true);
+			pause_buttons_[0]->Select(false);
 		}
 		break;
 	case RESTART:
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
 		{
 			pause_selection_ = RESUME;
-			pause_buttons_[0].Select(true);
-			pause_buttons_[1].Select(false);
+			pause_buttons_[0]->Select(true);
+			pause_buttons_[1]->Select(false);
 		}
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 		{
@@ -227,16 +243,16 @@ APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 		{
 			pause_selection_ = QUIT;
-			pause_buttons_[2].Select(true);
-			pause_buttons_[1].Select(false);
+			pause_buttons_[2]->Select(true);
+			pause_buttons_[1]->Select(false);
 		}
 		break;
 	case QUIT:
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
 		{
 			pause_selection_ = RESTART;
-			pause_buttons_[1].Select(true);
-			pause_buttons_[2].Select(false);
+			pause_buttons_[1]->Select(true);
+			pause_buttons_[2]->Select(false);
 		}
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 		{
@@ -251,36 +267,46 @@ void LevelState::LoadMap(const char* map_filename)
 {
 	bool appendNull = true;
 
-	FILE* file = fopen( map_filename, "r" );
-	if ( !file ) {
-		std::cout << "Map failed to load." << std::endl;
+	abfw::File* file = platform_.CreateFile();
+	if ( !file->Open( map_filename) ) {
+		std::cout << "Map file could not be opened." << std::endl;
 		exit(-1);
 	}
 
-	fseek( file, 0, SEEK_END );
-	auto length = ftell( file ) + appendNull;
-	fseek( file, 0, SEEK_SET );
+	Int32 file_size;
+	if ( !file->GetSize(file_size))
+	{
+		std::cout << "Map failed to return file size." << std::endl;
+		exit(-1);
+	}
 
-	void* buffer = malloc( length );
-	fread( buffer, length, 1, file );
-	fclose( file );
+	auto length = file_size + appendNull;
+	char* buffer = new char[length];
+	Int32 bytes_read;
+	if( !file->Read(buffer, file_size, bytes_read))
+	{
+		std::cout << "Map failed to read." << std::endl;
+		exit(-1);
+	}
+
+	if ( !file->Close() ) {
+		std::cout << "Map file failed to close." << std::endl;
+		exit(-1);
+	}
 
 	if ( appendNull ) {
 		((char*)buffer)[ length-1 ] = 0;
 	}
 
-	NLTmxMap* map_ = NLLoadTmxMap(static_cast<const char*>(buffer));
+	NLTmxMap* map_ = NLLoadTmxMap((char*)buffer);
 
 	// create vector of tile textures which will be used to create sprites
-	//std::vector<bool> tiles_used(map_->totalTileCount, false);
 	level_map_.textures.reserve(map_->totalTileCount); // reserve enough space (prevent constant resizing every push_back)
 
 	// load all textures
 	for (int tilesetindex = 0 ; tilesetindex < map_->tilesets.size(); tilesetindex++)
 	{
 		auto tileset = map_->tilesets[tilesetindex];
-		if (tileset->name == "Collision") // don't bother loading collision tilesets textures
-			continue;
 
 		for (int tileindex = 0 ; tileindex < tileset->tiles.size(); tileindex++)
 		{
@@ -294,7 +320,7 @@ void LevelState::LoadMap(const char* map_filename)
 	for (int layerindex = 0 ; layerindex < map_->layers.size() ; layerindex++)
 	{
 		auto layer = map_->layers[layerindex];
-		enum LAYER { LOW = 1, MID = 2, HIGH = 3, COLLISION = 4 };
+		enum LAYER { LOW = 1, MID = 2, HIGH = 3, COLLISION = 4, PICKUPS = 5, PLANTS = 6 };
 		LAYER layer_type_;
 		int layer_tile_size;
 

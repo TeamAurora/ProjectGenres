@@ -69,7 +69,12 @@ void Camera::ApplyCameraTransforms(const float& ticks)
 
 	if ((translation_.x != target_.x) && (translation_.y != target_.y))
 	{
-		//translation_ += velocity_;
+		abfw::Vector2 direction = target_ - translation_;
+		direction.Normalise();
+		direction.x *= velocity_;
+		direction.y *= velocity_;
+		translation_ += direction;
+		changed_ = true;
 	}
 
 	if(changed_) // only update the matrix on frames that it has changed

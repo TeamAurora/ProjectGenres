@@ -36,10 +36,10 @@ private:
 	abfw::Texture* level_select_texture_;
 	Sprite background_;
 	Sprite background_overlay_;
-	Button start_button_;
-	Button help_button_;
-	Button options_button_;
-	std::array<Button, 2> options_buttons_;
-	std::array<Button, 3> level_buttons_;
+	Button* start_button_;
+	Button* help_button_;
+	Button* options_button_;
+	std::array<Button*, 2> options_buttons_;
+	std::array<Button*, 3> level_buttons_;
 };
 
