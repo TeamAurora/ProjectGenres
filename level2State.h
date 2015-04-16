@@ -54,15 +54,9 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	// SHARED Textures
 	// Store single-object textures in the game object it's used for
 	// player textures
-	abfw::Texture* playerTex;
-	abfw::Texture* rotPlayerTex;	
-	abfw::Texture* playerIdle;	
-	abfw::Texture* rotPlayerIdle;
 	abfw::Texture* playerDeath;	
-	abfw::Texture* rotPlayerDeath;
-	abfw::Texture* playerJump;
-	abfw::Texture* rotPlayerJump;
 	abfw::Texture* playerFlying;
+	abfw::Texture* playerAttack;
 	//enemy texture
 	abfw::Texture* enemyShooting;	
 	abfw::Texture* shooterDeath;
@@ -78,8 +72,6 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	abfw::Texture* rotPlantBlockTex;
 	// spike texture - TODO get spike texture
 	abfw::Texture* spikeTexture;
-	//arrow texture for jump aim
-	abfw::Texture* arrowTex;
 	
 	// STATE-SPECIFIC Sound effects
 	

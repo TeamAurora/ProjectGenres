@@ -53,5 +53,7 @@ private:
 
 	float jumpCutOff, moveCutOff;//how far the sticks have to be pushed to trigger action
 	float rayLength;
+
+	bool setFlyingWidth;
 };
 

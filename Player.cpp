@@ -54,6 +54,7 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	setHealth(max_health());	
 	state_ = IDLE;
 	deadAnim = false;
+	setFlyingWidth = false;
 
 	// sets initial gravity to be down
 	gravity = b2Vec2(0.0f, -10.0f);
@@ -112,6 +113,12 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	mflying = flying;//check what animation should be done
 
+	if(setFlyingWidth == false && mflying == true)
+	{
+		set_uv_width(0.0625f);
+		set_uv_height(1);
+		setFlyingWidth = true;
+	}
 
 	OBJECTSTATE prevState = state_;
 
@@ -174,13 +181,13 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 				case RUNNING:
 						runningAnimation();
 						break;			 
-				case ATTACKING:
+				case ATTACKING:		
 						attackAnimation();
 						break;
 				case DEAD:
 						deadAnimation();
 					break;
-				case JUMPING:	
+				case JUMPING:
 						//jumpAnimation();
 					break;
 			};
@@ -188,6 +195,22 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 	}
 	else
 	{
+		//change state
+		if (attacking == true)
+		{
+			state_ = ATTACKING;
+		}
+		else if(dead == true && attacking == false)
+		{
+			state_ = DEAD;
+			body_->SetLinearVelocity(b2Vec2(0,0));//stop all movement
+		}
+		else
+		{
+			state_ = FLYING;
+		}
+
+
 		//set up animations for each state
 		if(state_ != prevState)
 		{
@@ -235,6 +258,15 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 	if(state_ == ATTACKING && result == true)
 	{
 		attacking = false;
+		if(mflying)
+		{
+			//reset uv
+			set_uv_width(0.0625f);
+			set_uv_position(abfw::Vector2 (0.0f,0.0f));
+		}
+		//reset sprite size
+		set_width(BOX2D_GFX_SIZE(2 * body_half_width));
+		set_height(BOX2D_GFX_SIZE(2 * body_half_height));
 	}
 	
 
@@ -265,16 +297,15 @@ void Player::Player_Input(const abfw::SonyController* controller)
 		//jetpack flight
 		if(mflying == true)
 		{
+			gDir = DOWN;
 			if (controller->right_stick_y_axis() < -jumpCutOff)//up
 			{
-				gDir = UP;
 				gravity = b2Vec2(0.0f, 10.0f);
 				state_ = FLYING;
 				flyAnimation();
 			}
 			else if (controller->right_stick_x_axis() > jumpCutOff)//right
 			{
-				gDir = RIGHT;
 				gravity = b2Vec2(10.0f, 0.0f);
 				state_ = FLYING;
 				move_right = true;
@@ -282,7 +313,6 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			}
 			else if (controller->right_stick_x_axis() < -jumpCutOff)//left
 			{
-				gDir = LEFT;
 				gravity = b2Vec2(-10.0f, 0.0f);
 				state_ = FLYING;
 				move_right = false;
@@ -290,7 +320,6 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			}
 			else if (controller->right_stick_y_axis()> jumpCutOff)//down
 			{
-				gDir = DOWN;
 				gravity = b2Vec2(0.0f, -10.0f);
 				state_ = FLYING;
 				flyAnimation();
@@ -424,7 +453,8 @@ void Player::changeState()
 }
 
 void Player::runningAnimation()
-{
+{	
+
 	//flip for gravity
 	if (gDir == UP)
 	{
@@ -516,6 +546,7 @@ void Player::runningAnimation()
 
 void Player::idleAnimation()
 {
+
 	//flip for gravity
 	if (gDir == UP)
 	{
@@ -604,6 +635,7 @@ void Player::idleAnimation()
 
 void Player::deadAnimation()
 {
+
 	//flip for gravity
 	if (gDir == UP)
 	{
@@ -692,6 +724,7 @@ void Player::deadAnimation()
 
 void Player::jumpAnimation(float xAxis, float yAxis)
 {
+
 	//flip for gravity
 	if (gDir == UP)
 	{
@@ -800,6 +833,10 @@ void Player::jumpAnimation(float xAxis, float yAxis)
 
 void Player::attackAnimation()
 {
+	//attack sprite is bigger so must be resized to match other sprites
+	set_width(BOX2D_GFX_SIZE(2.5 * body_half_width));
+	set_height(BOX2D_GFX_SIZE(2.15 * body_half_height));
+	
 	if(mflying == false)
 	{
 		//flip for gravity
@@ -813,11 +850,11 @@ void Player::attackAnimation()
 		}
 		else if (gDir == RIGHT)
 		{
-			set_uv_width(-1);
+			set_uv_width(1);
 		}
 		else if (gDir == LEFT)
 		{
-			set_uv_width(1);
+			set_uv_width(-1);
 		}
 	}
 		
@@ -847,7 +884,7 @@ void Player::attackAnimation()
 			else
 			{
 				set_uv_width(-0.0833);
-				set_uv_position(abfw::Vector2 (0.0833,1));
+				set_uv_position(abfw::Vector2 (0.0833,1));				
 			}
 		}				
 
@@ -862,7 +899,7 @@ void Player::attackAnimation()
 			if (moveUp == true)
 			{
 				set_uv_height(0.0833);
-				set_uv_position(abfw::Vector2(0.0f,0.0833));
+				set_uv_position(abfw::Vector2(0.0f,0.0833f));
 			}
 			else
 			{
@@ -875,7 +912,7 @@ void Player::attackAnimation()
 			if (moveUp == true)
 			{
 				set_uv_height(0.0833);
-				set_uv_position(abfw::Vector2(0.0f,(1-0.0833)));
+				set_uv_position(abfw::Vector2(0.0f,0.0833f));
 			}
 			else
 			{
@@ -891,16 +928,15 @@ void Player::attackAnimation()
 
 void Player::flyAnimation()
 {
+
 	if (move_right == true)
 	{
 		set_uv_width(0.0625f);
-		set_uv_height(1);
 		set_uv_position(abfw::Vector2 (0.0f,0.0f));
 	}
 	else
 	{
 		set_uv_width(-0.0625f);
-		set_uv_height(1);
 		set_uv_position(abfw::Vector2 (0.0625f,0.0f));
 	}
 

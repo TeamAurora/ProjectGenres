@@ -184,15 +184,9 @@ void Level2State::LoadTextures()
 
 	// state-level textures 
 	//player
-	playerTex = application_->LoadTextureFromPNG("Robot_animations.png");
-	rotPlayerTex = application_->LoadTextureFromPNG("Robot_animations_rotated.png");
-	playerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle.png");	
-	rotPlayerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle_rot.png");
 	playerDeath = application_->LoadTextureFromPNG("Robot_Animation_death.png");
-	rotPlayerDeath = application_->LoadTextureFromPNG("Robot_Animation_death_rot.png");
-	playerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP.png");
-	rotPlayerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP_rot.png");
 	playerFlying = application_->LoadTextureFromPNG("Robot_floating.png");
+	playerAttack = application_->LoadTextureFromPNG("Robot_floating_attack.png");
 
 	//enemy
 	enemyShooting = application_->LoadTextureFromPNG("shooting.png");
@@ -318,6 +312,7 @@ void Level2State::UpdateGameObjects(const float& ticks_, const int& frame_counte
 		blade2_.created = false;
 	}
 	
+	//update timer
 	if(blade2_.created == true)
 	{
 		blade2_.Update(ticks_,player2_);
@@ -382,52 +377,20 @@ void Level2State::UpdateGameObjects(const float& ticks_, const int& frame_counte
 		}
 	}
 
-	//change sprite for horizontal or vertical movement
-//change sprite for horizontal or vertical movement
-	//if (player2_.horizontal == false)
-	//{
-	//	//change textures
-	//	switch(player2_.state_)
-	//	{
-	//		case Player::IDLE:
-	//				player2_.set_texture(rotPlayerIdle);
-	//				break;
-	//		case Player::RUNNING:
-	//				player2_.set_texture(rotPlayerTex);
-	//				break;			 
-	//		case Player::ATTACKING:
-
-	//			break;
-	//		case Player::DEAD:
-	//			player2_.set_texture(rotPlayerDeath);
-	//			break;
-	//		case Player::FLYING:
-	//			player2_.set_texture(playerFlying);
-	//			break;
-	//	};
-	//}
-	//else
-	//{
-		//change textures
-		switch(player2_.state_)
-		{
-			//case Player::IDLE:
-			//		//player2_.set_texture(playerIdle);
-			//		break;
-			//case Player::RUNNING:
-			//		player2_.set_texture(playerTex);
-			//		break;			 
-			case Player::ATTACKING:
-
-				break;
-			case Player::DEAD:
-				player2_.set_texture(playerDeath);
-				break;
-			case Player::FLYING:
-				player2_.set_texture(playerFlying);
-				break;
-		};
-	//}
+	//change textures
+	switch(player2_.state_)
+	{		 
+		case Player::ATTACKING:
+			player2_.set_texture(playerAttack);
+			break;
+		case Player::DEAD:
+			player2_.set_texture(playerDeath);
+			break;
+		case Player::FLYING:
+			player2_.set_texture(playerFlying);
+			break;
+	};
+	
 
 	switch(enemy2_.shooterState_)
 	{
