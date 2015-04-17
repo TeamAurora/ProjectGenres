@@ -854,6 +854,7 @@ void Player::attackAnimation()
 	}
 		
 	//orientate sprite with direction
+
 	if (horizontal == true)
 	{
 		if(gDir == DOWN)
@@ -894,12 +895,12 @@ void Player::attackAnimation()
 			if (moveUp == true)
 			{
 				set_uv_height(0.0833);
-				set_uv_position(abfw::Vector2(0.0f,0.9277f));
+				set_uv_position(abfw::Vector2(1.0f,0.9277f));
 			}
 			else
 			{
 				set_uv_height(-0.0833);
-				set_uv_position(abfw::Vector2(0.0f,1.0f));
+				set_uv_position(abfw::Vector2(1.0f,1.0f));
 			}
 		}
 		else if (gDir == RIGHT)
