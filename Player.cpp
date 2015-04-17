@@ -170,6 +170,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 			}
 		}
 
+
 		//set up animations for each state
 		if(state_ != prevState)
 		{
@@ -188,12 +189,11 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 						deadAnimation();
 					break;
 				case JUMPING:
-						//jumpAnimation();
 					break;
 			};
 		}
 	}
-	else
+	else//flying level
 	{
 		//change state
 		if (attacking == true)
@@ -221,7 +221,6 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 						attackAnimation();
 						break;
 				case FLYING:
-						//flyAnimation();
 						break;
 				case DEAD:
 						deadAnimation();
@@ -272,7 +271,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	if(!mflying)
 	{
-		if(state_ != JUMPING && state_ != INAIR)//no change in movment during jump
+		if(state_ != JUMPING && state_ != INAIR)//no change in movement during jump
 		{
 			//apply gravity
 			body_->ApplyForceToCenter(gravity);
@@ -694,12 +693,12 @@ void Player::deadAnimation()
 		{
 			if (moveUp == true)
 			{
-				set_uv_height(0.0625);
-				set_uv_position(abfw::Vector2(0.0f,0.0625));
+				set_uv_height(-0.0625);
+				set_uv_position(abfw::Vector2(0.0f,1.0f));
 			}
 			else
 			{
-				set_uv_height(-0.0625);
+				set_uv_height(0.0625);
 				set_uv_position(abfw::Vector2(0.0f,1.0f));
 			}
 		}
@@ -707,12 +706,12 @@ void Player::deadAnimation()
 		{
 			if (moveUp == true)
 			{
-				set_uv_height(0.0625);
-				set_uv_position(abfw::Vector2(0.0f,0.0625));
+				set_uv_height(-0.0625);
+				set_uv_position(abfw::Vector2(0.0f,1.0f));
 			}
 			else
 			{
-				set_uv_height(-0.0625);
+				set_uv_height(0.0625);
 				set_uv_position(abfw::Vector2(0.0f,1.0f));
 			}
 		}
@@ -899,7 +898,7 @@ void Player::attackAnimation()
 			if (moveUp == true)
 			{
 				set_uv_height(0.0833);
-				set_uv_position(abfw::Vector2(0.0f,0.0833f));
+				set_uv_position(abfw::Vector2(0.0f,0.9277f));
 			}
 			else
 			{
@@ -912,7 +911,7 @@ void Player::attackAnimation()
 			if (moveUp == true)
 			{
 				set_uv_height(0.0833);
-				set_uv_position(abfw::Vector2(0.0f,0.0833f));
+				set_uv_position(abfw::Vector2(0.0f,0.9277f));
 			}
 			else
 			{
