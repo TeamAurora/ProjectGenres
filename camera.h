@@ -33,7 +33,8 @@ public:
 	// Intensity of screen shake and duration (in seconds)
 	void ScreenShake(int intensity, float duration);
 
-	void ApplyCameraTransforms(const float& ticks);
+	void UpdateCamera(const float& ticks);
+	void SetActiveCamera();
 	void ResetCamera();
 
 private:
@@ -48,5 +49,6 @@ private:
 	abfw::Vector2 translation_;
 	abfw::Vector2 scale_;
 	float rotation_;
+	abfw::Matrix44 result_;
 	const abfw::Platform& platform_;
 };

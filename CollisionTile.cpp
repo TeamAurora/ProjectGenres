@@ -2,7 +2,7 @@
 #include <iostream>
 
 CollisionTile::CollisionTile(SHAPETYPE shapetype) :
-	shapetype_(shapetype_),
+	shapetype_(shapetype),
 	harmful_(false)
 {
 	edges_.DOWN = false;
@@ -15,5 +15,4 @@ CollisionTile::CollisionTile(SHAPETYPE shapetype) :
 
 CollisionTile::~CollisionTile(void)
 {
-	DestroyBody();
 }

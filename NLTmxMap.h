@@ -22,7 +22,6 @@ public:
 	vector<NLTmxMapTile*> tiles;
 };
 
-
 class NLTmxMapLayer {
 public:
     string name;
@@ -56,7 +55,7 @@ public:
     ~NLTmxMapObject() {
         for ( int propertyindex = 0; propertyindex < properties.size(); propertyindex++ ) {
             delete properties[propertyindex];
-			properties[propertyindex] = nullptr;
+			properties[propertyindex] = NULL;
         }
     }
 };
@@ -74,7 +73,7 @@ public:
     ~NLTmxMapObjectGroup() {
         for ( int objectindex = 0; objectindex < objects.size(); objectindex++ ) {
             delete objects[objectindex];
-			objects[objectindex] = nullptr;
+			objects[objectindex] = NULL;
         }
     }
 };
@@ -96,17 +95,17 @@ public:
     ~NLTmxMap() {
         for ( int groupindex = 0; groupindex < groups.size(); groupindex++ ) {
 			delete groups[groupindex];
-			groups[groupindex] = nullptr;
+			groups[groupindex] = NULL;
         }
         
         for ( int layerindex = 0; layerindex < layers.size(); layerindex++ ) {
 			delete layers[layerindex];
-			layers[layerindex] = nullptr;
+			layers[layerindex] = NULL;
         }
         
         for ( int tilesetindex = 0; tilesetindex < tilesets.size(); tilesetindex++ ) {
 			delete tilesets[tilesetindex];
-			tilesets[tilesetindex] = nullptr;
+			tilesets[tilesetindex] = NULL;
         }
     }
 };

@@ -26,6 +26,10 @@ LevelState::LevelState(abfw::Platform& platform, const GameApplication* applicat
 	pause_buttons_[1] = new Button(application_->LoadTextureFromPNG("pause_restart.png"), application_->LoadTextureFromPNG("pause_restart_highlighted.png"));
 	pause_buttons_[2] = new Button(application_->LoadTextureFromPNG("pause_quit.png"), application_->LoadTextureFromPNG("pause_quit_highlighted.png"));
 
+	pause_background_ = Sprite();
+	pause_background_texture_ = application_->LoadTextureFromPNG("pause_background.png");
+	pause_background_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width() / 2.0f, platform_.height() / 2.0f, 0.0f), pause_background_texture_);
+
 	for (int buttonindex = 0; buttonindex < pause_buttons_.size(); buttonindex++)
 	{
 		pause_buttons_[buttonindex]->set_width(256.0f);
@@ -35,7 +39,6 @@ LevelState::LevelState(abfw::Platform& platform, const GameApplication* applicat
 
 	pause_buttons_[0]->Select(true);
 }
-
 
 LevelState::~LevelState()
 {
@@ -66,7 +69,7 @@ void LevelState::TerminateState()
 	//DeleteNull(plant_block_texture_);
 
 	// Spike Texture
-	DeleteNull(spike_texture_);
+	//DeleteNull(spike_texture_);
 
 	// Player Textures
 	DeleteNull(playerArrow);
@@ -89,9 +92,11 @@ void LevelState::TerminateState()
 	// delete all collision layer bodies
 	for (int collisiontileindex = 0 ; collisiontileindex < level_map_.collision_layer.size(); collisiontileindex++)
 	{
+		level_map_.collision_layer[collisiontileindex]->DestroyBody();
 		DeleteNull(level_map_.collision_layer[collisiontileindex]);
 	}
 
+	DeleteNull(pause_background_texture_);
 	for (int buttonindex = 0; buttonindex < pause_buttons_.size(); buttonindex++)
 	{
 		DeleteNull(pause_buttons_[buttonindex]);
@@ -112,6 +117,9 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 
 		// Do game logic for gameobjects
 		UpdateGameObjects(ticks_, frame_counter_);
+
+		application_->player_camera_->MoveTo(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)));
+		application_->player_camera_->UpdateCamera(ticks_);
 	}
 
 	// Do input
@@ -124,7 +132,7 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 		}
 		else if (controller->buttons_pressed() & ABFW_SONY_CTRL_START)
 		{
-			Pause(true);
+			paused_ = true;
 			return current_state_;
 		}
 		else if (!paused_) // do input loop for state if we aren't returning to menustate
@@ -137,12 +145,13 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 		std::cout << "Controller invalid." << endl;
 		exit(-1);
 	}
-
-	return current_state_;
 }
 
 void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
+	// Use dynamic player camera to draw game world objects
+	application_->player_camera_->SetActiveCamera();
+
 	for (int tile = 0 ; tile < level_map_.low_layer.size(); tile++)
 	{
 		sprite_renderer_->DrawSprite(level_map_.low_layer[tile]);
@@ -192,11 +201,13 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 		sprite_renderer_->DrawSprite(level_map_.high_layer[tile]);
 	}
 
+	// Use static camera at the origin to draw overlay
+	application_->main_camera_->SetActiveCamera();
+
 	// UI
 	font_.RenderText(sprite_renderer_, abfw::Vector3(10.0f, 5.0f, 0.0f), 1.0f, 0xff00ff00, abfw::TJ_LEFT, "Galaxea");
-	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 40.0f, 0.0f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "health  : %.0f", player_.health());	//display player health
+	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 40.0f, 0.0f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "Health : %.0f", player_.health());	//display player health
 	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 5.0f, 0.0f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "Score : %.0f", score_);//display player score
-	font_.RenderText(sprite_renderer_, abfw::Vector3(850.0f, 510.0f, 0.0f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "FPS: %.1f", frame_rate_);
 
 	if (paused_)
 	{
@@ -206,11 +217,6 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 			sprite_renderer_->DrawSprite(*pause_buttons_[button]);
 		}
 	}
-}
-
-void LevelState::Pause(bool _state)
-{
-	paused_ = _state;
 }
 
 APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
@@ -239,6 +245,7 @@ APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 		{
 			Restart();
+			paused_ = false;
 		}
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 		{
@@ -301,18 +308,24 @@ void LevelState::LoadMap(const char* map_filename)
 	NLTmxMap* map_ = NLLoadTmxMap((char*)buffer);
 
 	// create vector of tile textures which will be used to create sprites
-	level_map_.textures.reserve(map_->totalTileCount); // reserve enough space (prevent constant resizing every push_back)
+	level_map_.textures.reserve(map_->totalTileCount); // resize vector to make enough space for all textures
 
-	// load all textures
+	for(int i = 0; i < map_->totalTileCount; i++)
+	{
+		level_map_.textures.push_back(NULL); // fill textures array with nullptrs
+	}
+
+	std::vector<NLTmxMapTile*> tiles_;
+	tiles_.reserve(map_->totalTileCount);
+
+	// load all tiles into tiles_ vector
 	for (int tilesetindex = 0 ; tilesetindex < map_->tilesets.size(); tilesetindex++)
 	{
 		auto tileset = map_->tilesets[tilesetindex];
 
 		for (int tileindex = 0 ; tileindex < tileset->tiles.size(); tileindex++)
 		{
-			auto tile = tileset->tiles[tileindex];
-			auto tiletexture = application_->LoadTextureFromPNG(tile->filename.c_str());
-			level_map_.textures.push_back(tiletexture);
+			tiles_.push_back(tileset->tiles[tileindex]);
 		}
 	}
 
@@ -322,18 +335,11 @@ void LevelState::LoadMap(const char* map_filename)
 		auto layer = map_->layers[layerindex];
 		enum LAYER { LOW = 1, MID = 2, HIGH = 3, COLLISION = 4, PICKUPS = 5, PLANTS = 6 };
 		LAYER layer_type_;
-		int layer_tile_size;
 
-		if (layer->name == "Low128") { layer_tile_size = 128; layer_type_ = LOW; }
-		else if (layer->name == "Low256") { layer_tile_size = 256; layer_type_ = LOW; }
-		else if (layer->name == "Low512") { layer_tile_size = 512; layer_type_ = LOW; }
-		else if (layer->name == "Mid128") { layer_tile_size = 128; layer_type_ = MID; }
-		else if (layer->name == "Mid256") { layer_tile_size = 256; layer_type_ = MID; }
-		else if (layer->name == "Mid512") { layer_tile_size = 512; layer_type_ = MID; }
-		else if (layer->name == "High128") { layer_tile_size = 128; layer_type_ = HIGH; }
-		else if (layer->name == "High256") { layer_tile_size = 256; layer_type_ = HIGH; }
-		else if (layer->name == "High512") { layer_tile_size = 512; layer_type_ = HIGH; }
-		else if (layer->name == "Collision") { layer_tile_size = 128; layer_type_ = COLLISION; }
+		if (layer->name == "Low_Layer") { layer_type_ = LOW; }
+		else if (layer->name == "Mid_Layer") { layer_type_ = MID; }
+		else if (layer->name == "High_Layer") { layer_type_ = HIGH; }
+		else if (layer->name == "Collision") { layer_type_ = COLLISION; }
 
 		// Begin iterating over layer data
 		auto dataindex = layer->data.begin();
@@ -344,24 +350,56 @@ void LevelState::LoadMap(const char* map_filename)
 			for (int x = 0; x < map_->width; x++)
 			{
 				if (*dataindex == 0) // if data == 0, this is an empty tile so skip this iteration
-					continue;
-
-				if (layer_type_ == LOW || MID || HIGH) // if we're doing a render layer
+				{
+					// do nothing
+				}
+				else if ((layer_type_ == LOW) || (layer_type_ == MID) || (layer_type_ == HIGH)) // if we're doing a render layer
 				{
 					// Create sprite with correct texture and position it
-					Sprite sprite_;
-					switch (layer_tile_size)
+					Sprite sprite_ = Sprite();
+
+					NLTmxMapTile* tile = tiles_[*dataindex-1];
+
+					abfw::Texture* texture;
+					if(level_map_.textures[*dataindex-1] == NULL)
+					{
+						level_map_.textures[*dataindex-1] = application_->LoadTextureFromPNG(tile->filename.c_str());
+					}
+					texture = level_map_.textures[*dataindex-1];
+
+					sprite_.set_width(tile->width);
+					sprite_.set_height(tile->height);
+					sprite_.set_texture(texture);
+
+					abfw::Vector2 position;
+
+					switch(tile->width)
 					{
 					case 128:
-						sprite_.InitSprite(128, 128, abfw::Vector3(128 * x, 128 * y, 0.0f), level_map_.textures[*dataindex - 1]);
+						position.x = x * 128;
 						break;
 					case 256:
-						sprite_.InitSprite(256, 256, abfw::Vector3(128 * x + 64, 128 * y + 64, 0.0f), level_map_.textures[*dataindex - 1]);
+						position.x = x * 128 + 64;
 						break;
 					case 512:
-						sprite_.InitSprite(512, 512, abfw::Vector3(128 * x + 192, 128 * y + 192, 0.0f), level_map_.textures[*dataindex - 1]);
+						position.x = x * 128 + 192;
 						break;
 					}
+
+					switch(tile->height)
+					{
+					case 128:
+						position.y = y * 128;
+						break;
+					case 256:
+						position.y = y * 128 - 64;
+						break;
+					case 512:
+						position.y = y * 128 - 192;
+						break;
+					}
+
+					sprite_.set_position(abfw::Vector3(position.x, position.y, 0.0f));
 
 					// Push sprite to appropriate layer
 					switch (layer_type_)
@@ -377,8 +415,7 @@ void LevelState::LoadMap(const char* map_filename)
 						break;
 					}
 				}
-
-				if (layer_type_ == COLLISION)
+				else if (layer_type_ == COLLISION)
 				{
 					CollisionTile* tile;
 					
@@ -483,8 +520,9 @@ void LevelState::LoadMap(const char* map_filename)
 					// flags type as COLLISIONTILE
 					tile->setType(GameObject::COLLISIONTILE);
 
-					float x_pos = layer_tile_size * x;
-					float y_pos = layer_tile_size * y;
+					float tile_size = 128.0f;
+					float x_pos = x * tile_size;
+					float y_pos = y * tile_size;
 
 					// Define and add box2d body
 					b2BodyDef body;
@@ -501,11 +539,11 @@ void LevelState::LoadMap(const char* map_filename)
 					{
 					case CollisionTile::BOX:
 						// normal square box
-						shape.SetAsBox(GFX_BOX2D_SIZE(layer_tile_size), GFX_BOX2D_SIZE(layer_tile_size));
+						shape.SetAsBox(GFX_BOX2D_SIZE(tile_size / 2.0f) , GFX_BOX2D_SIZE(tile_size / 2.0f));
 						break;
 					case CollisionTile::DIAGONAL:
 						// create a diamond (box rotated 45 degrees about its centre)
-						shape.SetAsBox(GFX_BOX2D_SIZE(layer_tile_size), GFX_BOX2D_SIZE(layer_tile_size), b2Vec2(0.0f, 0.0f), 45.0f);
+						shape.SetAsBox(GFX_BOX2D_SIZE(tile_size / 2.0f), GFX_BOX2D_SIZE(tile_size / 2.0f), b2Vec2(0.0f, 0.0f), 45.0f);
 						break;
 					}
 					

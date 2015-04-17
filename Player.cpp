@@ -28,7 +28,6 @@ Player::Player()
 	move_right = false;
 	horizontal = true;
 	moveUp = true;
-
 	deadAnim = false;//has death animation played
 
 	//on stick axis
@@ -38,11 +37,12 @@ Player::Player()
 	//jump angle in radians
 	currentRayAngle = 0; //5.235987756 ;//300 radians
 	rayLength = 5.0f;
-	setGravity(DOWN);//down
+	setGravity(DOWN);
 }
 
 Player::~Player()
 {
+
 }
 
 void Player::Create_Player(b2World* world_, float x, float y)
@@ -59,12 +59,20 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	gravity = b2Vec2(0.0f, -10.0f);
 	gDir = DOWN;
 
-	//create body
-	bodyInitialPosition.x = x;//
-	bodyInitialPosition.y = y;//
+	float width = 256.0f;
+	float height = 256.0f;
 
-	body_half_width = 0.35f;
-	body_half_height = 0.35f;
+	//sprite set up
+	//set sprite size to match body
+	set_width(width);
+	set_height(height);
+
+	//create body
+	bodyInitialPosition.x = x;
+	bodyInitialPosition.y = y;
+
+	body_half_width = GFX_BOX2D_SIZE(width/2.0f);
+	body_half_height = GFX_BOX2D_SIZE(height/2.0f);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -84,11 +92,6 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	fixtureDef.restitution = 0.1f; // not bouncy
 	this->AddFixture(fixtureDef);
 
-	//sprite set up
-	//set sprite size to match body
-	set_width(BOX2D_GFX_SIZE(2 * body_half_width));
-	set_height(BOX2D_GFX_SIZE(2 * body_half_height));
-
 	//uv height, width and position
 	set_uv_height(uv_height);
 	set_uv_width(uv_width);
@@ -99,16 +102,10 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 {
 	bool result;
 	
-	float new_x = BOX2D_GFX_POS_X(body_->GetPosition().x);
-	float new_y = BOX2D_GFX_POS_Y(body_->GetPosition().y);
-
 	//update sprite position to match body
-	set_position(abfw::Vector3(new_x, new_y, 0.f));
-	set_rotation(-body_->GetAngle());
+	UpdatePosition();
 
-	currentPos = b2Vec2(new_x, new_y);//gives access to current position
-
-	mflying = flying;//check what animation should be done
+	flying_ = flying;//check what animation should be done
 
 	OBJECTSTATE prevState = state_;
 
@@ -126,9 +123,8 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	changeState();//check variables and change player's state
 	
-
 	//set player's axis
-	if(gDir == UP || gDir == DOWN)
+	if((gDir == UP) || (gDir == DOWN))
 	{
 		horizontal = true;
 	}
@@ -137,7 +133,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 		horizontal = false;
 	}
 
-	if(mflying == false)
+	if(flying_ == false)
 	{
 		//flip facing back the right way after jump has landed
 		if(prevState == INAIR &&  state_ != INAIR)
@@ -209,7 +205,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 			state_ = INAIR;
 		}
 	
-	if(!mflying)
+	if(!flying_)
 	{
 		if(state_ != JUMPING && state_ != INAIR)//no change in movment during jump
 		{
@@ -234,7 +230,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 ////Rebecca//////////
 		// Sets current gravity manipulation via player input
 		//jetpack flight
-		if(mflying == true)
+		if(flying_ == true)
 		{
 			if (controller->right_stick_y_axis() < -jumpCutOff)//up
 			{
@@ -349,6 +345,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 //// Craig
 void Player::DetermineOrientation(CollisionTile* collisiontile)
 {
+	state_ = GROUNDED;
 	switch(collisiontile->shapetype_)
 	{
 	case CollisionTile::BOX:
@@ -360,22 +357,22 @@ void Player::DetermineOrientation(CollisionTile* collisiontile)
 
 		if(collisiontile->edges_.DOWN == true)
 		{
-			if(this->currentPos.y > collisiontile->position().y + (collisiontile->height() / 2.0f))
+			if(this->position().y > collisiontile->position().y + (collisiontile->height() / 2.0f))
 				setGravity(DOWN);
 		}
 		else if(collisiontile->edges_.UP == true)
 		{
-			if(this->currentPos.y < collisiontile->position().y - (collisiontile->height() / 2.0f))
+			if(this->position().y < collisiontile->position().y - (collisiontile->height() / 2.0f))
 				setGravity(UP);
 		}
 		else if(collisiontile->edges_.LEFT == true)
 		{
-			if(this->currentPos.x < collisiontile->position().y - (collisiontile->width() / 2.0f))
+			if(this->position().x < collisiontile->position().y - (collisiontile->width() / 2.0f))
 				setGravity(LEFT);
 		}
 		else if(collisiontile->edges_.RIGHT == true)
 		{
-			if(this->currentPos.y > collisiontile->position().y + (collisiontile->width() / 2.0f))
+			if(this->position().y > collisiontile->position().y + (collisiontile->width() / 2.0f))
 				setGravity(RIGHT);
 		}
 		break;
@@ -422,7 +419,7 @@ void Player::changeState()
 	else if(dead == true)
 	{
 		state_ = DEAD;
-		body_->SetLinearVelocity(b2Vec2(0,0));//stop all movement
+		body_->SetLinearVelocity(b2Vec2(0.0f,0.0f));//stop all movement
 	}
 	else if (state_ != INAIR && state_ != JUMPING)//state stays as INAIR until a surface is touched
 	{

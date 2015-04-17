@@ -47,26 +47,6 @@ APPSTATE Level_2::InputLoop(const abfw::SonyController* controller)
 		player_.Player_Input(controller);
 	}
 
-	if (controller->buttons_down() & ABFW_SONY_CTRL_LEFT)
-	{
-		application_->camera_->MoveBy(abfw::Vector2(-1.0f, 0.0f));
-	}
-
-	if (controller->buttons_down() & ABFW_SONY_CTRL_RIGHT)
-	{
-		application_->camera_->MoveBy(abfw::Vector2(1.0f, 0.0f));
-	}
-
-	if (controller->buttons_down() & ABFW_SONY_CTRL_UP)
-	{
-		application_->camera_->MoveBy(abfw::Vector2(0.0f, -1.0f));
-	}
-
-	if (controller->buttons_down() & ABFW_SONY_CTRL_DOWN)
-	{
-		application_->camera_->MoveBy(abfw::Vector2(0.0f, 1.0f));
-	}
-
 	return LEVEL_2;
 }
 

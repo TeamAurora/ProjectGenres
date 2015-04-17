@@ -26,8 +26,6 @@ public:
 	bool horizontal;
 	bool move_right, moveUp;//flag for telling player direction used to change animation/place blade
 
-	//current varaibles of player
-	b2Vec2 currentPos;
 	float currentRayAngle; // angle of raycast line displayed on screen
 
 	/////// Enumerated states player can be in - use these to do logic & for sprite animation
@@ -56,6 +54,6 @@ private:
 
 	float jumpCutOff, moveCutOff;//how far the sticks have to be pushed to trigger action
 	float rayLength;
-	bool mflying;
+	bool flying_;
 };
 

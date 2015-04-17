@@ -52,6 +52,7 @@ private:
 	LevelMap level_map_;
 
 	Sprite pause_background_;
+	abfw::Texture* pause_background_texture_;
 	std::array<Button*, 3> pause_buttons_;
 	enum PAUSEBUTTONSELECTION { RESUME, RESTART, QUIT };
 	PAUSEBUTTONSELECTION pause_selection_;
@@ -62,7 +63,6 @@ protected:
 	LevelState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager, APPSTATE state);
 
 	void LoadMap(const char* map_filename);
-	void Pause(bool);
 
 	Contact_Listener contact_listener_;
 	b2World* world_;
@@ -70,7 +70,6 @@ protected:
 	// Spawn functions
 	void SpawnSpike(b2Vec2 spawn_position, b2Vec2 dimensions);
 	void SpawnPickup(b2Vec2 spawn_position,  b2Vec2 dimensions, PickUp::PICKUPTYPE type);
-	//void SpawnBullet(b2Vec2 spawn_position);
 
 	void Destroy(GameObject &object);//will destroy non-destroyed body thats been passed in
 

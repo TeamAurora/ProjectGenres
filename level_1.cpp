@@ -51,22 +51,22 @@ APPSTATE Level_1::InputLoop(const abfw::SonyController* controller)
 
 	if (controller->buttons_down() & ABFW_SONY_CTRL_LEFT)
 	{
-		application_->camera_->MoveBy(abfw::Vector2(-1.0f, 0.0f));
+		application_->main_camera_->MoveBy(abfw::Vector2(-15.0f, 0.0f));
 	}
 
 	if (controller->buttons_down() & ABFW_SONY_CTRL_RIGHT)
 	{
-		application_->camera_->MoveBy(abfw::Vector2(1.0f, 0.0f));
+		application_->main_camera_->MoveBy(abfw::Vector2(15.0f, 0.0f));
 	}
 
 	if (controller->buttons_down() & ABFW_SONY_CTRL_UP)
 	{
-		application_->camera_->MoveBy(abfw::Vector2(0.0f, -1.0f));
+		application_->main_camera_->MoveBy(abfw::Vector2(0.0f, -15.0f));
 	}
 
 	if (controller->buttons_down() & ABFW_SONY_CTRL_DOWN)
 	{
-		application_->camera_->MoveBy(abfw::Vector2(0.0f, 1.0f));
+		application_->main_camera_->MoveBy(abfw::Vector2(0.0f, 15.0f));
 	}
 
 	return LEVEL_1;
@@ -75,11 +75,13 @@ APPSTATE Level_1::InputLoop(const abfw::SonyController* controller)
 void Level_1::CreateObjects()
 {
 	//make moving objects
-	player_.Create_Player(world_, GFX_BOX2D_POS_X(platform_.width()*0.15),GFX_BOX2D_POS_Y(platform_.height()*0.85));
+	player_.Create_Player(world_, GFX_BOX2D_POS_X(4352.0f),GFX_BOX2D_POS_Y(2944.0f));
 
 	//set game objects' textures
 	player_.set_texture(playerTex);
 	arrow_.set_texture(playerArrow);
+	arrow_.set_width(256.0f);
+	arrow_.set_height(256.0f);
 
 	// Enemies
 	/*Enemy enemy = Enemy();
@@ -102,8 +104,8 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	if(player_.dead != true)
 	{
 		player_.Update(ticks_, gameOver_,false);
-		arrow_.set_position(player_.currentPos.x, player_.currentPos.y, 0.0f);	
-		arrow_.set_rotation(player_.currentRayAngle - abfw::DegToRad(45.0f));
+		arrow_.set_position(player_.position().x, player_.position().y, 0.0f);	
+		arrow_.set_rotation(player_.currentRayAngle - abfw::DegToRad(90.0f));
 	}
 	else if (player_.deadAnim == false)//play death animation
 	{
@@ -111,12 +113,8 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	}
 	else
 	{
-		//Restart();
+		Restart();
 	}
-
-	
-	arrow_.set_position(player_.currentPos.x,player_.currentPos.y,0.0f);	
-	arrow_.set_rotation(player_.currentRayAngle);
 	
 	//create and update blade
 	if(player_.attacking == true)

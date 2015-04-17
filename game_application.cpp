@@ -27,7 +27,7 @@ GameApplication::~GameApplication()
 void GameApplication::Init()
 {
 	// load the font to draw the on-screen text
-	bool font_loaded = font_.Load("vermin_vibes_2", platform_);
+	bool font_loaded = font_.Load("comic_sans", platform_);
 	if(!font_loaded)
 	{
 		std::cout << "Font failed to load." << std::endl;
@@ -38,7 +38,8 @@ void GameApplication::Init()
 	sprite_renderer_ = platform_.CreateSpriteRenderer();
 	controller_manager_ = platform_.CreateSonyControllerInputManager();
 	audio_manager_ = new abfw::AudioManagerVita;
-	camera_ = new Camera(sprite_renderer_, platform_);
+	main_camera_ = new Camera(sprite_renderer_, platform_);
+	player_camera_ = new Camera(sprite_renderer_, platform_);
 	
 	// Seed RNG
 	srand(time(NULL));
@@ -68,7 +69,7 @@ void GameApplication::CleanUp()
 	pCurrentState = NULL; // Cannot delete the interface pointer (it is never instantiated)
 
 	// Application cleanup
-	DeleteNull(camera_);
+	DeleteNull(main_camera_);
 	DeleteNull(controller_manager_);
 	DeleteNull(sprite_renderer_);
 	DeleteNull(audio_manager_);
@@ -112,7 +113,7 @@ bool GameApplication::Update(float ticks)
 		}
 	}
 
-	camera_->ApplyCameraTransforms(ticks);
+	main_camera_->UpdateCamera(ticks);
 
 	return true;
 }
@@ -122,6 +123,9 @@ void GameApplication::Render()
 	// set up sprite renderer for drawing
 	sprite_renderer_->Begin();
 
+	// Use main camera (static view at the origin) by default
+	main_camera_->SetActiveCamera();
+
 	if(change_state_)
 	{
 		sprite_renderer_->DrawSprite(loading_); // draw load screen if state changes next frame
@@ -130,6 +134,8 @@ void GameApplication::Render()
 	{
 		pCurrentState->Render(frame_rate_, font_, sprite_renderer_); // else do state-specific rendering
 	}
+
+	font_.RenderText(sprite_renderer_, abfw::Vector3(850.0f, 510.0f, 0.0f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "FPS: %.1f", frame_rate_);
 
 	// tell sprite renderer that all sprites have been drawn
 	sprite_renderer_->End();

@@ -38,7 +38,8 @@ public:
 	abfw::Texture* LoadTextureFromPNG(const char* filename) const; // must be const functions to allow "this" pointers access ("this" pointer is const qualified)
 	
 	mutable GameSettings settings_; // easily accessed through GameApplication pointers when public - useful to have settings accessible from anywhere within the application
-	Camera* camera_; // must be pointer as cannot be constructed until renderer is created
+	Camera* main_camera_; // must be pointer as cannot be constructed until renderer is created
+	Camera* player_camera_; // need to do this here to circumvent the fact that appstates don't have access to sprite_renderer_ during initialization
 
 private:
 

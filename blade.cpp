@@ -16,8 +16,8 @@ void Blade::Create(b2World* world_,const Player &player)
 	alignFace(player);
 
 	//create body
-	bodyInitialPosition.x = GFX_BOX2D_POS_X(player.currentPos.x + xOffset);
-	bodyInitialPosition.y = GFX_BOX2D_POS_Y(player.currentPos.y + yOffset);
+	bodyInitialPosition.x = GFX_BOX2D_POS_X(player.position().x + xOffset);
+	bodyInitialPosition.y = GFX_BOX2D_POS_Y(player.position().y + yOffset);
 
 	body_half_width = 0.05f;
 	body_half_height = 0.1f;
@@ -61,8 +61,8 @@ void Blade::Update(float ticks,const Player &player)
 	alignFace(player);
 
 	//update sprite position to match body
-	float new_x = player.currentPos.x + xOffset;
-	float new_y = player.currentPos.y + yOffset;
+	float new_x = player.position().x + xOffset;
+	float new_y = player.position().y + yOffset;
 
 	set_position(abfw::Vector3(new_x,new_y,0.f));
 	set_rotation(-body_->GetAngle());
