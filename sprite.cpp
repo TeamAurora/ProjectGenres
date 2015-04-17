@@ -29,7 +29,7 @@ const bool Sprite::Animate(float ticks, bool facing)
 			switch(sheettype_)
 			{
 				case SCROLL_Y:
-					uv_position_.y += uv_height_;							// scroll down 1 frame on y axis
+					uv_position_.y -= uv_height_;							// scroll down 1 frame on y axis
 					if(uv_position_.y > (frame_count_ - 1) * uv_height_)	// if moved off bottom edge of sprite
 					{
 						uv_position_.y = 0;									// moves back to start of column
@@ -73,26 +73,26 @@ const bool Sprite::Animate(float ticks, bool facing)
 			switch(sheettype_)
 			{
 				case SCROLL_Y:
-					uv_position_.y -= uv_height_;							// scroll down 1 frame on y axis
-					if(uv_position_.y < (frame_count_ - 1) * -uv_height_)	// if moved off bottom edge of sprite
+					uv_position_.y += uv_height_;							// scroll down 1 frame on y axis
+					if(uv_position_.y > (frame_count_ - 1) * -uv_height_)	// if moved off bottom edge of sprite
 					{
 						uv_position_.y = 0;									// moves back to start of column
 					}
 					break;
 				case SCROLL_X:
 					uv_position_.x -= uv_width_;							// scroll across 1 frame on x axis
-					if(uv_position_.x < (frame_count_ - 1) * -uv_width_)		// if moved off right edge of sprite
+					if(uv_position_.x > (frame_count_ - 1) * -uv_width_)		// if moved off right edge of sprite
 					{
 						uv_position_.x = 0;									// moves back to start of row
 					}
 					break;
 				case SCROLL_XY:
 					uv_position_.x -= uv_width_;								// scroll across 1 frame on x axis
-					if(uv_position_.x < (x_frame_count_ - 1) * -uv_width_)		// if moved off right edge of sprite
+					if(uv_position_.x > (x_frame_count_ - 1) * -uv_width_)		// if moved off right edge of sprite
 					{
 						uv_position_.x = -uv_width_;							// moves back to start of row
 						uv_position_.y += uv_height_;							// scrolls down 1 frame on y axis
-						if(uv_position_.y < (y_frame_count_ - 1) * uv_height_)	// if moved off bottom edge of sprite
+						if(uv_position_.y > (y_frame_count_ - 1) * uv_height_)	// if moved off bottom edge of sprite
 						{
 							uv_position_.y = 0.0;								// moves back to start of column
 						}
@@ -100,11 +100,11 @@ const bool Sprite::Animate(float ticks, bool facing)
 					break;
 				case SCROLL_YX:
 					uv_position_.y -= uv_height_;								// scrolls down 1 frame on y axis
-					if(uv_position_.y < (y_frame_count_ - 1) * -uv_height_)		// if moved off bottom edge of sprite
+					if(uv_position_.y > (y_frame_count_ - 1) * -uv_height_)		// if moved off bottom edge of sprite
 					{
 						uv_position_.y = -uv_height_;							// moves back to start of column
 						uv_position_.x += uv_width_;							// scroll across 1 frame on x axis
-						if(uv_position_.x < (x_frame_count_ - 1) * uv_width_)	// if moved off right edge of sprite
+						if(uv_position_.x > (x_frame_count_ - 1) * uv_width_)	// if moved off right edge of sprite
 						{
 							uv_position_.x = 0;									// moves back to start of row
 						}

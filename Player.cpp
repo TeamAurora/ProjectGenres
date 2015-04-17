@@ -228,9 +228,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 			};
 		}
 	}
-	
-
-		
+			
 	// play the animation
 	if(horizontal == true)
 	{
@@ -452,8 +450,7 @@ void Player::changeState()
 }
 
 void Player::runningAnimation()
-{	
-
+{
 	//flip for gravity
 	if (gDir == UP)
 	{
@@ -693,27 +690,26 @@ void Player::deadAnimation()
 		{
 			if (moveUp == true)
 			{
-				set_uv_height(-0.0625);
-				set_uv_position(abfw::Vector2(0.0f,1.0f));
+				set_uv_height(0.0625);
+				set_uv_position(abfw::Vector2(1.0f,1.0f));
 			}
 			else
 			{
-				set_uv_height(0.0625);
-				set_uv_position(abfw::Vector2(0.0f,1.0f));
+				set_uv_height(-0.0625);
+				set_uv_position(abfw::Vector2(1.0f,1.0f));
 			}
 		}
 		else if (gDir == RIGHT)
 		{
 			if (moveUp == true)
 			{
-				set_uv_height(-0.0625);
-				set_uv_position(abfw::Vector2(0.0f,1.0f));
+				set_uv_height(0.0625);
+				set_uv_position(abfw::Vector2(0.0f,0.9375f));
 			}
 			else
 			{
-				set_uv_height(0.0625);
-				set_uv_position(abfw::Vector2(0.0f,1.0f));
-			}
+				set_uv_height(-0.0625);
+				set_uv_position(abfw::Vector2(0.0f,1.0f));			}
 		}
 
 		//set up animation
