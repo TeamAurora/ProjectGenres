@@ -116,6 +116,7 @@ protected:
 
 	// STATE-SPECIFIC Variables
 	int score_;		// Score for this level
+	int max_score_;
 	bool gameOver_;		// Track current level status
 	float attackTime;	// Amount of time between when attack can be pressed
 	float reloadTime;	// Time between shots from the enemy

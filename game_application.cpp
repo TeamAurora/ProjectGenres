@@ -9,6 +9,7 @@
 #include "menu_state.h"
 #include "level_1.h"
 #include "level_2.h"
+#include "level_3.h"
 
 
 GameApplication::GameApplication(abfw::Platform& platform) :
@@ -40,6 +41,7 @@ void GameApplication::Init()
 	audio_manager_ = new abfw::AudioManagerVita;
 	main_camera_ = new Camera(sprite_renderer_, platform_);
 	player_camera_ = new Camera(sprite_renderer_, platform_);
+	player_camera_->Scale(abfw::Vector2(0.75f, 0.75f));
 	
 	// Seed RNG
 	srand(time(NULL));
@@ -64,12 +66,13 @@ void GameApplication::CleanUp()
 	DeleteNull(pMenu);
 	DeleteNull(pLevel_1);
 	DeleteNull(pLevel_2);
-	//DeleteNull(pLevel_3);
+	DeleteNull(pLevel_3);
 	//DeleteNull(pScoreScreen);
 	pCurrentState = NULL; // Cannot delete the interface pointer (it is never instantiated)
 
 	// Application cleanup
 	DeleteNull(main_camera_);
+	DeleteNull(player_camera_);
 	DeleteNull(controller_manager_);
 	DeleteNull(sprite_renderer_);
 	DeleteNull(audio_manager_);
@@ -174,9 +177,9 @@ void GameApplication::ChangeState(APPSTATE next_state)
 							break;
 			case LEVEL_2: 	DeleteNull(pLevel_2);
 							break;
-			/*case LEVEL_3: 	DeleteNull(pLevel_3);
+			case LEVEL_3: 	DeleteNull(pLevel_3);
 							break;
-			case SCORE_SCREEN: 	DeleteNull(pScoreScreen);
+			/*case SCORE_SCREEN: 	DeleteNull(pScoreScreen);
 								break;*/
 		}
 	}
@@ -192,13 +195,13 @@ void GameApplication::ChangeState(APPSTATE next_state)
 		case LEVEL_1: 	pLevel_1 = new Level_1(platform_, this, audio_manager_);
 						pCurrentState = pLevel_1;
 						break;
-		case LEVEL_2: 	pLevel_2 = new Level_2(platform_, this, audio_manager_); // NYI
+		case LEVEL_2: 	pLevel_2 = new Level_2(platform_, this, audio_manager_);
 						pCurrentState = pLevel_2;
 						break;
-		/*case LEVEL_3: 	//pLevel_3 = new Level_3(platform_, this, audio_manager_); NYI
-						//pCurrentState = pLevel_3;
+		case LEVEL_3: 	pLevel_3 = new Level_3(platform_, this, audio_manager_);
+						pCurrentState = pLevel_3;
 						break;
-		case SCORE_SCREEN: 	//pScoreScreen = new ScoreScreen(platform_, this, audio_manager_); NYI
+		/*case SCORE_SCREEN: 	//pScoreScreen = new ScoreScreen(platform_, this, audio_manager_); NYI
 							//pCurrentState = pScoreScreen;
 							break;*/
 	}

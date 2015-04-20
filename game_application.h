@@ -19,7 +19,7 @@ namespace abfw
 class IntroState;
 class Level_1;
 class Level_2;
-//class Level_3;
+class Level_3;
 class MenuState;
 //class ScoreScreen;
 
@@ -65,7 +65,7 @@ private:
 	MenuState* pMenu;
 	Level_1* pLevel_1;
 	Level_2* pLevel_2;
-	//Level_3* pLevel_3;	// NYI
+	Level_3* pLevel_3;
 	//ScoreScreen* pScoreScreen;	// NYI
 
 	APPSTATE gamestate_;		// tracks current state

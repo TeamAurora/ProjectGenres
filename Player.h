@@ -53,7 +53,7 @@ private:
 	void setGravity(Direction direction);
 
 	float jumpCutOff, moveCutOff;//how far the sticks have to be pushed to trigger action
-	float rayLength;
+	float jumpStrength;
 	bool flying_;
 };
 

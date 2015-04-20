@@ -2,6 +2,7 @@
 #include "graphics/sprite_renderer.h"
 #include "maths/math_utils.h"
 #include "system/platform.h"
+#include "maths/vector3.h"
 
 Camera::Camera(abfw::SpriteRenderer* renderer, abfw::Platform& platform) :
 	renderer_(renderer),
@@ -73,16 +74,15 @@ void Camera::UpdateCamera(const float& ticks)
 		abfw::Vector2 direction = target_ - translation_;
 		if(direction.Length() < (velocity_ * 1.5f)) // defines a cutoff distance at which the camera reaches target (else it will never be exactly equal)
 		{
-			translation_ = target_;
+			MoveTo(target_);
 		}
 		else
 		{
 			direction.Normalise();
 			direction.x *= velocity_;
 			direction.y *= velocity_;
-			translation_ += direction;
+			MoveBy(direction);
 		}
-		changed_ = true;
 	}
 
 	if (shaking_remaining_time_ > 0.0f)
@@ -94,14 +94,16 @@ void Camera::UpdateCamera(const float& ticks)
 	if(changed_) // only update the matrix on frames that it has changed
 	{
 		// construct edges of the frustrum using transforms
-		float left_edge = translation_.x * scale_.x;
-		float right_edge = (translation_.x + platform_.width()) * scale_.x;
-		float top_edge = translation_.y * scale_.y;
-		float bottom_edge = (translation_.y + platform_.height()) * scale_.y;
-		
+		float left_edge = translation_.x;
+		float right_edge = (translation_.x + platform_.width());
+		float top_edge = translation_.y;
+		float bottom_edge = (translation_.y + platform_.height());
+		abfw::Matrix44 scale;
+		scale.Scale(abfw::Vector3(scale_.x, scale_.y, 1.0f));
+
 		// construct the frustrum from parameters
 		result_.OrthographicFrustumGL(left_edge, right_edge, top_edge, bottom_edge, -1.0f, 1.0f);
-
+		result_ = result_ * scale;
 		/*abfw::Matrix44 rotation;
 		rotation.RotationZ(rotation_);
 		result = result * rotation;*/

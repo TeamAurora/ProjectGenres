@@ -26,7 +26,7 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 			((Player *)game_object)->hurting = true;
 			((Player *)game_object)->Knockback(((Player *)game_object)->body_->GetPosition(),((Enemy *)game_object_b)->body_->GetPosition());
 		}
-		else if (game_object->getType() == GameObject::ENEMY && game_object_b->getType() == GameObject::PLAYER&& ((Player *)game_object_b)->attacking == false)
+		else if (game_object->getType() == GameObject::ENEMY && game_object_b->getType() == GameObject::PLAYER && ((Player *)game_object_b)->attacking == false)
 		{
 			((Player *)game_object_b)->hurting = true;
 			((Player *)game_object_b)->Knockback(((Player *)game_object_b)->body_->GetPosition(), ((Enemy *)game_object)->body_->GetPosition());
@@ -140,7 +140,6 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 			((Bullet* )game_object_b)->dead = true;
 			((Player* )game_object)->dead = true;
 		}
-
 	}
 }
 
@@ -166,7 +165,7 @@ void Contact_Listener::EndContact(b2Contact* contact)
 			((Player *)game_object_b)->hurting = false;
 		}
 
-		//stop touching platform
+		
 		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::COLLISIONTILE)
 		{
 			//((Player *)game_object)->state_ = Player::JUMPING;

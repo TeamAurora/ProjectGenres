@@ -14,6 +14,7 @@ LevelState::LevelState(abfw::Platform& platform, const GameApplication* applicat
 	current_state_(state),
 	pause_selection_(RESUME),
 	score_(0),
+	max_score_(100),
 	gameOver_(false),
 	reloadTime(0)
 {
@@ -65,8 +66,8 @@ void LevelState::TerminateState()
 	DeleteNull(green_pickup_texture_);
 
 	// Plant Textures
-	//DeleteNull(plant_wall_texture_);
-	//DeleteNull(plant_block_texture_);
+	DeleteNull(plant_wall_texture_);
+	DeleteNull(plant_block_texture_);
 
 	// Spike Texture
 	//DeleteNull(spike_texture_);
@@ -85,15 +86,30 @@ void LevelState::TerminateState()
 	// Enemy Textures
 	DeleteNull(enemyMove);
 	DeleteNull(enemyDeath);
-	//DeleteNull(enemyAttack);
-	//DeleteNull(enemyHit);
-	//DeleteNull(enemyIdle);
+	DeleteNull(enemyAttack);
+	DeleteNull(enemyHit);
+	DeleteNull(enemyIdle);
 
 	// delete all collision layer bodies
-	for (int collisiontileindex = 0 ; collisiontileindex < level_map_.collision_layer.size(); collisiontileindex++)
+	for (int collisiontileindex = 0; collisiontileindex < level_map_.collision_layer.size(); collisiontileindex++)
 	{
 		level_map_.collision_layer[collisiontileindex]->DestroyBody();
 		DeleteNull(level_map_.collision_layer[collisiontileindex]);
+	}
+
+	for (int pickupindex = 0; pickupindex < pickups_.size(); pickupindex++)
+	{
+		pickups_[pickupindex].DestroyBody();
+	}
+
+	for (int enemiesindex = 0; enemiesindex < enemies_.size(); enemiesindex++)
+	{
+		enemies_[enemiesindex].DestroyBody();
+	}
+
+	for (int plantsindex = 0; plantsindex < plants_.size(); plantsindex++)
+	{
+		plants_[plantsindex].DestroyBody();
 	}
 
 	DeleteNull(pause_background_texture_);
@@ -118,7 +134,7 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 		// Do game logic for gameobjects
 		UpdateGameObjects(ticks_, frame_counter_);
 
-		application_->player_camera_->MoveTo(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)));
+		application_->player_camera_->TendTowards(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)), 15.0f);
 		application_->player_camera_->UpdateCamera(ticks_);
 	}
 
@@ -145,6 +161,8 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 		std::cout << "Controller invalid." << endl;
 		exit(-1);
 	}
+	// this will never be reached but it gets rid of annoying warning
+	return current_state_;
 }
 
 void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
@@ -172,11 +190,14 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 		}
 	}
 
-	for(int enemyindex = 0; enemyindex < enemies_.size(); enemyindex++)
+	if(!enemies_.empty())
 	{
-		if(enemies_[enemyindex].deadAnim == false)
+		for(int enemyindex = 0; enemyindex < enemies_.size(); enemyindex++)
 		{
-			sprite_renderer_->DrawSprite(enemies_[enemyindex]);
+			if(enemies_[enemyindex].deadAnim == false)
+			{
+				sprite_renderer_->DrawSprite(enemies_[enemyindex]);
+			}
 		}
 	}
 
@@ -307,12 +328,12 @@ void LevelState::LoadMap(const char* map_filename)
 
 	NLTmxMap* map_ = NLLoadTmxMap((char*)buffer);
 
-	// create vector of tile textures which will be used to create sprites
-	level_map_.textures.reserve(map_->totalTileCount); // resize vector to make enough space for all textures
+	level_map_.textures.reserve(map_->totalTileCount); // resrve vector to make enough space for all textures (prevents constant reserving)
 
+	// fill textures array with nulls
 	for(int i = 0; i < map_->totalTileCount; i++)
 	{
-		level_map_.textures.push_back(NULL); // fill textures array with nullptrs
+		level_map_.textures.push_back(NULL);
 	}
 
 	std::vector<NLTmxMapTile*> tiles_;
@@ -333,7 +354,7 @@ void LevelState::LoadMap(const char* map_filename)
 	for (int layerindex = 0 ; layerindex < map_->layers.size() ; layerindex++)
 	{
 		auto layer = map_->layers[layerindex];
-		enum LAYER { LOW = 1, MID = 2, HIGH = 3, COLLISION = 4, PICKUPS = 5, PLANTS = 6 };
+		enum LAYER { LOW = 1, MID, HIGH, COLLISION};
 		LAYER layer_type_;
 
 		if (layer->name == "Low_Layer") { layer_type_ = LOW; }
@@ -356,7 +377,7 @@ void LevelState::LoadMap(const char* map_filename)
 				else if ((layer_type_ == LOW) || (layer_type_ == MID) || (layer_type_ == HIGH)) // if we're doing a render layer
 				{
 					// Create sprite with correct texture and position it
-					Sprite sprite_ = Sprite();
+					Sprite sprite = Sprite();
 
 					NLTmxMapTile* tile = tiles_[*dataindex-1];
 
@@ -367,9 +388,9 @@ void LevelState::LoadMap(const char* map_filename)
 					}
 					texture = level_map_.textures[*dataindex-1];
 
-					sprite_.set_width(tile->width);
-					sprite_.set_height(tile->height);
-					sprite_.set_texture(texture);
+					sprite.set_width(tile->width);
+					sprite.set_height(tile->height);
+					sprite.set_texture(texture);
 
 					abfw::Vector2 position;
 
@@ -399,19 +420,19 @@ void LevelState::LoadMap(const char* map_filename)
 						break;
 					}
 
-					sprite_.set_position(abfw::Vector3(position.x, position.y, 0.0f));
+					sprite.set_position(abfw::Vector3(position.x, position.y, 0.0f));
 
 					// Push sprite to appropriate layer
 					switch (layer_type_)
 					{
 					case LOW:
-						level_map_.low_layer.push_back(sprite_);
+						level_map_.low_layer.push_back(sprite);
 						break;
 					case MID:
-						level_map_.mid_layer.push_back(sprite_);
+						level_map_.mid_layer.push_back(sprite);
 						break;
 					case HIGH:
-						level_map_.high_layer.push_back(sprite_);
+						level_map_.high_layer.push_back(sprite);
 						break;
 					}
 				}
@@ -424,6 +445,7 @@ void LevelState::LoadMap(const char* map_filename)
 					{
 					case 1:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.DOWN = true;
 						tile->edges_.UP = true;
 						tile->edges_.LEFT = true;
@@ -431,88 +453,106 @@ void LevelState::LoadMap(const char* map_filename)
 						break;
 					case 2:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.DOWN = true;
 						tile->edges_.LEFT = true;
 						tile->edges_.RIGHT = true;
 						break;
 					case 3:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.DOWN = true;
 						tile->edges_.UP = true;
 						tile->edges_.RIGHT = true;
 						break;
 					case 4:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.UP = true;
 						tile->edges_.LEFT = true;
 						tile->edges_.RIGHT = true;
 						break;
 					case 5:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.DOWN = true;
 						tile->edges_.UP = true;
 						tile->edges_.LEFT = true;
 						break;
 					case 6:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
+						tile->harmful_ = true;
 						tile->diagonal_ = CollisionTile::BOTTOMRIGHT;
 						break;
 					case 7:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
+						tile->harmful_ = true;
 						tile->diagonal_ = CollisionTile::BOTTOMLEFT;
 						break;
 					case 8:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
+						tile->harmful_ = true;
 						tile->diagonal_ = CollisionTile::TOPRIGHT;
 						break;
 					case 9:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
+						tile->harmful_ = true;
 						tile->diagonal_ = CollisionTile::TOPLEFT;
 						break;
 					case 10:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.LEFT = true;
 						tile->edges_.RIGHT = true;
 						break;
 					case 11:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.DOWN = true;
 						tile->edges_.UP = true;
 						break;
 					case 12:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.DOWN = true;
 						tile->edges_.RIGHT = true;
 						break;
 					case 13:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.UP = true;
 						tile->edges_.RIGHT = true;
 						break;
 					case 14:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.UP = true;
 						tile->edges_.LEFT = true;
 						break;
 					case 15:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.DOWN = true;
 						tile->edges_.LEFT = true;
 						break;
 					case 16:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.UP = true;
 						break;
 					case 17:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.LEFT = true;
 						break;
 					case 18:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.DOWN = true;
 						break;
 					case 19:
 						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = false;
 						tile->edges_.RIGHT = true;
 						break;
 					}
@@ -555,11 +595,48 @@ void LevelState::LoadMap(const char* map_filename)
 					// push completed tile to collision layer
 					level_map_.collision_layer.push_back(tile);
 				}
-				
+
 				dataindex++;
 			}
 		}
 	}
+
+	// load all object groups
+	for(int objectgroupindex = 0; objectgroupindex < map_->groups.size(); objectgroupindex++)
+	{
+		auto group = map_->groups[objectgroupindex];
+		enum GROUPS { PICKUPS = 0, PLANTS };
+		GROUPS objectgroup_type;
+
+		if(group->name == "Pickups") { objectgroup_type = PICKUPS; }
+		else if(group->name == "Plants") { objectgroup_type = PLANTS; }
+
+
+		for(int objectsindex = 0; objectsindex < group->objects.size(); objectsindex++)
+		{
+			auto object = group->objects[objectsindex];
+
+			// get associated tile for this object
+			NLTmxMapTile* tile = tiles_[object->gid];
+
+			switch(objectgroup_type)
+			{
+			case PICKUPS:
+				PickUp::PICKUPTYPE type;
+
+				if(tile->filename == "pickup_red.png") { type = PickUp::RED; }
+				else if(tile->filename == "pickup_blue.png") { type = PickUp::BLUE; }
+				else if(tile->filename == "pickup_yellow.png") { type = PickUp::YELLOW; }
+				else if(tile->filename == "pickup_green.png") { type = PickUp::GREEN; }
+
+				SpawnPickup(b2Vec2(object->x, object->y), b2Vec2(object->width, object->height), type);
+				break;
+			}
+		}
+	}
+
+	// map 
+	DeleteNull(map_);
 }
 
 void LevelState::SpawnSpike(b2Vec2 _position, b2Vec2 _dimensions)
@@ -607,7 +684,7 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 
 	// Define and add box2d body
 	b2BodyDef body;
-	body.type = b2_staticBody;
+	body.type = b2_dynamicBody;
 	body.position = b2Vec2(GFX_BOX2D_POS_X(x_pos), GFX_BOX2D_POS_Y(y_pos));
 	body.fixedRotation = true;
 	pickup.AddBody(world_, body); // this also changes this object to use box2d physics in all its functions
@@ -642,6 +719,9 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 	pickup.InitSprite(width, height, abfw::Vector3(x_pos, y_pos, 0.0f), texture); // init sprite properties
 	pickup.setType(GameObject::PICKUP);
 	pickup.set_visibility(true);
+	pickup.spawned = true;
+	pickup.destroyed = false;
+	pickup.dead = false;
 
 	pickups_.push_back(pickup);
 }

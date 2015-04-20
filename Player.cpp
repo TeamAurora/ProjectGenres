@@ -36,7 +36,7 @@ Player::Player()
 
 	//jump angle in radians
 	currentRayAngle = 0; //5.235987756 ;//300 radians
-	rayLength = 5.0f;
+	jumpStrength = 50.0f;
 	setGravity(DOWN);
 }
 
@@ -59,8 +59,8 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	gravity = b2Vec2(0.0f, -10.0f);
 	gDir = DOWN;
 
-	float width = 256.0f;
-	float height = 256.0f;
+	float width = 128.0f;
+	float height = 128.0f;
 
 	//sprite set up
 	//set sprite size to match body
@@ -91,6 +91,8 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	fixtureDef.friction = 0.95f;
 	fixtureDef.restitution = 0.1f; // not bouncy
 	this->AddFixture(fixtureDef);
+
+	UpdatePosition();
 
 	//uv height, width and position
 	set_uv_height(uv_height);
@@ -159,51 +161,51 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	}
 
-		//set up animations for each state
-		if(state_ != prevState)
+	//set up animations for each state
+	if(state_ != prevState)
+	{
+		switch(state_)
 		{
-			switch(state_)
-			{
-				case IDLE:
-						idleAnimation();
-						break;
-				case RUNNING:
-						runningAnimation();
-						break;			 
-				case ATTACKING:
+			case IDLE:
+					idleAnimation();
+					break;
+			case RUNNING:
+					runningAnimation();
+					break;			 
+			case ATTACKING:
 
-					break;
-				case DEAD:
-						deadAnimation();
-					break;
-				case JUMPING:	
-						//jumpAnimation();
-					break;
-			};
-		}
+				break;
+			case DEAD:
+					deadAnimation();
+				break;
+			case JUMPING:	
+					//jumpAnimation();
+				break;
+		};
+	}
 
 		
-		// play the animation
-		if(horizontal == true)
-		{
-			result = Animate(ticks, move_right);
-		}
-		else
-		{
-			result = Animate(ticks, moveUp);
-		}
+	// play the animation
+	if(horizontal == true)
+	{
+		result = Animate(ticks, move_right);
+	}
+	else
+	{
+		result = Animate(ticks, moveUp);
+	}
 
-		//check for animations that play once
-		if(state_ == DEAD)
-		{
-			deadAnim = result;//death animation has played
-		}
+	//check for animations that play once
+	if(state_ == DEAD)
+	{
+		deadAnim = result;//death animation has played
+	}
 
-		//jump animation has played
-		if(state_ == JUMPING && result == true)
-		{
-			state_ = INAIR;
-		}
+	//jump animation has played
+	if(state_ == JUMPING && result == true)
+	{
+		state_ = INAIR;
+	}
 	
 	if(!flying_)
 	{
@@ -226,7 +228,6 @@ void Player::Player_Input(const abfw::SonyController* controller)
 	// check we have a valid controller object (one that isn't NULL)
 	if (controller)
 	{	
-
 ////Rebecca//////////
 		// Sets current gravity manipulation via player input
 		//jetpack flight
@@ -235,25 +236,25 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			if (controller->right_stick_y_axis() < -jumpCutOff)//up
 			{
 				gDir = UP;
-				gravity = b2Vec2(0.0f, 10.0f);
+				gravity = b2Vec2(0.0f, 50.0f);
 				state_ = INAIR;
 			}
 			else if (controller->right_stick_x_axis() > jumpCutOff)//right
 			{
 				gDir = RIGHT;
-				gravity = b2Vec2(10.0f, 0.0f);
+				gravity = b2Vec2(50.0f, 0.0f);
 				state_ = INAIR;
 			}
 			else if (controller->right_stick_x_axis() < -jumpCutOff)//left
 			{
 				gDir = LEFT;
-				gravity = b2Vec2(-10.0f, 0.0f);
+				gravity = b2Vec2(-50.0f, 0.0f);
 				state_ = INAIR;
 			}
 			else if (controller->right_stick_y_axis() > jumpCutOff)//down
 			{
 				gDir = DOWN;
-				gravity = b2Vec2(0.0f, -10.0f);
+				gravity = b2Vec2(0.0f, -50.0f);
 				state_ = INAIR;
 			}
 		}
@@ -265,72 +266,70 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			currentRayAngle = atan2(xaxisval, -yaxisval); //* FRAMEWORK_RAD_TO_DEG;
 
 			// jump mechanic
-			if (controller->buttons_pressed() & ABFW_SONY_CTRL_R2 && state_ != INAIR)
+			if ((controller->buttons_pressed() & ABFW_SONY_CTRL_R2) && (state_ != INAIR))
 			{
 				//calls to set up animtaion for the jump
 				state_ = JUMPING;
 				jumpAnimation(xaxisval, yaxisval);
 
-				//set_rotation(currentRayAngle);
-			
-
 				//state_ = INAIR;
 				b2Vec2 angle = b2Vec2(sinf(currentRayAngle), cosf(currentRayAngle));
-				b2Vec2 impulse = b2Vec2(rayLength * angle);
+				b2Vec2 impulse = b2Vec2(jumpStrength * angle);
 
-				body_->ApplyLinearImpulse(impulse,body_->GetWorldCenter());
+				body_->ApplyLinearImpulse(impulse, body_->GetWorldCenter());
 			}
 		}
 
 		// checks what gravity is currently applied and dictates what movement
 		// can be used ie. x axis movement on ground/ceiling, y axis movement on
 		// walls
-		if (gDir == DOWN || gDir == UP)
+		if((state_ != INAIR) && (state_ != JUMPING))
 		{
-			if (controller->left_stick_x_axis() > moveCutOff)//right
+			if (gDir == DOWN || gDir == UP)
 			{
-				move = true;
-				move_right = true;
-				force.Set(move_v, 0.0f);
+				if (controller->left_stick_x_axis() > moveCutOff)//right
+				{
+					move = true;
+					move_right = true;
+					force.Set(move_v, 0.0f);
+				}
+				else if (controller->left_stick_x_axis() < -moveCutOff)//left
+				{
+					move = true;
+					move_right = false;
+					force.Set(-move_v, 0.0f);
+				}
+				else
+				{
+					move = false;
+					force.SetZero();
+				}
 			}
-			else if (controller->left_stick_x_axis() < -moveCutOff)//left
+			else if (gDir == RIGHT || gDir == LEFT)
 			{
-				move = true;
-				move_right = false;
-				force.Set(-move_v, 0.0f);
-			}
-			else
-			{
-				move = false;
-				force.SetZero();
-			//	body_->SetLinearVelocity(b2Vec2(0,0));
-			}
-		}
-		else if (gDir == RIGHT || gDir == LEFT)
-		{
-			if (controller->left_stick_y_axis() > moveCutOff) // down
-			{
-				move = true;
-				moveUp = false;
-				force.Set(0.0f, -move_v);
-			}
-			else if (controller->left_stick_y_axis() < -moveCutOff) // up
-			{
-				move = true;
-				moveUp = true;
-				force.Set(0.0f, move_v);
-			}
-			else
-			{
-				move = false;
-				force.SetZero();
-				//body_->SetLinearVelocity(b2Vec2(0,0));
+				if (controller->left_stick_y_axis() > moveCutOff) // down
+				{
+					move = true;
+					moveUp = false;
+					force.Set(0.0f, -move_v);
+				}
+				else if (controller->left_stick_y_axis() < -moveCutOff) // up
+				{
+					move = true;
+					moveUp = true;
+					force.Set(0.0f, move_v);
+				}
+				else
+				{
+					move = false;
+					force.SetZero();
+				}
 			}
 		}
 
 ///////John///////////////////
 		//attack
-		if (controller->buttons_pressed() & ABFW_SONY_CTRL_L2 && attacking == false)
+		if ((controller->buttons_pressed() & ABFW_SONY_CTRL_L2) && (attacking == false))
 		{
 			attacking = true;
 		}
@@ -346,40 +345,43 @@ void Player::Player_Input(const abfw::SonyController* controller)
 void Player::DetermineOrientation(CollisionTile* collisiontile)
 {
 	state_ = GROUNDED;
-	switch(collisiontile->shapetype_)
-	{
-	case CollisionTile::BOX:
-		// Using collisiontile hints to determine which edge of tile is being collided with:
-		//		Checking each edge to see if the centre of player is beyond that edge
-		//		If true, then that edge is being collided with
-		//		NOTE: it's possible to be colliding with multiple edges
-		//		The else-if structure creates an edge-precedence order
 
-		if(collisiontile->edges_.DOWN == true)
-		{
-			if(this->position().y > collisiontile->position().y + (collisiontile->height() / 2.0f))
-				setGravity(DOWN);
-		}
-		else if(collisiontile->edges_.UP == true)
-		{
-			if(this->position().y < collisiontile->position().y - (collisiontile->height() / 2.0f))
-				setGravity(UP);
-		}
-		else if(collisiontile->edges_.LEFT == true)
-		{
-			if(this->position().x < collisiontile->position().y - (collisiontile->width() / 2.0f))
-				setGravity(LEFT);
-		}
-		else if(collisiontile->edges_.RIGHT == true)
-		{
-			if(this->position().y > collisiontile->position().y + (collisiontile->width() / 2.0f))
-				setGravity(RIGHT);
-		}
-		break;
-	case CollisionTile::DIAGONAL:
-		// all diagonals are currently harmful
+	if(collisiontile->harmful_ == true)
+	{
 		this->dead = true;
-		break;
+	}
+	else
+	{
+		switch(collisiontile->shapetype_)
+		{
+		case CollisionTile::BOX:
+			// Using collisiontile hints to determine which edge of tile is being collided with:
+			//		Checking each edge to see if the centre of player is beyond that edge
+			//		If true, then that edge is being collided with
+			//		NOTE: it's possible to be colliding with multiple edges
+			//		The else-if structure creates an edge-precedence order
+
+			if((collisiontile->edges_.DOWN == true) && (this->position().y > collisiontile->position().y + (collisiontile->height() / 2.0f)))
+			{
+				setGravity(UP);
+			}
+			else if((collisiontile->edges_.UP == true) && (this->position().y < collisiontile->position().y - (collisiontile->height() / 2.0f)))
+			{
+				setGravity(DOWN);
+			}
+			else if((collisiontile->edges_.LEFT == true) && (this->position().x < collisiontile->position().y - (collisiontile->width() / 2.0f)))
+			{
+				setGravity(RIGHT);
+			}
+			else if((collisiontile->edges_.RIGHT == true) && (this->position().y > collisiontile->position().y + (collisiontile->width() / 2.0f)))
+			{
+				setGravity(LEFT);
+			}
+			break;
+		case CollisionTile::DIAGONAL:
+			// all diagonals are currently harmful, will never reach here
+			break;
+		}
 	}
 }
 
@@ -407,7 +409,6 @@ void Player::setGravity(Direction direction)
 //change state
 void Player::changeState()
 {
-	
 	if(move == true && dead == false && state_ != INAIR)//only run when on a surface
 	{
 		state_ = RUNNING;

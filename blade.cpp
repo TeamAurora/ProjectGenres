@@ -4,7 +4,7 @@ Blade::Blade()
 {
 	type_ = BLADE;
 	created = false;
-	armLength = 50;
+	armLength = 100.0f;
 }
 
 void Blade::Create(b2World* world_,const Player &player)
@@ -19,8 +19,8 @@ void Blade::Create(b2World* world_,const Player &player)
 	bodyInitialPosition.x = GFX_BOX2D_POS_X(player.position().x + xOffset);
 	bodyInitialPosition.y = GFX_BOX2D_POS_Y(player.position().y + yOffset);
 
-	body_half_width = 0.05f;
-	body_half_height = 0.1f;
+	body_half_width = 0.5f;
+	body_half_height = 1.0f;
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -70,7 +70,6 @@ void Blade::Update(float ticks,const Player &player)
 
 void Blade::alignFace(const Player &player)
 {
-	
 	if(player.horizontal == true)
 	{
 		yOffset = 0;
@@ -78,12 +77,10 @@ void Blade::alignFace(const Player &player)
 		if(player.move_right == true)
 		{
 			xOffset = armLength;
-		
 		}
 		else 
 		{
 			xOffset = -armLength;
-			
 		}
 	}
 	else

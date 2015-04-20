@@ -10,7 +10,8 @@ GameObject::GameObject() :
 	body_(NULL),
 	physicsengine_(DEFAULT),
 	magnitude_(150), 
-	dead(true)
+	dead(true),
+	destroyed(true)
 {
 }
 
