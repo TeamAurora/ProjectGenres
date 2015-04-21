@@ -165,6 +165,7 @@ void GameState::LoadTextures()
 	//enemy
 	enemyMove = application_->LoadTextureFromPNG("Enemy_walk.png");
 	enemyDeath = application_->LoadTextureFromPNG("Enemy_death_animation.png");
+	enemyAttack = application_->LoadTextureFromPNG("Enemy_attack.png");
 
 	//pickups
 	redPUTex = application_->LoadTextureFromPNG("Red.png");
@@ -477,6 +478,9 @@ void GameState::UpdateGameObjects(const float& ticks_, const int& frame_counter_
 			break;
 		case Enemy::DEAD:
 			enemy_.set_texture(enemyDeath);
+			break;
+		case Enemy::ATTACKING:
+			enemy_.set_texture(enemyAttack);
 			break;
 	};
 

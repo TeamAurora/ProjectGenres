@@ -91,6 +91,7 @@ protected:
 	//Knockback
 	b2Vec2 knockbackForce_;//push object back when hit
 	float magnitude_;///size of knockback force
+	bool knockback_;
 
 ///////
 };

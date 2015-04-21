@@ -25,11 +25,15 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		{
 			((Player *)game_object)->hurting = true;
 			((Player *)game_object)->Knockback(((Player *)game_object)->body_->GetPosition(),((Enemy *)game_object_b)->body_->GetPosition());
+			//((Enemy* )game_object_b)->meleeState_ = Enemy::ATTACKING;
+			((Enemy* )game_object_b)->attack_ = true;
 		}
 		else if (game_object->getType() == GameObject::ENEMY && game_object_b->getType() == GameObject::PLAYER&& ((Player *)game_object_b)->attacking == false)
 		{
-			((Player *)game_object_b)->hurting = true;
+			((Player *)game_object_b)->hurting = true;			
 			((Player *)game_object_b)->Knockback(((Player *)game_object_b)->body_->GetPosition(), ((Enemy *)game_object)->body_->GetPosition());
+			((Enemy* )game_object)->attack_ = true;
+			//((Enemy* )game_object)->meleeState_ = Enemy::ATTACKING;
 		}
 
 		//attack enemies

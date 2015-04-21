@@ -70,6 +70,7 @@ private: // PRIVATE MEMBERS (VARIABLES/OBJECTS)
 	//enemy texture
 	abfw::Texture* enemyMove;
 	abfw::Texture* enemyDeath;
+	abfw::Texture* enemyAttack;
 	// pickup textures
 	abfw::Texture* redPUTex;
 	abfw::Texture* bluePUTex;

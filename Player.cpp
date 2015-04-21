@@ -14,7 +14,6 @@ Player::Player()
 	//set values for variables
 	move_v = 6;
 	damage = 1.25;
-	knockbackForce.Set(150, 0.0f);//check if this doing anything
 
 	//texture coords
 	uv_x = 0.0f;
@@ -73,6 +72,7 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	bodyDef.position.y = bodyInitialPosition.y;
 	bodyDef.fixedRotation = true;//stops body rotating 
 	body_ = world_->CreateBody(&bodyDef);
+	physicsengine_ = BOX2D;			// changes to box2d physics for this object
 
 	b2PolygonShape dynamicBox;
 	dynamicBox.SetAsBox(body_half_width, body_half_height);
@@ -125,7 +125,8 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 	//damage player
 	if(hurting && health() > 0)
 	{
-		updateHealth(-damage);
+		updateHealth(-damage);	
+		MoveBy(knockbackForce_.x,knockbackForce_.y);
 	}
 
 	//die
