@@ -337,10 +337,6 @@ void Player::Player_Input(const abfw::SonyController* controller)
 				state_ = JUMPING;
 				jumpAnimation(xaxisval, yaxisval);
 
-				//set_rotation(currentRayAngle);
-			
-
-				//state_ = INAIR;
 				b2Vec2 angle = b2Vec2(sinf(currentRayAngle), cosf(currentRayAngle));
 				b2Vec2 impulse = b2Vec2(rayLength * angle);
 

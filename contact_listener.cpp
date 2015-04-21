@@ -245,6 +245,15 @@ void Contact_Listener::EndContact(b2Contact* contact)
 		{
 			//((Player *)game_object_b)->state_ = Player::JUMPING;
 		}
+
+	/*	if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::ENEMY && ((Player *)game_object)->attacking == false)
+		{
+			((Enemy* )game_object_b)->attack_ = false;
+		}
+		else if (game_object->getType() == GameObject::ENEMY && game_object_b->getType() == GameObject::PLAYER&& ((Player *)game_object_b)->attacking == false)
+		{
+			((Enemy* )game_object)->attack_ = false;
+		}*/
 	}
 }
 
