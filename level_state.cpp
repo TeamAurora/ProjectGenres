@@ -439,6 +439,9 @@ void LevelState::LoadMap(const char* map_filename)
 				else if (layer_type_ == COLLISION)
 				{
 					CollisionTile* tile;
+					float tile_size = 128.0f;
+					float x_pos = x * tile_size;
+					float y_pos = y * tile_size;
 					
 					// Assumption that the data for the collision tiles is correct (collision tileset is the first loaded tileset and in right order)
 					switch (*dataindex)
@@ -482,21 +485,29 @@ void LevelState::LoadMap(const char* map_filename)
 					case 6:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
 						tile->harmful_ = true;
+						x_pos += tile_size / 2.0f;
+						y_pos += tile_size / 2.0f;
 						tile->diagonal_ = CollisionTile::BOTTOMRIGHT;
 						break;
 					case 7:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
 						tile->harmful_ = true;
+						x_pos -= tile_size / 2.0f;
+						y_pos += tile_size / 2.0f;
 						tile->diagonal_ = CollisionTile::BOTTOMLEFT;
 						break;
 					case 8:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
 						tile->harmful_ = true;
+						x_pos += tile_size / 2.0f;
+						y_pos -= tile_size / 2.0f;
 						tile->diagonal_ = CollisionTile::TOPRIGHT;
 						break;
 					case 9:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
 						tile->harmful_ = true;
+						x_pos -= tile_size / 2.0f;
+						y_pos -= tile_size / 2.0f;
 						tile->diagonal_ = CollisionTile::TOPLEFT;
 						break;
 					case 10:
@@ -559,10 +570,6 @@ void LevelState::LoadMap(const char* map_filename)
 
 					// flags type as COLLISIONTILE
 					tile->setType(GameObject::COLLISIONTILE);
-
-					float tile_size = 128.0f;
-					float x_pos = x * tile_size;
-					float y_pos = y * tile_size;
 
 					// Define and add box2d body
 					b2BodyDef body;
@@ -707,12 +714,15 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 	{
 	case PickUp::RED:
 		texture = red_pickup_texture_;
+		max_score_ += 30;
 		break;
 	case PickUp::BLUE:
 		texture = blue_pickup_texture_;
+		max_score_ += 60;
 		break;
 	case PickUp::YELLOW:
 		texture = yellow_pickup_texture_;
+		max_score_ += 90;
 		break;
 	case PickUp::GREEN:
 		texture = green_pickup_texture_;
@@ -721,6 +731,7 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 
 	// Initialize all the gameobject related things for this pickup
 	pickup.InitSprite(width, height, abfw::Vector3(x_pos, y_pos, 0.0f), texture); // init sprite properties
+	pickup.pickup_type_ = _pickup_type;
 	pickup.setType(GameObject::PICKUP);
 	pickup.set_visibility(true);
 	pickup.spawned = true;

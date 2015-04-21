@@ -41,7 +41,7 @@ void GameApplication::Init()
 	audio_manager_ = new abfw::AudioManagerVita;
 	main_camera_ = new Camera(sprite_renderer_, platform_);
 	player_camera_ = new Camera(sprite_renderer_, platform_);
-	player_camera_->Scale(abfw::Vector2(0.75f, 0.75f));
+	player_camera_->Scale(abfw::Vector2(0.65f, 0.65f));
 	
 	// Seed RNG
 	srand(time(NULL));
