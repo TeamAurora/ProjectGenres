@@ -6,7 +6,8 @@
 
 Camera::Camera(abfw::SpriteRenderer* renderer, abfw::Platform& platform) :
 	renderer_(renderer),
-	platform_(platform)
+	platform_(platform),
+	tracking_(false)
 {
 	translation_ = abfw::Vector2(0.0f, 0.0f);
 	target_ = translation_;
@@ -32,6 +33,7 @@ Camera::~Camera(void)
 
 void Camera::TendTowards(abfw::Vector2 target, float velocity)
 {
+	tracking_ = true;
 	target_ = target;
 	velocity_ = velocity;
 }
@@ -69,7 +71,7 @@ void Camera::ScreenShake(int intensity, float duration)
 
 void Camera::UpdateCamera(const float& ticks)
 {
-	if ((translation_.x != target_.x) && (translation_.y != target_.y)) // no Vector2 != operator
+	if (tracking_ == true)
 	{
 		abfw::Vector2 direction = target_ - translation_;
 		if(direction.Length() < (velocity_ * 1.5f)) // defines a cutoff distance at which the camera reaches target (else it will never be exactly equal)
@@ -83,6 +85,7 @@ void Camera::UpdateCamera(const float& ticks)
 			direction.y *= velocity_;
 			MoveBy(direction);
 		}
+		tracking_ = false;
 	}
 
 	if (shaking_remaining_time_ > 0.0f)

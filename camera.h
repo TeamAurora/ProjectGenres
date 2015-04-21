@@ -43,6 +43,7 @@ private:
 	float shaking_remaining_time_;
 	abfw::Vector2 target_;
 	float velocity_;
+	bool tracking_;
 
 	bool changed_; // Tracks if camera has been changed to stop unnecessary updates
 	abfw::SpriteRenderer* renderer_; // pointer to sprite renderer for updating its projection matrix

@@ -164,16 +164,6 @@ void Contact_Listener::EndContact(b2Contact* contact)
 		{
 			((Player *)game_object_b)->hurting = false;
 		}
-
-		
-		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::COLLISIONTILE)
-		{
-			//((Player *)game_object)->state_ = Player::JUMPING;
-		}
-		else if (game_object->getType() == GameObject::COLLISIONTILE && game_object_b->getType() == GameObject::PLAYER)
-		{
-			//((Player *)game_object_b)->state_ = Player::JUMPING;
-		}
 	}
 }
 

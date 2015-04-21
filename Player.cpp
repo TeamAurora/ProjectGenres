@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <input/sony_controller_input_manager.h>
 #include "box2d_helpers.h"
+#include <iostream>
 
 /////John//////
 Player::Player()
@@ -12,7 +13,7 @@ Player::Player()
 	state_ = IDLE;
 
 	//set values for variables
-	move_v = 6;
+	move_v = 30;
 	damage = 1.25;
 	knockbackForce.Set(150, 0.0f);//check if this doing anything
 
@@ -36,7 +37,7 @@ Player::Player()
 
 	//jump angle in radians
 	currentRayAngle = 0; //5.235987756 ;//300 radians
-	jumpStrength = 50.0f;
+	jumpStrength = 25.0f;
 	setGravity(DOWN);
 }
 
@@ -81,11 +82,12 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	bodyDef.fixedRotation = true;//stops body rotating 
 	this->AddBody(world_, bodyDef);
 
-	b2PolygonShape dynamicBox;
-	dynamicBox.SetAsBox(body_half_width, body_half_height);
+	b2CircleShape shape;
+	shape.m_p.Set(0, 0);
+	shape.m_radius = body_half_width;
 
 	b2FixtureDef fixtureDef;
-	fixtureDef.shape = &dynamicBox;
+	fixtureDef.shape = &shape;
 	fixtureDef.density = 2.0f;//set mass
 	body_->ResetMassData();//it only sets new value after this is called
 	fixtureDef.friction = 0.95f;
@@ -355,29 +357,41 @@ void Player::DetermineOrientation(CollisionTile* collisiontile)
 		switch(collisiontile->shapetype_)
 		{
 		case CollisionTile::BOX:
-			// Using collisiontile hints to determine which edge of tile is being collided with:
-			//		Checking each edge to see if the centre of player is beyond that edge
-			//		If true, then that edge is being collided with
-			//		NOTE: it's possible to be colliding with multiple edges
-			//		The else-if structure creates an edge-precedence order
-
-			if((collisiontile->edges_.DOWN == true) && (this->position().y > collisiontile->position().y + (collisiontile->height() / 2.0f)))
 			{
-				setGravity(UP);
+				// Using collisiontile hints to determine which edge of tile is being collided with:
+				//		Checking each edge to see if the centre of player is beyond that edge
+				//		If true, then that edge is being collided with
+				//		NOTE: it's possible to be colliding with multiple edges
+				//		The else-if structure creates an edge-precedence order
+				bool result = false;
+				Direction direction;
+				while(!result)
+				{
+					if((collisiontile->edges_.DOWN == true) && (this->position().y > collisiontile->position().y + (collisiontile->height() / 2.0f)))
+					{
+						result = true;
+						direction = UP;
+					}
+					if((collisiontile->edges_.UP == true) && (this->position().y < collisiontile->position().y - (collisiontile->height() / 2.0f)))
+					{
+						result = true;
+						direction = DOWN;
+					}
+					if((collisiontile->edges_.LEFT == true) && (this->position().x < collisiontile->position().x - (collisiontile->width() / 2.0f)))
+					{
+						result = true;
+						direction = RIGHT;
+					}
+					if((collisiontile->edges_.RIGHT == true) && (this->position().x > collisiontile->position().x + (collisiontile->width() / 2.0f)))
+					{
+						result = true;
+						direction = LEFT;
+					}
+					std::cout << "Collision tile orientation error." << std::endl;
+				}
+				setGravity(direction);
+				break;
 			}
-			else if((collisiontile->edges_.UP == true) && (this->position().y < collisiontile->position().y - (collisiontile->height() / 2.0f)))
-			{
-				setGravity(DOWN);
-			}
-			else if((collisiontile->edges_.LEFT == true) && (this->position().x < collisiontile->position().y - (collisiontile->width() / 2.0f)))
-			{
-				setGravity(RIGHT);
-			}
-			else if((collisiontile->edges_.RIGHT == true) && (this->position().y > collisiontile->position().y + (collisiontile->width() / 2.0f)))
-			{
-				setGravity(LEFT);
-			}
-			break;
 		case CollisionTile::DIAGONAL:
 			// all diagonals are currently harmful, will never reach here
 			break;

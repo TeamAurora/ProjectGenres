@@ -592,6 +592,10 @@ void LevelState::LoadMap(const char* map_filename)
 					fixture.density = 0.0f;
 					tile->AddFixture(fixture);
 
+					tile->UpdatePosition();
+					tile->set_height(tile_size);
+					tile->set_width(tile_size);
+
 					// push completed tile to collision layer
 					level_map_.collision_layer.push_back(tile);
 				}
