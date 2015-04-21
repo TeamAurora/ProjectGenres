@@ -15,7 +15,7 @@ public:
 	void Create_Player(b2World* world_, float x, float y); // make player body and match it to sprite
 	void Update(const float& ticks_, bool gameOver, bool flying);// player update loop - called from UpdateGameObjects in gamestate
 	void Player_Input(const class abfw::SonyController* controller_);	// player input loop - called from InputLoop in gamestate
-	void DetermineOrientation(CollisionTile* collisiontile); // deterimes orientation after colliding with a collisiontile
+	void ResolveCollisionTile(CollisionTile* collisiontile); // deterimes orientation after colliding with a collisiontile
 
 	b2Vec2 gravity;//personal gravity
 	

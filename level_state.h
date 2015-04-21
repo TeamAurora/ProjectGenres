@@ -71,7 +71,7 @@ protected:
 	void SpawnSpike(b2Vec2 spawn_position, b2Vec2 dimensions);
 	void SpawnPickup(b2Vec2 spawn_position,  b2Vec2 dimensions, PickUp::PICKUPTYPE type);
 
-	void Destroy(GameObject &object);//will destroy non-destroyed body thats been passed in
+	void Destroy(GameObject &object); //will destroy non-destroyed body thats been passed in
 
 	// Pickup Textures
 	abfw::Texture* red_pickup_texture_;
@@ -117,6 +117,9 @@ protected:
 	// STATE-SPECIFIC Variables
 	int score_;		// Score for this level
 	int max_score_;
+	int collectables_;
+	int max_collectable_count_;
+	float time_;
 	bool gameOver_;		// Track current level status
 	float attackTime;	// Amount of time between when attack can be pressed
 	float reloadTime;	// Time between shots from the enemy

@@ -35,12 +35,10 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		//attack enemies
 		if (game_object->getType() == GameObject::BLADE && game_object_b->getType() == GameObject::ENEMY)
 		{
-			//((Enemy *)game_object_b)->Knockback(((Enemy *)game_object)->body_->GetPosition(), ((Blade *)game_object_b)->body_->GetPosition());
 			((Enemy* )game_object_b)->dead = true;
 		}
 		else if (game_object->getType() == GameObject::ENEMY && game_object_b->getType() == GameObject::BLADE)
 		{
-			//((Enemy *)game_object_b)->Knockback(((Enemy *)game_object_b)->body_->GetPosition(), ((Blade *)game_object)->body_->GetPosition());
 			((Enemy* )game_object)->dead = true;
 		}
 
@@ -90,12 +88,12 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 ///////////Platform check///// Craig
 		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::COLLISIONTILE)
 		{
-			static_cast<Player*>(game_object)->DetermineOrientation(static_cast<CollisionTile*>(game_object_b));
+			static_cast<Player*>(game_object)->ResolveCollisionTile(static_cast<CollisionTile*>(game_object_b));
 		}
 
 		if (game_object->getType() == GameObject::COLLISIONTILE && game_object_b->getType() == GameObject::PLAYER)
 		{
-			static_cast<Player*>(game_object_b)->DetermineOrientation(static_cast<CollisionTile*>(game_object));
+			static_cast<Player*>(game_object_b)->ResolveCollisionTile(static_cast<CollisionTile*>(game_object));
 		}
 	
 //////////Bullets///////////////////////

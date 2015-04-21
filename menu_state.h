@@ -30,16 +30,20 @@ private:
 	
 	void LoadTextures();
 	abfw::Texture* menu_background_texture_;
-	abfw::Texture* main_menu_texture_;
-	abfw::Texture* help_screen_texture_;
-	abfw::Texture* options_screen_texture_;
-	abfw::Texture* level_select_texture_;
+	abfw::Texture* main_menu_overlay_texture_;
 	Sprite background_;
-	Sprite background_overlay_;
+	Sprite main_menu_overlay_;
 	Button* start_button_;
 	Button* help_button_;
 	Button* options_button_;
+	Button* sfx_display_;
+	Button* music_display_;
 	std::array<Button*, 2> options_buttons_;
 	std::array<Button*, 3> level_buttons_;
+
+	void LoadSounds();
+	Int32 menu_move_;
+	Int32 menu_select_;
+	Int32 menu_back_;
 };
 

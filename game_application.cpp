@@ -28,7 +28,7 @@ GameApplication::~GameApplication()
 void GameApplication::Init()
 {
 	// load the font to draw the on-screen text
-	bool font_loaded = font_.Load("comic_sans", platform_);
+	bool font_loaded = font_.Load("vermin_vibes_2", platform_);
 	if(!font_loaded)
 	{
 		std::cout << "Font failed to load." << std::endl;
@@ -67,7 +67,6 @@ void GameApplication::CleanUp()
 	DeleteNull(pLevel_1);
 	DeleteNull(pLevel_2);
 	DeleteNull(pLevel_3);
-	//DeleteNull(pScoreScreen);
 	pCurrentState = NULL; // Cannot delete the interface pointer (it is never instantiated)
 
 	// Application cleanup
@@ -179,8 +178,6 @@ void GameApplication::ChangeState(APPSTATE next_state)
 							break;
 			case LEVEL_3: 	DeleteNull(pLevel_3);
 							break;
-			/*case SCORE_SCREEN: 	DeleteNull(pScoreScreen);
-								break;*/
 		}
 	}
 	
@@ -201,9 +198,6 @@ void GameApplication::ChangeState(APPSTATE next_state)
 		case LEVEL_3: 	pLevel_3 = new Level_3(platform_, this, audio_manager_);
 						pCurrentState = pLevel_3;
 						break;
-		/*case SCORE_SCREEN: 	//pScoreScreen = new ScoreScreen(platform_, this, audio_manager_); NYI
-							//pCurrentState = pScoreScreen;
-							break;*/
 	}
 
 	pCurrentState->InitializeState();		// initialize new state

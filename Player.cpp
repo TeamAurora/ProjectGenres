@@ -344,7 +344,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 }
 
 //// Craig
-void Player::DetermineOrientation(CollisionTile* collisiontile)
+void Player::ResolveCollisionTile(CollisionTile* collisiontile)
 {
 	state_ = GROUNDED;
 

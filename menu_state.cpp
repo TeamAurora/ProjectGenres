@@ -3,6 +3,7 @@
 #include <graphics\sprite_renderer.h>
 #include <graphics\texture.h>
 #include <sstream>
+#include <audio/vita/audio_manager_vita.h>
 
 
 MenuState::MenuState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
@@ -12,9 +13,9 @@ MenuState::MenuState(abfw::Platform& platform, const GameApplication* applicatio
 	level_selection_(1),
 	options_selection_(MUSIC)
 {
-	start_button_ = new Button(application_->LoadTextureFromPNG("start_button.png"), application_->LoadTextureFromPNG("start_button_highlighted.png"));
-	help_button_ = new Button(application_->LoadTextureFromPNG("help_button.png"), application_->LoadTextureFromPNG("help_button_highlighted.png"));
-	options_button_ = new Button(application_->LoadTextureFromPNG("options_button.png"), application_->LoadTextureFromPNG("options_button_highlighted.png"));
+	start_button_ = new Button(application_->LoadTextureFromPNG("menu_start_button.png"), application_->LoadTextureFromPNG("menu_start_button_highlighted.png"));
+	help_button_ = new Button(application_->LoadTextureFromPNG("menu_help_button.png"), application_->LoadTextureFromPNG("menu_help_button_highlighted.png"));
+	options_button_ = new Button(application_->LoadTextureFromPNG("menu_options_button.png"), application_->LoadTextureFromPNG("menu_options_button_highlighted.png"));
 	start_button_->set_width(256.0f);
 	start_button_->set_height(64.0f);
 	start_button_->set_position(abfw::Vector3(750.0f, 190.0f, 0.0f));
@@ -27,13 +28,25 @@ MenuState::MenuState(abfw::Platform& platform, const GameApplication* applicatio
 
 	start_button_->Select(true);
 
-	options_buttons_[0] = new Button(application_->LoadTextureFromPNG("music_button.png"), application_->LoadTextureFromPNG("music_button_highlighted.png"));
-	options_buttons_[1] = new Button(application_->LoadTextureFromPNG("sfx_button.png"), application_->LoadTextureFromPNG("sfx_button_highlighted.png"));
+	options_buttons_[0] = new Button(application_->LoadTextureFromPNG("options_music.png"), application_->LoadTextureFromPNG("options_music_highlighted.png"));
+	options_buttons_[1] = new Button(application_->LoadTextureFromPNG("options_sfx.png"), application_->LoadTextureFromPNG("options_sfx_highlighted.png"));
+	music_display_ = new Button(application_->LoadTextureFromPNG("options_music_off.png"), application_->LoadTextureFromPNG("options_music_on.png"));
+	sfx_display_ = new Button(application_->LoadTextureFromPNG("options_sfx_off.png"), application_->LoadTextureFromPNG("options_sfx_on.png"));
+
+	music_display_->set_position(670.0f, (platform_.height() / (options_buttons_.size() + 1)) * 1, 0.0f);
+	music_display_->set_width(128.0f);
+	music_display_->set_height(128.0f);
+	music_display_->Select(application_->settings_.music_);
+
+	sfx_display_->set_position(670.0f, (platform_.height() / (options_buttons_.size() + 1)) * 2, 0.0f);
+	sfx_display_->set_width(100.0f);
+	sfx_display_->set_height(100.0f);
+	sfx_display_->Select(application_->settings_.sound_effects_);
 
 	for (int buttonindex = 0; buttonindex < options_buttons_.size(); buttonindex++)
 	{
 		options_buttons_[buttonindex]->set_width(256.0f);
-		options_buttons_[buttonindex]->set_height(128.0f);
+		options_buttons_[buttonindex]->set_height(64.0f);
 		options_buttons_[buttonindex]->set_position(470.0f, (platform_.height() / (options_buttons_.size() + 1)) * (buttonindex + 1), 0.0f);
 	}
 	options_buttons_[0]->Select(true);
@@ -44,9 +57,18 @@ MenuState::MenuState(abfw::Platform& platform, const GameApplication* applicatio
 		default_texture << "level_" << buttonindex + 1 << "_button.png";
 		highlighted_texture << "level_" << buttonindex + 1 << "_button_highlighted.png";
 		level_buttons_[buttonindex] = new Button(application_->LoadTextureFromPNG(default_texture.str().c_str()), application_->LoadTextureFromPNG(highlighted_texture.str().c_str()));
-		level_buttons_[buttonindex]->set_width(128.0f);
+		switch(buttonindex)
+		{
+		case 0:
+		case 2:
+			level_buttons_[buttonindex]->set_width(256.0f);
+			break;
+		case 1:
+			level_buttons_[buttonindex]->set_width(512.0f);
+			break;
+		}
 		level_buttons_[buttonindex]->set_height(128.0f);
-		level_buttons_[buttonindex]->set_position((platform_.width() / (level_buttons_.size() + 1)) * (buttonindex + 1), (platform_.height() / 2.0f), 0.0f);
+		level_buttons_[buttonindex]->set_position((platform_.width() / (level_buttons_.size() + 1)) * (buttonindex + 1), (platform_.height() / 2.0f) + 32.0f, 0.0f);
 	}
 	level_buttons_[0]->Select(true);
 }
@@ -65,17 +87,15 @@ void MenuState::InitializeState()
 	background_ = Sprite();
 	background_.InitSprite(platform_.width(), platform_.height(), screen_centre, menu_background_texture_);
 
-	background_overlay_ = Sprite();
-	background_overlay_.InitSprite(platform_.width(), platform_.height(), screen_centre, main_menu_texture_);
+	main_menu_overlay_ = Sprite();
+	main_menu_overlay_.InitSprite(platform_.width(), platform_.height(), screen_centre, main_menu_overlay_texture_);
 }
 
 void MenuState::TerminateState()
 {
 	DeleteNull(menu_background_texture_);
-	DeleteNull(main_menu_texture_);
-	DeleteNull(help_screen_texture_);
-	DeleteNull(options_screen_texture_);
-	DeleteNull(level_select_texture_);
+	DeleteNull(main_menu_overlay_texture_);
+	audio_manager_->UnloadAllSamples();
 }
 
 APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
@@ -92,13 +112,14 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
 					menustate_ = LEVEL_SELECT;
-					background_overlay_.set_texture(level_select_texture_);
+					audio_manager_->PlaySample(menu_select_);
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 				{
 					main_menu_selection_ = HELP;
 					help_button_->Select(true);
 					start_button_->Select(false);
+					audio_manager_->PlaySample(menu_move_);
 				}
 				break;
 			case HELP:
@@ -107,17 +128,19 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 					main_menu_selection_ = START;
 					start_button_->Select(true);
 					help_button_->Select(false);
+					audio_manager_->PlaySample(menu_move_);
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
 					menustate_ = HELP_SCREEN;
-					background_overlay_.set_texture(help_screen_texture_);
+					audio_manager_->PlaySample(menu_select_);
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 				{
 					main_menu_selection_ = OPTIONS;
 					options_button_->Select(true);
 					help_button_->Select(false);
+					audio_manager_->PlaySample(menu_move_);
 				}
 				break;
 			case OPTIONS:
@@ -126,11 +149,12 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 					main_menu_selection_ = HELP;
 					help_button_->Select(true);
 					options_button_->Select(false);
+					audio_manager_->PlaySample(menu_move_);
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
 					menustate_ = OPTIONS_SCREEN;
-					background_overlay_.set_texture(options_screen_texture_);
+					audio_manager_->PlaySample(menu_select_);
 				}
 				break;
 			}
@@ -139,14 +163,14 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
 			{
 				menustate_ = MAIN_MENU;
-				background_overlay_.set_texture(main_menu_texture_);
+				audio_manager_->PlaySample(menu_back_);
 			}
 			break;
 		case OPTIONS_SCREEN:
 			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
 			{
 				menustate_ = MAIN_MENU;
-				background_overlay_.set_texture(main_menu_texture_);
+				audio_manager_->PlaySample(menu_back_);
 			}
 			switch (options_selection_)
 			{
@@ -162,12 +186,14 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 						application_->settings_.music_ = true;
 						break;
 					}
+					music_display_->Select(application_->settings_.music_);
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 				{
 					options_selection_ = SFX;
 					options_buttons_[1]->Select(true);
 					options_buttons_[0]->Select(false);
+					audio_manager_->PlaySample(menu_move_);
 				}
 				break;
 			case SFX:
@@ -176,6 +202,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 					options_selection_ = MUSIC;
 					options_buttons_[0]->Select(true);
 					options_buttons_[1]->Select(false);
+					audio_manager_->PlaySample(menu_move_);
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
@@ -188,6 +215,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 						application_->settings_.sound_effects_ = true;
 						break;
 					}
+					sfx_display_->Select(application_->settings_.sound_effects_);
 				}
 				break;
 			}
@@ -200,6 +228,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 					level_buttons_[level_selection_-1]->Select(false);
 					level_selection_--;
 					level_buttons_[level_selection_-1]->Select(true);
+					audio_manager_->PlaySample(menu_move_);
 				}
 			}
 
@@ -210,11 +239,13 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 					level_buttons_[level_selection_-1]->Select(false);
 					level_selection_++;
 					level_buttons_[level_selection_-1]->Select(true);
+					audio_manager_->PlaySample(menu_move_);
 				}
 			}
 
 			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 			{
+				audio_manager_->PlaySample(menu_select_);
 				switch (level_selection_)
 				{
 				case 1:
@@ -229,7 +260,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
 			{
 				menustate_ = MAIN_MENU;
-				background_overlay_.set_texture(main_menu_texture_);
+				audio_manager_->PlaySample(menu_back_);
 			}
 			break;
 		}
@@ -240,10 +271,10 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 void MenuState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteRenderer* sprite_renderer_)
 {
 	sprite_renderer_->DrawSprite(background_);
-	sprite_renderer_->DrawSprite(background_overlay_);
 	switch (menustate_)
 	{
 	case MAIN_MENU:
+		sprite_renderer_->DrawSprite(main_menu_overlay_);
 		sprite_renderer_->DrawSprite(*start_button_);
 		sprite_renderer_->DrawSprite(*help_button_);
 		sprite_renderer_->DrawSprite(*options_button_);
@@ -259,6 +290,8 @@ void MenuState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 		{
 			sprite_renderer_->DrawSprite(*options_buttons_[buttonindex]);
 		}
+		sprite_renderer_->DrawSprite(*music_display_);
+		sprite_renderer_->DrawSprite(*sfx_display_);
 		break;
 	}
 }
@@ -266,8 +299,11 @@ void MenuState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 void MenuState::LoadTextures()
 {
 	menu_background_texture_ = application_->LoadTextureFromPNG("menu_background.png");
-	main_menu_texture_ = application_->LoadTextureFromPNG("main_menu_background.png");
-	help_screen_texture_ = application_->LoadTextureFromPNG("help_menu_background.png");
-	options_screen_texture_ = application_->LoadTextureFromPNG("options_menu_background.png");
-	level_select_texture_ = application_->LoadTextureFromPNG("level_select_background.png");
+	main_menu_overlay_texture_ = application_->LoadTextureFromPNG("main_menu_background.png");
+}
+void MenuState::LoadSounds()
+{
+	menu_move_ = audio_manager_->LoadSample("menu_move.wav", platform_);
+	menu_back_ = audio_manager_->LoadSample("menu_back.wav", platform_);
+	menu_select_ = audio_manager_->LoadSample("menu_select.wav", platform_);
 }
