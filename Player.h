@@ -51,7 +51,6 @@ private:
 	void changeState();
 
 	float damage;//amount of damage taken
-	b2Vec2 knockbackForce;//push player back when hit
 
 	enum Direction { UP, DOWN, LEFT, RIGHT };
 	Direction gDir;

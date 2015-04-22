@@ -12,6 +12,11 @@ GameObject::GameObject() :
 	magnitude_(150), 
 	dead(true),
 	destroyed(true)
+=======
+	magnitude_(15), 
+	dead(true),
+	knockback_(false)
+>>>>>>> origin/John's
 {
 }
 
@@ -234,6 +239,7 @@ void GameObject::CreateStaticBody(b2World* world_,float x , float y, float width
 	fixtureDef.friction = 0.1f;
 	// bind the shape to the body
 	body_ -> CreateFixture(&shape, 0.0f);
+	physicsengine_ = BOX2D;			// changes to box2d physics for this object
 
 	//set ground sprite size
 	set_width(BOX2D_GFX_SIZE(2*body_half_width));
@@ -252,23 +258,22 @@ void GameObject::Knockback(b2Vec2 pos1, b2Vec2 pos2)
 {
 	if(pos1.x - pos2.x <= 0)//push to left
 	{	
-		knockbackForce_.Set(magnitude_,0.0f);
+		knockbackForce_.Set(-magnitude_,knockbackForce_.y);
 	}
 	else if(pos1.x - pos2.x > 0)//push to right
 	{	
-		knockbackForce_.Set(-magnitude_,0.0f);
+		knockbackForce_.Set(magnitude_,knockbackForce_.y);
 	}
 
 	if(pos1.y - pos2.y <= 0)//push down
 	{
-		knockbackForce_.Set(0.0f,-magnitude_);
+		knockbackForce_.Set(knockbackForce_.x,-magnitude_);
 	}
 	else if(pos1.y - pos2.y > 0)//push up
 	{
-		knockbackForce_.Set(0.0f,magnitude_);
+		knockbackForce_.Set(knockbackForce_.x,magnitude_);
 	}
 
-	body_->ApplyForceToCenter(knockbackForce_);
 }
 
 void GameObject::setAnimation()

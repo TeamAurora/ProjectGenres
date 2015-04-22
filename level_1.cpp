@@ -12,7 +12,7 @@ Level_1::~Level_1()
 
 void Level_1::LoadAssets()
 {
-	LoadMap("level1.tmx");
+	LoadMap("level_1.tmx");
 
 	// player
 	playerArrow = application_->LoadTextureFromPNG("arrow.png");

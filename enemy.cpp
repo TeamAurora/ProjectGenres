@@ -21,6 +21,7 @@ Enemy::Enemy()
 	shooterState_ = IDLE;
 
 	shotFired = false;
+	attack_ = false;
 }
 
 void Enemy::Create_Enemy(b2World* world_,float x , float y)
@@ -46,6 +47,7 @@ void Enemy::Create_Enemy(b2World* world_,float x , float y)
 	enemy_bodyDef.position.x = bodyInitialPosition.x;
 	enemy_bodyDef.position.y = bodyInitialPosition.y;
 	body_ = world_->CreateBody(&enemy_bodyDef);
+	physicsengine_ = BOX2D;			// changes to box2d physics for this object
 
 	b2PolygonShape enemy_Box;
 	enemy_Box.SetAsBox(body_half_width, body_half_height);
@@ -105,18 +107,28 @@ void Enemy::MeleeUpdate(float ticks, b2Vec2 playerPos)
 	//change state
 	OBJECTSTATE prevState = meleeState_;
 
-	if(dead == false)
+	if(dead == false && attack_ == false)
 	{
-		Patrol(ticks);
+		patrol_ = true;
 		meleeState_ = MOVING;
+		Advance(playerPos, x, y);//move enemy to hurt player if in range
 	}	
+	else if(attack_ == true)
+	{
+		meleeState_ = ATTACKING;
+	}
 	else
 	{
+		patrol_ = false;
 		meleeState_ = DEAD;
 	}
 
+	//set to moving back and forth
+	if(patrol_ == true)
+	{
+		Patrol(ticks);
+	}
 	
-	Attack(playerPos, x, y);//move enemy to hurt player
 
 	//set up animations for each state
 	if(meleeState_ != prevState)
@@ -127,7 +139,7 @@ void Enemy::MeleeUpdate(float ticks, b2Vec2 playerPos)
 					moveAnimation();
 					break;			 
 			case ATTACKING:
-
+					attackAnimation();
 					break;
 			case DEAD:
 					deathAnimation(true);
@@ -147,6 +159,7 @@ void Enemy::MeleeUpdate(float ticks, b2Vec2 playerPos)
 	{
 		facing = true;
 	}
+
 	
 	//do animation
 	result = Animate(ticks, facing);
@@ -154,6 +167,11 @@ void Enemy::MeleeUpdate(float ticks, b2Vec2 playerPos)
 	if(meleeState_ == DEAD)
 	{
 		deadAnim = result;
+	}
+
+	if(meleeState_ == ATTACKING && result == true)
+	{
+		attack_ = false;
 	}
 }
 
@@ -215,7 +233,7 @@ void Enemy::ShooterUpdate(float ticks)
 
 }
 
-void Enemy::Attack(b2Vec2 playerPos, float enemyX, float enemyY)
+void Enemy::Advance(b2Vec2 playerPos, float enemyX, float enemyY)
 {
 	//check vertically if enemy is on a wall
 	if(gravity.y == 0)
@@ -224,6 +242,8 @@ void Enemy::Attack(b2Vec2 playerPos, float enemyX, float enemyY)
 		{
 			if(playerPos.y > (enemyY - range_) && playerPos.y < (enemyY + range_))//player is in attack range
 			{
+				patrol_ = false;
+
 				if(playerPos.y > enemyY)//if below move down
 				{
 					force.Set(0,-move_v);
@@ -244,13 +264,19 @@ void Enemy::Attack(b2Vec2 playerPos, float enemyX, float enemyY)
 		{
 			if(playerPos.x > (enemyX - range_) && playerPos.x < (enemyX + range_))//player is in attack range
 			{
+				patrol_ = false;
+
 				if(playerPos.x > enemyX)//if to the right move right
 				{
 					force.Set(move_v,0);
+					move = false;
+					moveAnimation();
 				}
 				else if(playerPos.x < enemyX)//if to the left move left
 				{
 					force.Set(-move_v,0);
+					move = true;
+					moveAnimation();
 				}
 
 				body_->ApplyForceToCenter(force);
@@ -355,4 +381,24 @@ void Enemy::deathAnimation(bool melee)
 	
 	
 	InitSpriteAnimation(0.07,16,false,SCROLL_X,0,0);
+}
+
+void Enemy::attackAnimation()
+{
+	//set facing
+	if(move)
+	{
+		set_uv_width(-uv_width);// face left
+	}
+	else
+	{
+		set_uv_width(uv_width);// face right
+	}
+
+	
+	//make sure sprites starts from first frame
+	set_uv_position(abfw::Vector2 (0.0f,0.0f));
+
+	
+	InitSpriteAnimation(0.05,16,false,SCROLL_X,0,0);
 }

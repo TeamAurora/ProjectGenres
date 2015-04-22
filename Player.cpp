@@ -15,7 +15,6 @@ Player::Player()
 	//set values for variables
 	move_v = 30;
 	damage = 1.25;
-	knockbackForce.Set(150, 0.0f);//check if this doing anything
 
 	//texture coords
 	uv_x = 0.0f;
@@ -124,7 +123,8 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 	//damage player
 	if(hurting && health() > 0)
 	{
-		updateHealth(-damage);
+		updateHealth(-damage);	
+		MoveBy(knockbackForce_.x,knockbackForce_.y);
 	}
 
 	//die
@@ -383,7 +383,10 @@ void Player::Player_Input(const abfw::SonyController* controller)
 				state_ = JUMPING;
 				jumpAnimation(xaxisval, yaxisval);
 
+<<<<<<< HEAD
 				//state_ = INAIR;
+=======
+>>>>>>> origin/John's
 				b2Vec2 angle = b2Vec2(sinf(currentRayAngle), cosf(currentRayAngle));
 				b2Vec2 impulse = b2Vec2(jumpStrength * angle);
 

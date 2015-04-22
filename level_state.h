@@ -96,6 +96,9 @@ protected:
 	abfw::Texture* rotPlayerDeath;
 	abfw::Texture* playerJump;
 	abfw::Texture* rotPlayerJump;
+	abfw::Texture* playerAttack;
+	abfw::Texture* rotPlayerAttack;
+	abfw::Texture* playerFlying;
 
 	// Enemy Textures
 	abfw::Texture* enemyMove;
@@ -103,6 +106,7 @@ protected:
 	abfw::Texture* enemyAttack;
 	abfw::Texture* enemyHit;
 	abfw::Texture* enemyIdle;
+	abfw::Texture* shooterProjectile;
 
 	// STATE-SPECIFIC Game/Living Objects
 	std::vector<PickUp> pickups_;

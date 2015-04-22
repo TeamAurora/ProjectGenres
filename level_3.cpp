@@ -14,25 +14,19 @@ void Level_3::LoadAssets()
 {
 	//Load textures using application_->LoadTextureFromPNG("texturename.png")
 
-	LoadMap("level3.tmx");
+	LoadMap("level_3.tmx");
 
 	// single object texture loaded directly into objects
-	playerArrow = application_->LoadTextureFromPNG("arrow.png");
+	playerArrow = NULL;
 
-	// state-level textures 
-	// player
-	playerTex = application_->LoadTextureFromPNG("Robot_animations.png");
-	rotPlayerTex = application_->LoadTextureFromPNG("Robot_animations_rotated.png");
-	playerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle.png");	
-	rotPlayerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle_rot.png");
-	playerDeath = application_->LoadTextureFromPNG("Robot_Animation_death.png");
-	rotPlayerDeath = application_->LoadTextureFromPNG("Robot_Animation_death_rot.png");
-	playerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP.png");
-	rotPlayerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP_rot.png");
+	playerDeath = application_->LoadTextureFromPNG("player_death.png");
+	playerFlying = application_->LoadTextureFromPNG("player_floating.png");
+	playerAttack = application_->LoadTextureFromPNG("player_floating_attack.png");
 
 	//enemy
-	enemyMove = application_->LoadTextureFromPNG("Enemy_walk.png");
-	enemyDeath = application_->LoadTextureFromPNG("Enemy_death_animation.png");
+	shooterAttack = application_->LoadTextureFromPNG("enemy_ranged_firing.png");
+	shooterDeath = application_->LoadTextureFromPNG("enemy_ranged_death.png");
+	shooterProjectile = application_->LoadTextureFromPNG("enemy_projectile.png");
 
 	////pickups
 	red_pickup_texture_ = application_->LoadTextureFromPNG("pickup_red.png");

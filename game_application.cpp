@@ -18,7 +18,7 @@ GameApplication::GameApplication(abfw::Platform& platform) :
 	controller_manager_(NULL),
 	pCurrentState(NULL),
 	change_state_(false),
-	settings_(true, false)
+	settings_(true, true)
 {
 }
 
@@ -52,17 +52,17 @@ void GameApplication::Init()
 	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width() / 2.0f, platform_.height() / 2.0f, 0.0f), loading_texture_);
 	audio_manager_->LoadMusic("Main_Menu_Music.wav", platform_);
 	audio_manager_->PlayMusic();
-	menu_move_ = audio_manager_->LoadSample("menu_move.wav", platform_);
+	menu_move_ = audio_manager_->LoadSample("UI_move.wav", platform_);
 	if (menu_move_ == -1)
 	{
 		std::cout << "menu_move failed to load." << std::endl;
 	}
-	menu_back_ = audio_manager_->LoadSample("menu_back.wav", platform_);
+	menu_back_ = audio_manager_->LoadSample("UI_back.wav", platform_);
 	if (menu_back_ == -1)
 	{
 		std::cout << "menu_back failed to load." << std::endl;
 	}
-	menu_select_ = audio_manager_->LoadSample("menu_select.wav", platform_);
+	menu_select_ = audio_manager_->LoadSample("UI_select.wav", platform_);
 	if (menu_select_ == -1)
 	{
 		std::cout << "menu_select failed to load." << std::endl;
