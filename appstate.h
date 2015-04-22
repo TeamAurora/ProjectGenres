@@ -38,7 +38,7 @@ protected:
 	{
 	}
 	
-	class abfw::Platform& platform_;
-	class abfw::AudioManager* audio_manager_;
+	abfw::Platform& platform_;
+	abfw::AudioManager* audio_manager_;
 	const GameApplication* application_;
 };

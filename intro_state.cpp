@@ -36,6 +36,7 @@ APPSTATE IntroState::Update(const float& ticks_, const int& frame_counter_, cons
 	{
 		if(controller->buttons_down() & ABFW_SONY_CTRL_TRIANGLE)
 		{
+			application_->PlayMenuSelect();
 			return MENU;
 		}
 	}

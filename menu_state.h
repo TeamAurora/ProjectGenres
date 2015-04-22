@@ -40,10 +40,5 @@ private:
 	Button* music_display_;
 	std::array<Button*, 2> options_buttons_;
 	std::array<Button*, 3> level_buttons_;
-
-	void LoadSounds();
-	Int32 menu_move_;
-	Int32 menu_select_;
-	Int32 menu_back_;
 };
 

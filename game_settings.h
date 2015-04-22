@@ -2,9 +2,9 @@
 
 struct GameSettings
 {
-	GameSettings() :
-		music_(true),
-		sound_effects_(true)
+	GameSettings(bool music = true, bool sound_effects_ = true) :
+		music_(music),
+		sound_effects_(sound_effects_)
 		{
 		}
 

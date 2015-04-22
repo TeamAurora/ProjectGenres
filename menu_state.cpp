@@ -3,6 +3,7 @@
 #include <graphics\sprite_renderer.h>
 #include <graphics\texture.h>
 #include <sstream>
+#include <iostream>
 #include <audio/vita/audio_manager_vita.h>
 
 
@@ -95,7 +96,6 @@ void MenuState::TerminateState()
 {
 	DeleteNull(menu_background_texture_);
 	DeleteNull(main_menu_overlay_texture_);
-	audio_manager_->UnloadAllSamples();
 }
 
 APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
@@ -112,14 +112,14 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
 					menustate_ = LEVEL_SELECT;
-					audio_manager_->PlaySample(menu_select_);
+					application_->PlayMenuSelect();
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 				{
 					main_menu_selection_ = HELP;
 					help_button_->Select(true);
 					start_button_->Select(false);
-					audio_manager_->PlaySample(menu_move_);
+					application_->PlayMenuMove();
 				}
 				break;
 			case HELP:
@@ -128,19 +128,19 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 					main_menu_selection_ = START;
 					start_button_->Select(true);
 					help_button_->Select(false);
-					audio_manager_->PlaySample(menu_move_);
+					application_->PlayMenuMove();
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
 					menustate_ = HELP_SCREEN;
-					audio_manager_->PlaySample(menu_select_);
+					application_->PlayMenuSelect();
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 				{
 					main_menu_selection_ = OPTIONS;
 					options_button_->Select(true);
 					help_button_->Select(false);
-					audio_manager_->PlaySample(menu_move_);
+					application_->PlayMenuMove();
 				}
 				break;
 			case OPTIONS:
@@ -149,12 +149,12 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 					main_menu_selection_ = HELP;
 					help_button_->Select(true);
 					options_button_->Select(false);
-					audio_manager_->PlaySample(menu_move_);
+					application_->PlayMenuMove();
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
 					menustate_ = OPTIONS_SCREEN;
-					audio_manager_->PlaySample(menu_select_);
+					application_->PlayMenuSelect();
 				}
 				break;
 			}
@@ -163,14 +163,14 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
 			{
 				menustate_ = MAIN_MENU;
-				audio_manager_->PlaySample(menu_back_);
+				application_->PlayMenuBack();
 			}
 			break;
 		case OPTIONS_SCREEN:
 			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
 			{
 				menustate_ = MAIN_MENU;
-				audio_manager_->PlaySample(menu_back_);
+				application_->PlayMenuBack();
 			}
 			switch (options_selection_)
 			{
@@ -187,13 +187,14 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 						break;
 					}
 					music_display_->Select(application_->settings_.music_);
+					application_->PlayMenuSelect();
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 				{
 					options_selection_ = SFX;
 					options_buttons_[1]->Select(true);
 					options_buttons_[0]->Select(false);
-					audio_manager_->PlaySample(menu_move_);
+					application_->PlayMenuMove();
 				}
 				break;
 			case SFX:
@@ -202,7 +203,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 					options_selection_ = MUSIC;
 					options_buttons_[0]->Select(true);
 					options_buttons_[1]->Select(false);
-					audio_manager_->PlaySample(menu_move_);
+					application_->PlayMenuMove();
 				}
 				if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 				{
@@ -216,6 +217,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 						break;
 					}
 					sfx_display_->Select(application_->settings_.sound_effects_);
+					application_->PlayMenuSelect();
 				}
 				break;
 			}
@@ -228,7 +230,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 					level_buttons_[level_selection_-1]->Select(false);
 					level_selection_--;
 					level_buttons_[level_selection_-1]->Select(true);
-					audio_manager_->PlaySample(menu_move_);
+					application_->PlayMenuMove();
 				}
 			}
 
@@ -239,13 +241,13 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 					level_buttons_[level_selection_-1]->Select(false);
 					level_selection_++;
 					level_buttons_[level_selection_-1]->Select(true);
-					audio_manager_->PlaySample(menu_move_);
+					application_->PlayMenuMove();
 				}
 			}
 
 			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 			{
-				audio_manager_->PlaySample(menu_select_);
+				application_->PlayMenuSelect();
 				switch (level_selection_)
 				{
 				case 1:
@@ -260,7 +262,7 @@ APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const
 			if (controller->buttons_pressed() & ABFW_SONY_CTRL_CIRCLE)
 			{
 				menustate_ = MAIN_MENU;
-				audio_manager_->PlaySample(menu_back_);
+				application_->PlayMenuBack();
 			}
 			break;
 		}
@@ -300,10 +302,4 @@ void MenuState::LoadTextures()
 {
 	menu_background_texture_ = application_->LoadTextureFromPNG("menu_background.png");
 	main_menu_overlay_texture_ = application_->LoadTextureFromPNG("main_menu_background.png");
-}
-void MenuState::LoadSounds()
-{
-	menu_move_ = audio_manager_->LoadSample("menu_move.wav", platform_);
-	menu_back_ = audio_manager_->LoadSample("menu_back.wav", platform_);
-	menu_select_ = audio_manager_->LoadSample("menu_select.wav", platform_);
 }

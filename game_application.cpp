@@ -17,7 +17,8 @@ GameApplication::GameApplication(abfw::Platform& platform) :
 	sprite_renderer_(NULL),
 	controller_manager_(NULL),
 	pCurrentState(NULL),
-	change_state_(false)
+	change_state_(false),
+	settings_(true, false)
 {
 }
 
@@ -38,7 +39,7 @@ void GameApplication::Init()
 	// Initialize platform-specific systems
 	sprite_renderer_ = platform_.CreateSpriteRenderer();
 	controller_manager_ = platform_.CreateSonyControllerInputManager();
-	audio_manager_ = new abfw::AudioManagerVita;
+	audio_manager_ = platform_.CreateAudioManager();
 	main_camera_ = new Camera(sprite_renderer_, platform_);
 	player_camera_ = new Camera(sprite_renderer_, platform_);
 	player_camera_->Scale(abfw::Vector2(0.65f, 0.65f));
@@ -51,6 +52,21 @@ void GameApplication::Init()
 	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width() / 2.0f, platform_.height() / 2.0f, 0.0f), loading_texture_);
 	audio_manager_->LoadMusic("Main_Menu_Music.wav", platform_);
 	audio_manager_->PlayMusic();
+	menu_move_ = audio_manager_->LoadSample("menu_move.wav", platform_);
+	if (menu_move_ == -1)
+	{
+		std::cout << "menu_move failed to load." << std::endl;
+	}
+	menu_back_ = audio_manager_->LoadSample("menu_back.wav", platform_);
+	if (menu_back_ == -1)
+	{
+		std::cout << "menu_back failed to load." << std::endl;
+	}
+	menu_select_ = audio_manager_->LoadSample("menu_select.wav", platform_);
+	if (menu_select_ == -1)
+	{
+		std::cout << "menu_select failed to load." << std::endl;
+	}
 
 	ChangeState(INTRO);
 }
@@ -60,6 +76,7 @@ void GameApplication::CleanUp()
 	// Resources cleanup
 	DeleteNull(loading_texture_);
 	audio_manager_->UnloadMusic();
+	audio_manager_->UnloadAllSamples();
 	
 	// State machine cleanup
 	DeleteNull(pIntro);
@@ -160,6 +177,31 @@ abfw::Texture* GameApplication::LoadTextureFromPNG(const char* filename) const
 		return texture;
 	}
 }
+
+void GameApplication::PlayMenuBack() const
+{
+	if(settings_.sound_effects_ == true)
+	{
+		audio_manager_->PlaySample(menu_back_);
+	}
+}
+
+void GameApplication::PlayMenuMove() const
+{
+	if(settings_.sound_effects_ == true)
+	{
+		audio_manager_->PlaySample(menu_move_);
+	}
+}
+
+void GameApplication::PlayMenuSelect() const
+{
+	if(settings_.sound_effects_ == true)
+	{
+		audio_manager_->PlaySample(menu_select_);
+	}
+}
+
 
 void GameApplication::ChangeState(APPSTATE next_state)
 {

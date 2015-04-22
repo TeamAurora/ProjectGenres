@@ -248,12 +248,14 @@ APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 		{
 			paused_ = false;
+			application_->PlayMenuSelect();
 		}
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 		{
 			pause_selection_ = RESTART;
 			pause_buttons_[1]->Select(true);
 			pause_buttons_[0]->Select(false);
+			application_->PlayMenuMove();
 		}
 		break;
 	case RESTART:
@@ -262,17 +264,20 @@ APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
 			pause_selection_ = RESUME;
 			pause_buttons_[0]->Select(true);
 			pause_buttons_[1]->Select(false);
+			application_->PlayMenuMove();
 		}
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 		{
 			Restart();
 			paused_ = false;
+			application_->PlayMenuSelect();
 		}
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_DOWN)
 		{
 			pause_selection_ = QUIT;
 			pause_buttons_[2]->Select(true);
 			pause_buttons_[1]->Select(false);
+			application_->PlayMenuMove();
 		}
 		break;
 	case QUIT:
@@ -281,9 +286,11 @@ APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
 			pause_selection_ = RESTART;
 			pause_buttons_[1]->Select(true);
 			pause_buttons_[2]->Select(false);
+			application_->PlayMenuMove();
 		}
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 		{
+			application_->PlayMenuBack();
 			return MENU;
 		}
 		break;
