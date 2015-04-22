@@ -19,26 +19,25 @@ void Blade::Create(b2World* world_,const Player &player)
 	bodyInitialPosition.x = GFX_BOX2D_POS_X(player.position().x + xOffset);
 	bodyInitialPosition.y = GFX_BOX2D_POS_Y(player.position().y + yOffset);
 
-	body_half_width = 0.5f;
-	body_half_height = 1.0f;
+	body_half_width = 0.35f;
+	body_half_height = 0.5f;
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
 	bodyDef.position.x = bodyInitialPosition.x;
 	bodyDef.position.y = bodyInitialPosition.y;
 	bodyDef.fixedRotation = true;//stops body rotating 
-	body_ = world_->CreateBody(&bodyDef);
+	this->AddBody(world_, bodyDef);
 
 	b2PolygonShape dynamicBox;
 	dynamicBox.SetAsBox(body_half_width, body_half_height);
 
 	b2FixtureDef fixtureDef;
+	fixtureDef.isSensor = true;
 	fixtureDef.shape = &dynamicBox;
-	fixtureDef.density = 2.0f;//set mass
 	body_->ResetMassData();//it only sets new value after this is called
-	fixtureDef.friction = 0.5f;
-	fixtureDef.restitution = 0.1f; // not bouncy
-	body_->CreateFixture(&fixtureDef);
+	
+	this->AddFixture(fixtureDef);
 
 	body_->SetUserData(this);
 
@@ -49,6 +48,7 @@ void Blade::Create(b2World* world_,const Player &player)
 	set_colour(0xffff0000);
 	
 	created = true;
+	disabled = false;
 }
 
 void Blade::Update(float ticks,const Player &player)
@@ -65,11 +65,7 @@ void Blade::Update(float ticks,const Player &player)
 
 void Blade::alignFace(const Player &player)
 {
-	if(player.horizontal == true)
-=======
-	
-	if(player.horizontal == true || player.mflying == true)
->>>>>>> origin/John's
+	if(player.horizontal == true || player.flying_ == true)
 	{
 		yOffset = 0;
 
@@ -82,7 +78,7 @@ void Blade::alignFace(const Player &player)
 			xOffset = -armLength;
 		}
 	}
-	else if(player.mflying == false)
+	else if(player.flying_ == false)
 	{
 		xOffset = 0;
 

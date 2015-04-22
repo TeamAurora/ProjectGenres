@@ -97,8 +97,8 @@ NLTmxMap* NLLoadTmxMap(const char* xml )
         NLTmxMapObjectGroup* group = new NLTmxMapObjectGroup();
         
         group->name = objectgroupnode->first_attribute( "name" )->value();
-        group->width = atoi( objectgroupnode->first_attribute( "width" )->value() );
-        group->height = atoi( objectgroupnode->first_attribute( "height" )->value() );
+        //group->width = atoi( objectgroupnode->first_attribute( "width" )->value() );
+        //group->height = atoi( objectgroupnode->first_attribute( "height" )->value() );
         
         xml_attribute<> *visibleattr = objectgroupnode->first_attribute( "visible" );
         if ( visibleattr ) {

@@ -31,13 +31,10 @@ public:
 	/////// Enumerated states player can be in - use these to do logic & for sprite animation
 	/*enum PLAYERSTATE { DEAD, IDLE, INAIR, RUNNING, ATTACKING };
 	PLAYERSTATE state_;*/
-	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING, DEAD, JUMPING };
-=======
 	enum OBJECTSTATE { IDLE, INAIR, GROUNDED, RUNNING, ATTACKING, DEAD, JUMPING, FLYING };
->>>>>>> origin/John's
 	OBJECTSTATE state_;
-	bool mflying;
-	
+	bool flying_;
+
 private:
 	//set up uv coords for animations
 	//void setUVCoordinates(float width, float height);//take the height and width of single frame of the sprite
@@ -59,11 +56,6 @@ private:
 
 	float jumpCutOff, moveCutOff;//how far the sticks have to be pushed to trigger action
 	float jumpStrength;
-	bool flying_;
-=======
-	float rayLength;
-
 	bool setFlyingWidth;
->>>>>>> origin/John's
 };
 

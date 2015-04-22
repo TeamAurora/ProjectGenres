@@ -15,15 +15,15 @@ void Level_1::LoadAssets()
 	LoadMap("level_1.tmx");
 
 	// player
-	playerArrow = application_->LoadTextureFromPNG("arrow.png");
-	playerTex = application_->LoadTextureFromPNG("Robot_animations.png");
-	rotPlayerTex = application_->LoadTextureFromPNG("Robot_animations_rotated.png");
-	playerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle.png");	
-	rotPlayerIdle = application_->LoadTextureFromPNG("Robot_Animation_Idle_rot.png");
-	playerDeath = application_->LoadTextureFromPNG("Robot_Animation_death.png");
-	rotPlayerDeath = application_->LoadTextureFromPNG("Robot_Animation_death_rot.png");
-	playerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP.png");
-	rotPlayerJump = application_->LoadTextureFromPNG("Robot_AnimatioN_JUMP_rot.png");
+	playerArrow = application_->LoadTextureFromPNG("player_arrow.png");
+	playerTex = application_->LoadTextureFromPNG("player_animations.png");
+	rotPlayerTex = application_->LoadTextureFromPNG("player_animations_rotated.png");
+	playerIdle = application_->LoadTextureFromPNG("player_idle.png");	
+	rotPlayerIdle = application_->LoadTextureFromPNG("player_idle_rotated.png");
+	playerDeath = application_->LoadTextureFromPNG("player_death.png");
+	rotPlayerDeath = application_->LoadTextureFromPNG("player_death_rotated.png");
+	playerJump = application_->LoadTextureFromPNG("player_jump.png");
+	rotPlayerJump = application_->LoadTextureFromPNG("player_jump_rotated.png");
 
 	////pickups
 	red_pickup_texture_ = application_->LoadTextureFromPNG("pickup_red.png");
@@ -61,18 +61,8 @@ void Level_1::CreateObjects()
 	//set game objects' textures
 	player_.set_texture(playerTex);
 	arrow_.set_texture(playerArrow);
-	arrow_.set_width(256.0f);
-	arrow_.set_height(256.0f);
-
-	//destroy pickups
-	for ( int pickupindex = 0; pickupindex < pickups_.size(); pickupindex++)
-	{
-		//reset for another play
-		pickups_[pickupindex].dead = true;
-		pickups_[pickupindex].spawned = false;
-
-		Destroy(pickups_[pickupindex]);
-	}
+	arrow_.set_width(1024.0f);
+	arrow_.set_height(1024.0f);
 }
 
 void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
@@ -104,7 +94,7 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	}
 	else if (blade_.destroyed == false && blade_.created == true && attackTime > 20)//destroy blade after a certain time
 	{
-		Destroy(blade_);
+		blade_.body_->SetActive(false);
 		blade_.created = false;
 	}
 	

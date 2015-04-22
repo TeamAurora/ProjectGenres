@@ -107,6 +107,8 @@ protected:
 	abfw::Texture* enemyHit;
 	abfw::Texture* enemyIdle;
 	abfw::Texture* shooterProjectile;
+	abfw::Texture* shooterDeath;
+	abfw::Texture* shooterFiring;
 
 	// STATE-SPECIFIC Game/Living Objects
 	std::vector<PickUp> pickups_;

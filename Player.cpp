@@ -111,7 +111,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	flying_ = flying;//check what animation should be done
 
-	if(setFlyingWidth == false && mflying == true)
+	if(setFlyingWidth == false && flying_ == true)
 	{
 		set_uv_width(0.0625f);
 		set_uv_height(1);
@@ -147,7 +147,6 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	if(flying_ == false)
 	{
-		changeState();//check variables and change player's state
 
 		//flip facing back the right way after jump has landed
 		if(prevState == INAIR &&  state_ != INAIR)
@@ -179,19 +178,20 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 		switch(state_)
 		{
 			case IDLE:
-					idleAnimation();
-					break;
+				idleAnimation();
+				break;
 			case RUNNING:
-					runningAnimation();
-					break;			 
+				runningAnimation();
+				break;			 
 			case ATTACKING:
-
+				attackAnimation();
 				break;
 			case DEAD:
-					deadAnimation();
+				deadAnimation();
 				break;
 			case JUMPING:	
-					//jumpAnimation();
+				break;
+			case FLYING:
 				break;
 		};
 	}
@@ -207,73 +207,21 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 		result = Animate(ticks, moveUp);
 	}
 
-=======
-			switch(state_)
-			{
-				case IDLE:
-						idleAnimation();
-						break;
-				case RUNNING:
-						runningAnimation();
-						break;			 
-				case ATTACKING:		
-						attackAnimation();
-						break;
-				case DEAD:
-						deadAnimation();
-					break;
-				case JUMPING:
-					break;
-			};
-		}
-	}
-	else//flying level
+	//change state
+	if (attacking == true)
 	{
-		//change state
-		if (attacking == true)
-		{
-			state_ = ATTACKING;
-		}
-		else if(dead == true && attacking == false)
-		{
-			state_ = DEAD;
-			body_->SetLinearVelocity(b2Vec2(0,0));//stop all movement
-		}
-		else
-		{
-			state_ = FLYING;
-		}
-
-
-		//set up animations for each state
-		if(state_ != prevState)
-		{
-			
-			switch(state_)
-			{
-				case ATTACKING:
-						attackAnimation();
-						break;
-				case FLYING:
-						break;
-				case DEAD:
-						deadAnimation();
-						break;
-			};
-		}
+		state_ = ATTACKING;
 	}
-			
-	// play the animation
-	if(horizontal == true)
+	else if(dead == true && attacking == false)
 	{
-		result = Animate(ticks, move_right);
+		state_ = DEAD;
+		body_->SetLinearVelocity(b2Vec2(0,0));//stop all movement
 	}
 	else
 	{
-		result = Animate(ticks, moveUp);
+		state_ = FLYING;
 	}
 
->>>>>>> origin/John's
 	//check for animations that play once
 	if(state_ == DEAD)
 	{
@@ -285,21 +233,12 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 	{
 		state_ = INAIR;
 	}
-	
-	if(!flying_)
-=======
-
-	//jump animation has played
-	if(state_ == JUMPING && result == true)
-	{
-		state_ = INAIR;
-	}
 
 	//attack animation has played
 	if(state_ == ATTACKING && result == true)
 	{
 		attacking = false;
-		if(mflying)
+		if(flying_)
 		{
 			//reset uv
 			set_uv_width(0.0625f);
@@ -310,9 +249,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 		set_height(BOX2D_GFX_SIZE(2 * body_half_height));
 	}
 	
-
-	if(!mflying)
->>>>>>> origin/John's
+	if(!flying_)
 	{
 		if(state_ != JUMPING && state_ != INAIR)//no change in movement during jump
 		{
@@ -341,32 +278,27 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			gDir = DOWN;
 			if (controller->right_stick_y_axis() < -jumpCutOff)//up
 			{
-				gDir = UP;
-				gravity = b2Vec2(0.0f, 50.0f);
-				state_ = INAIR;
+				MoveBy(0.0f, 20.0f);
+				state_ = FLYING;
+				flyAnimation();
 			}
 			else if (controller->right_stick_x_axis() > jumpCutOff)//right
 			{
-				gDir = RIGHT;
-				gravity = b2Vec2(50.0f, 0.0f);
-				state_ = INAIR;
+				MoveBy(20.0f, 0.0f);
+				state_ = FLYING;
+				flyAnimation();
 			}
 			else if (controller->right_stick_x_axis() < -jumpCutOff)//left
 			{
-				gDir = LEFT;
-				gravity = b2Vec2(-50.0f, 0.0f);
-				state_ = INAIR;
+				MoveBy(-20.0f, 0.0f);
+				state_ = FLYING;
+				flyAnimation();
 			}
 			else if (controller->right_stick_y_axis() > jumpCutOff)//down
 			{
-				gDir = DOWN;
-				gravity = b2Vec2(0.0f, -50.0f);
-				state_ = INAIR;
-=======
-				gravity = b2Vec2(0.0f, -10.0f);
+				MoveBy(0.0f, -20.0f);
 				state_ = FLYING;
 				flyAnimation();
->>>>>>> origin/John's
 			}
 		}
 		else//wall jump
@@ -379,64 +311,86 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			// jump mechanic
 			if ((controller->buttons_pressed() & ABFW_SONY_CTRL_R2) && (state_ != INAIR))
 			{
-				//calls to set up animtaion for the jump
-				state_ = JUMPING;
-				jumpAnimation(xaxisval, yaxisval);
-
-<<<<<<< HEAD
-				//state_ = INAIR;
-=======
->>>>>>> origin/John's
 				b2Vec2 angle = b2Vec2(sinf(currentRayAngle), cosf(currentRayAngle));
 				b2Vec2 impulse = b2Vec2(jumpStrength * angle);
 
-				body_->ApplyLinearImpulse(impulse, body_->GetWorldCenter());
+				bool jump_possible = true;
+				switch(gDir)
+				{
+				case DOWN:
+					if (angle.y > 0)
+						jump_possible = false;
+					break;
+				case UP:
+					if (angle.y < 0)
+						jump_possible = false;
+					break;
+				case LEFT:
+					if (angle.x < 0)
+						jump_possible = false;
+					break;
+				case RIGHT:
+					if (angle.x > 0)
+						jump_possible = false;
+					break;
+				}
+
+				if(jump_possible)
+				{
+					//calls to set up animtaion for the jump
+					state_ = JUMPING;
+					jumpAnimation(xaxisval, yaxisval);
+					body_->ApplyLinearImpulse(impulse, body_->GetWorldCenter());
+				}
 			}
 		}
 
 		// checks what gravity is currently applied and dictates what movement
 		// can be used ie. x axis movement on ground/ceiling, y axis movement on
 		// walls
-		if((state_ != INAIR) && (state_ != JUMPING))
+		if(!flying_)
 		{
-			if (gDir == DOWN || gDir == UP)
+			if((state_ != INAIR) && (state_ != JUMPING))
 			{
-				if (controller->left_stick_x_axis() > moveCutOff)//right
+				if (gDir == DOWN || gDir == UP)
 				{
-					move = true;
-					move_right = true;
-					force.Set(move_v, 0.0f);
+					if (controller->left_stick_x_axis() > moveCutOff)//right
+					{
+						move = true;
+						move_right = true;
+						MoveBy(move_v, 0.0f);
+					}
+					else if (controller->left_stick_x_axis() < -moveCutOff)//left
+					{
+						move = true;
+						move_right = false;
+						MoveBy(-move_v, 0.0f);
+					}
+					else
+					{
+						move = false;
+						force.SetZero();
+					}
 				}
-				else if (controller->left_stick_x_axis() < -moveCutOff)//left
+				else if (gDir == RIGHT || gDir == LEFT)
 				{
-					move = true;
-					move_right = false;
-					force.Set(-move_v, 0.0f);
-				}
-				else
-				{
-					move = false;
-					force.SetZero();
-				}
-			}
-			else if (gDir == RIGHT || gDir == LEFT)
-			{
-				if (controller->left_stick_y_axis() > moveCutOff) // down
-				{
-					move = true;
-					moveUp = false;
-					force.Set(0.0f, -move_v);
-				}
-				else if (controller->left_stick_y_axis() < -moveCutOff) // up
-				{
-					move = true;
-					moveUp = true;
-					force.Set(0.0f, move_v);
-				}
-				else
-				{
-					move = false;
-					force.SetZero();
+					if (controller->left_stick_y_axis() > moveCutOff) // down
+					{
+						move = true;
+						moveUp = false;
+						MoveBy(0.0f, -move_v);
+					}
+					else if (controller->left_stick_y_axis() < -moveCutOff) // up
+					{
+						move = true;
+						moveUp = true;
+						MoveBy(0.0f, move_v);
+					}
+					else
+					{
+						move = false;
+						force.SetZero();
+					}
 				}
 			}
 		}
@@ -808,7 +762,8 @@ void Player::deadAnimation()
 			else
 			{
 				set_uv_height(-0.0625);
-				set_uv_position(abfw::Vector2(0.0f,1.0f));			}
+				set_uv_position(abfw::Vector2(0.0f,1.0f));
+			}
 		}
 
 		//set up animation
@@ -930,7 +885,7 @@ void Player::attackAnimation()
 	set_width(BOX2D_GFX_SIZE(2.5 * body_half_width));
 	set_height(BOX2D_GFX_SIZE(2.15 * body_half_height));
 	
-	if(mflying == false)
+	if(flying_ == false)
 	{
 		//flip for gravity
 		if (gDir == UP)
@@ -1022,7 +977,6 @@ void Player::attackAnimation()
 
 void Player::flyAnimation()
 {
-
 	if (move_right == true)
 	{
 		set_uv_width(0.0625f);

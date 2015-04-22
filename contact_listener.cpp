@@ -39,20 +39,24 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		//attack enemies
 		if (game_object->getType() == GameObject::BLADE && game_object_b->getType() == GameObject::ENEMY)
 		{
+			((Blade* )game_object)->disabled = true;
 			((Enemy* )game_object_b)->dead = true;
 		}
 		else if (game_object->getType() == GameObject::ENEMY && game_object_b->getType() == GameObject::BLADE)
 		{
+			((Blade* )game_object_b)->disabled = true;
 			((Enemy* )game_object)->dead = true;
 		}
 
 		//kill plants
 		if (game_object->getType() == GameObject::BLADE && game_object_b->getType() == GameObject::PLANT)
 		{
+			((Blade* )game_object)->disabled = true;
 			((GameObject* )game_object_b)->dead = true;
 		}
 		else if (game_object->getType() == GameObject::PLANT && game_object_b->getType() == GameObject::BLADE)
 		{
+			((Blade* )game_object_b)->disabled = true;
 			((GameObject* )game_object)->dead = true;
 		}
 
@@ -81,11 +85,13 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		//stops the blade pushing the pickup away 
 		if (game_object->getType() == GameObject::BLADE && game_object_b->getType() == GameObject::PICKUP)
 		{
+			((Blade* )game_object)->disabled = true;
 			((PickUp *)game_object_b)->dead = true;
 		}
 
 		if (game_object->getType() == GameObject::PICKUP && game_object_b->getType() == GameObject::BLADE)
 		{
+			((Blade* )game_object_b)->disabled = true;
 			((PickUp *)game_object)->dead = true;
 		}
 
