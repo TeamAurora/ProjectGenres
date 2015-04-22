@@ -79,7 +79,7 @@ void Bullet::CreateBullet(b2World* world_, float x, float y, b2Vec2 gravity, b2V
 	body_->SetUserData(this);
 
 	//set colour black
-	set_colour(0xff00ff00);
+	//set_colour(0xff00ff00);
 
 	created = true;
 }

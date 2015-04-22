@@ -49,11 +49,6 @@ void Blade::Create(b2World* world_,const Player &player)
 	set_colour(0xffff0000);
 	
 	created = true;
-
-	//uv height, width and position
-	//set_uv_height(uv_height);
-	//set_uv_width(uv_width);
-	//set_uv_position(abfw::Vector2(uv_x,uv_y));
 }
 
 void Blade::Update(float ticks,const Player &player)
@@ -71,6 +66,10 @@ void Blade::Update(float ticks,const Player &player)
 void Blade::alignFace(const Player &player)
 {
 	if(player.horizontal == true)
+=======
+	
+	if(player.horizontal == true || player.mflying == true)
+>>>>>>> origin/John's
 	{
 		yOffset = 0;
 
@@ -83,7 +82,7 @@ void Blade::alignFace(const Player &player)
 			xOffset = -armLength;
 		}
 	}
-	else
+	else if(player.mflying == false)
 	{
 		xOffset = 0;
 

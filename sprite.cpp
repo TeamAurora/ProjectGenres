@@ -34,7 +34,7 @@ const bool Sprite::Animate(float ticks, bool facing)
 			switch(sheettype_)
 			{
 				case SCROLL_Y:
-					uv_position_.y += uv_height_;							// scroll down 1 frame on y axis
+					uv_position_.y -= uv_height_;							// scroll down 1 frame on y axis
 					if(uv_position_.y > (frame_count_ - 1) * uv_height_)	// if moved off bottom edge of sprite
 					{
 						uv_position_.y = 0;									// moves back to start of column
@@ -78,7 +78,7 @@ const bool Sprite::Animate(float ticks, bool facing)
 			switch(sheettype_)
 			{
 				case SCROLL_Y:
-					uv_position_.y -= uv_height_;							// scroll down 1 frame on y axis
+					uv_position_.y += uv_height_;							// scroll down 1 frame on y axis
 					if(uv_position_.y > (frame_count_ - 1) * -uv_height_)	// if moved off bottom edge of sprite
 					{
 						uv_position_.y = 0;									// moves back to start of column
