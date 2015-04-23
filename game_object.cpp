@@ -9,14 +9,9 @@ GameObject::GameObject() :
 	world_(NULL),
 	body_(NULL),
 	physicsengine_(DEFAULT),
-	magnitude_(150), 
-	dead(true),
-	destroyed(true)
-=======
-	magnitude_(15), 
+	magnitude_(15),
 	dead(true),
 	knockback_(false)
->>>>>>> origin/John's
 {
 }
 
@@ -207,53 +202,6 @@ void GameObject::LinearImpulse(const b2Vec2& impulse, const b2Vec2& point)
 	body_->ApplyLinearImpulse(impulse, point);
 }
 
-//John//////////////////////////
-void GameObject::CreateStaticBody(b2World* world_,float x , float y, float width, float height)
-{
-	//reset all variable for removing object
-	dead = false;
-	destroyed = false;
-	deadAnim = false;
-
-	body_half_width = width;
-	body_half_height = height;
-
-	//set position
-	bodyInitialPosition.x = x;
-	bodyInitialPosition.y = y;
-
-	// setup the ground definition
-	b2BodyDef body_def;
-	body_def.position.x = bodyInitialPosition.x;
-	body_def.position.y = bodyInitialPosition.y;
-
-	// create the ground
-	body_ = world_->CreateBody(&body_def);
-
-	// set the shape for the object
-	b2PolygonShape shape;
-	shape.SetAsBox(body_half_width, body_half_height);
-
-	b2FixtureDef fixtureDef;
-	fixtureDef.shape = &shape;
-	fixtureDef.friction = 0.1f;
-	// bind the shape to the body
-	body_ -> CreateFixture(&shape, 0.0f);
-	physicsengine_ = BOX2D;			// changes to box2d physics for this object
-
-	//set ground sprite size
-	set_width(BOX2D_GFX_SIZE(2*body_half_width));
-	set_height(BOX2D_GFX_SIZE(2*body_half_height));
-
-	//set sprite position
-	float spriteX = BOX2D_GFX_POS_X(body_->GetPosition().x);
-	float spriteY = BOX2D_GFX_POS_Y(body_->GetPosition().y);
-
-	body_->SetUserData(this);
-
-	set_position(abfw::Vector3(spriteX,spriteY,1));
-}
-
 void GameObject::Knockback(b2Vec2 pos1, b2Vec2 pos2)
 {
 	if(pos1.x - pos2.x <= 0)//push to left
@@ -273,10 +221,51 @@ void GameObject::Knockback(b2Vec2 pos1, b2Vec2 pos2)
 	{
 		knockbackForce_.Set(knockbackForce_.x,magnitude_);
 	}
-
 }
 
-void GameObject::setAnimation()
+//John//////////////////////////
+/*void GameObject::CreateStaticBody(b2World* world_, float x , float y, float width, float height)
+{
+	//reset all variable for removing object
+	dead = false;
+	deadAnim = false;
+
+	body_half_width = width;
+	body_half_height = height;
+
+	//set position
+	bodyInitialPosition.x = x;
+	bodyInitialPosition.y = y;
+
+	// setup the ground definition
+	b2BodyDef body_def;
+	body_def.position.x = bodyInitialPosition.x;
+	body_def.position.y = bodyInitialPosition.y;
+
+	// create the ground
+	AddBody(world_, body_def);
+
+	// set the shape for the object
+	b2PolygonShape shape;
+	shape.SetAsBox(body_half_width, body_half_height);
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &shape;
+	fixtureDef.friction = 0.1f;
+	// bind the shape to the body
+	AddFixture(fixtureDef);
+
+	//set ground sprite size
+	set_width(BOX2D_GFX_SIZE(2*body_half_width));
+	set_height(BOX2D_GFX_SIZE(2*body_half_height));
+
+	//set sprite position
+	MoveTo(BOX2D_GFX_POS_X(body_->GetPosition().x), BOX2D_GFX_POS_Y(body_->GetPosition().y));
+	UpdatePosition();
+
+	body_->SetUserData(this);
+}*/
+/*void GameObject::setAnimation()
 {
 	// depending on objects orientation
 	if(rotated)
@@ -299,6 +288,4 @@ void GameObject::setAnimation()
 		//set up animation
 		InitSpriteAnimation(0.07,8,false,SCROLL_X,0,0);
 	}
-
-
-}
+}*/

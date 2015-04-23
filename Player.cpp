@@ -49,7 +49,6 @@ void Player::Create_Player(b2World* world_, float x, float y)
 {
 	//varaibles that need reset if player has been killed
 	dead = false;
-	destroyed = false;
 	setMaxHealth(100.0f);
 	setHealth(max_health());	
 	state_ = IDLE;
@@ -248,7 +247,6 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 void Player::Player_Input(const abfw::SonyController* controller)
 {
-
 	// check we have a valid controller object (one that isn't NULL)
 	if (controller)
 	{
@@ -260,27 +258,31 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			gDir = DOWN;
 			if (controller->right_stick_y_axis() < -jumpCutOff)//up
 			{
-				MoveBy(0.0f, 20.0f);
+				AccelerateTo(abfw::Vector2(0.0f, 20.0f));
 				state_ = FLYING;
 				flyAnimation();
 			}
 			else if (controller->right_stick_x_axis() > jumpCutOff)//right
 			{
-				MoveBy(20.0f, 0.0f);
+				AccelerateTo(abfw::Vector2(20.0f, 0.0f));
 				state_ = FLYING;
 				flyAnimation();
 			}
 			else if (controller->right_stick_x_axis() < -jumpCutOff)//left
 			{
-				MoveBy(-20.0f, 0.0f);
+				AccelerateTo(abfw::Vector2(-20.0f, 0.0f));
 				state_ = FLYING;
 				flyAnimation();
 			}
 			else if (controller->right_stick_y_axis() > jumpCutOff)//down
 			{
-				MoveBy(0.0f, -20.0f);
+				AccelerateTo(abfw::Vector2(0.0f, -20.0f));
 				state_ = FLYING;
 				flyAnimation();
+			}
+			else
+			{
+				AccelerateTo(abfw::Vector2(0.0f,0.0f));
 			}
 		}
 		else//wall jump
@@ -294,7 +296,6 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			if ((controller->buttons_pressed() & ABFW_SONY_CTRL_R2) && (state_ != INAIR))
 			{
 				b2Vec2 angle = b2Vec2(sinf(currentRayAngle), cosf(currentRayAngle));
-				b2Vec2 impulse = b2Vec2(jumpStrength * angle);
 
 				bool jump_possible = true;
 				switch(gDir)
@@ -319,10 +320,12 @@ void Player::Player_Input(const abfw::SonyController* controller)
 
 				if(jump_possible)
 				{
+					b2Vec2 impulse = b2Vec2(jumpStrength * angle);
 					//calls to set up animtaion for the jump
 					state_ = JUMPING;
 					jumpAnimation(xaxisval, yaxisval);
-					body_->ApplyLinearImpulse(impulse, body_->GetWorldCenter());
+					AccelerateTo(abfw::Vector2(impulse.x, impulse.y));
+					//body_->ApplyLinearImpulse(impulse, body_->GetWorldCenter());
 				}
 			}
 		}
@@ -340,18 +343,18 @@ void Player::Player_Input(const abfw::SonyController* controller)
 					{
 						move = true;
 						move_right = true;
-						MoveBy(move_v, 0.0f);
+						AccelerateTo(abfw::Vector2(move_v, 0.0f));
 					}
 					else if (controller->left_stick_x_axis() < -moveCutOff)//left
 					{
 						move = true;
 						move_right = false;
-						MoveBy(-move_v, 0.0f);
+						AccelerateTo(abfw::Vector2(-move_v, 0.0f));
 					}
 					else
 					{
 						move = false;
-						force.SetZero();
+						AccelerateTo(abfw::Vector2(0.0f,0.0f));
 					}
 				}
 				else if (gDir == RIGHT || gDir == LEFT)
@@ -360,18 +363,18 @@ void Player::Player_Input(const abfw::SonyController* controller)
 					{
 						move = true;
 						moveUp = false;
-						MoveBy(0.0f, -move_v);
+						AccelerateTo(abfw::Vector2(0.0f, -move_v));
 					}
 					else if (controller->left_stick_y_axis() < -moveCutOff) // up
 					{
 						move = true;
 						moveUp = true;
-						MoveBy(0.0f, move_v);
+						AccelerateTo(abfw::Vector2(0.0f, move_v));
 					}
 					else
 					{
 						move = false;
-						force.SetZero();
+						AccelerateTo(abfw::Vector2(0.0f,0.0f));
 					}
 				}
 			}
@@ -443,7 +446,6 @@ void Player::ResolveCollisionTile(CollisionTile* collisiontile)
 	}
 }
 
-////Rebecca
 void Player::setGravity(Direction direction)
 {
 	switch (direction)
@@ -475,7 +477,7 @@ void Player::changeState()
 		else if (dead == true && attacking == false)
 		{
 			state_ = DEAD;
-			body_->SetLinearVelocity(b2Vec2(0, 0));//stop all movement
+			AccelerateTo(abfw::Vector2(0.0f,0.0f));
 		}
 		else
 		{
@@ -495,7 +497,7 @@ void Player::changeState()
 		else if (dead == true)
 		{
 			state_ = DEAD;
-			body_->SetLinearVelocity(b2Vec2(0.0f, 0.0f));//stop all movement
+			AccelerateTo(abfw::Vector2(0.0f,0.0f));
 		}
 		else if (state_ != INAIR && state_ != JUMPING && attacking != true)//state stays as INAIR until a surface is touched
 		{

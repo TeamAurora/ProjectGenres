@@ -39,6 +39,59 @@ LevelState::LevelState(abfw::Platform& platform, const GameApplication* applicat
 	}
 
 	pause_buttons_[0]->Select(true);
+
+	UI_corner_texture_ = application_->LoadTextureFromPNG("UI_corner.png");
+
+	for (int corner = 0; corner < UI_corners_.size(); ++corner)
+	{
+		UI_corners_[corner].set_texture(UI_corner_texture_);
+		UI_corners_[corner].set_width(256.0f);
+		UI_corners_[corner].set_height(64.0f);
+	}
+	// Top left corner
+	UI_corners_[0].set_position(128.0f, 32.0f, 0.0f);
+	// Top right corner
+	UI_corners_[1].set_position(platform_.width() - 128.0f, 32.0f, 0.0f);
+	UI_corners_[1].set_uv_width(-1.0f);
+	// Bottom right corner
+	UI_corners_[2].set_position(platform_.width() - 128.0f, platform_.height() - 32.0f, 0.0f);
+	UI_corners_[2].set_uv_width(-1.0f);
+	UI_corners_[2].set_uv_height(-1.0f);
+	// Bottom left corner
+	UI_corners_[3].set_position(128.0f, platform_.height() - 32.0f, 0.0f);
+	UI_corners_[3].set_uv_height(-1.0f);
+
+	player_icon_texture_ = application_->LoadTextureFromPNG("UI_player.png");
+
+	player_icon_.InitSprite(64.0f, 32.0f, abfw::Vector3(32.0f, 16.0f, 0.0f), player_icon_texture_);
+
+	timer_icon_texture_ = application_->LoadTextureFromPNG("UI_timer.png");
+
+	timer_icon_.InitSprite(32.0f, 32.0f, abfw::Vector3(platform_.width() - 128.0f, platform_.height() - 16.0f, 0.0f), timer_icon_texture_);
+
+	// Init all the level_specific textures to NULL
+	playerArrow = NULL;
+	playerTex = NULL;
+	rotPlayerTex = NULL;
+	playerIdle = NULL;
+	rotPlayerIdle = NULL;
+	playerDeath = NULL;
+	rotPlayerDeath = NULL;
+	playerJump = NULL;
+	rotPlayerJump = NULL;
+	playerAttack = NULL;
+	rotPlayerAttack = NULL;
+	playerFlying = NULL;
+	plant_wall_texture_ = NULL;
+	plant_block_texture_ = NULL;
+	enemyMove = NULL;
+	enemyDeath = NULL;
+	enemyAttack = NULL;
+	enemyHit = NULL;
+	enemyIdle = NULL;
+	shooterProjectile = NULL;
+	shooterDeath = NULL;
+	shooterFiring = NULL;
 }
 
 LevelState::~LevelState()
@@ -59,6 +112,10 @@ void LevelState::TerminateState()
 		DeleteNull(level_map_.textures[texturesindex]);
 	}
 
+	DeleteNull(UI_corner_texture_);
+	DeleteNull(player_icon_texture_);
+	DeleteNull(timer_icon_texture_);
+
 	// Pickup Textures
 	DeleteNull(red_pickup_texture_);
 	DeleteNull(blue_pickup_texture_);
@@ -68,9 +125,6 @@ void LevelState::TerminateState()
 	// Plant Textures
 	DeleteNull(plant_wall_texture_);
 	DeleteNull(plant_block_texture_);
-
-	// Spike Texture
-	//DeleteNull(spike_texture_);
 
 	// Player Textures
 	DeleteNull(playerArrow);
@@ -82,6 +136,9 @@ void LevelState::TerminateState()
 	DeleteNull(rotPlayerDeath);
 	DeleteNull(playerJump);
 	DeleteNull(rotPlayerJump);
+	DeleteNull(playerAttack);
+	DeleteNull(rotPlayerAttack);
+	DeleteNull(playerFlying);
 
 	// Enemy Textures
 	DeleteNull(enemyMove);
@@ -89,6 +146,9 @@ void LevelState::TerminateState()
 	DeleteNull(enemyAttack);
 	DeleteNull(enemyHit);
 	DeleteNull(enemyIdle);
+	DeleteNull(shooterProjectile);
+	DeleteNull(shooterFiring);
+	DeleteNull(shooterDeath);
 
 	// delete all collision layer bodies
 	for (int collisiontileindex = 0; collisiontileindex < level_map_.collision_layer.size(); collisiontileindex++)
@@ -112,6 +172,11 @@ void LevelState::TerminateState()
 		plants_[plantsindex].DestroyBody();
 	}
 
+	for (int bulletsindex = 0; bulletsindex < bullets_.size(); bulletsindex++)
+	{
+		bullets_[bulletsindex].DestroyBody();
+	}
+
 	DeleteNull(pause_background_texture_);
 	for (int buttonindex = 0; buttonindex < pause_buttons_.size(); buttonindex++)
 	{
@@ -133,6 +198,8 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 
 		// Do game logic for gameobjects
 		UpdateGameObjects(ticks_, frame_counter_);
+
+		time_ = ( std::clock() - start_time_ ) / (double) CLOCKS_PER_SEC;
 
 		application_->player_camera_->TendTowards(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)), 15.0f);
 		application_->player_camera_->UpdateCamera(ticks_);
@@ -184,7 +251,7 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 	{
 		sprite_renderer_->DrawSprite(player_);
 		sprite_renderer_->DrawSprite(arrow_);
-		if(blade_.destroyed == false)
+		if(blade_.disabled == false)
 		{
 			sprite_renderer_->DrawSprite(blade_);
 		}
@@ -226,9 +293,16 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 	application_->main_camera_->SetActiveCamera();
 
 	// UI
-	font_.RenderText(sprite_renderer_, abfw::Vector3(10.0f, 5.0f, 0.0f), 1.0f, 0xff00ff00, abfw::TJ_LEFT, "Galaxea");
-	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 40.0f, 0.0f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "Health : %.0f", player_.health());	//display player health
-	font_.RenderText(sprite_renderer_, abfw::Vector3(815.0f, 5.0f, 0.0f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "Score : %.0f", score_);//display player score
+	for ( int corner = 0; corner < UI_corners_.size(); ++corner)
+	{
+		sprite_renderer_->DrawSprite(UI_corners_[corner]);
+	}
+	sprite_renderer_->DrawSprite(player_icon_);
+	sprite_renderer_->DrawSprite(timer_icon_);
+	font_.RenderText(sprite_renderer_, abfw::Vector3(16.0f, 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "HP: %.0f", player_.health());
+	font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() - 128.0f, 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "Score: %.0f", score_);
+	font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() - 128.0f, platform_.height() - 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "%.0fs", time_);
+	font_.RenderText(sprite_renderer_, abfw::Vector3(16.0f, platform_.height() - 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "%i/%i", collectables_, max_collectable_count_);
 
 	if (paused_)
 	{
@@ -657,39 +731,6 @@ void LevelState::LoadMap(const char* map_filename)
 	DeleteNull(map_);
 }
 
-void LevelState::SpawnSpike(b2Vec2 _position, b2Vec2 _dimensions)
-{
-	float x_pos = _position.x;
-	float y_pos = _position.y;
-	float width = _dimensions.x;
-	float height = _dimensions.y;
-
-	GameObject spike = GameObject();
-
-	// Define and add box2d body
-	b2BodyDef body;
-	body.type = b2_staticBody;
-	body.position = b2Vec2(GFX_BOX2D_POS_X(x_pos), GFX_BOX2D_POS_Y(y_pos));
-	spike.AddBody(world_, body); // this also changes this object to use box2d physics in all its functions
-
-	// Define and add box2d fixture
-	b2FixtureDef fixture;
-	b2PolygonShape shape;
-	shape.SetAsBox(GFX_BOX2D_SIZE(width/2.0f), GFX_BOX2D_SIZE(height/2.0f));
-	fixture.shape = &shape;
-	fixture.density = 0.0f;
-	spike.AddFixture(fixture);
-
-	// Initialize all the gameobject related things for this spike
-	spike.InitSprite(width, height, abfw::Vector3(x_pos, y_pos, 0.0f), spike_texture_); // init sprite properties
-	spike.setType(GameObject::SPIKE);
-	spike.set_visibility(true);			// Makes projectile visible
-
-	// adds this spike to the spikes vector
-	spikes_.push_back(spike);
-
-}
-
 void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp::PICKUPTYPE _pickup_type)
 {
 	float x_pos = _spawn_position.x;
@@ -741,18 +782,17 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 	pickup.pickup_type_ = _pickup_type;
 	pickup.setType(GameObject::PICKUP);
 	pickup.set_visibility(true);
-	pickup.spawned = true;
-	pickup.destroyed = false;
 	pickup.dead = false;
+	max_collectable_count_++;
 
 	pickups_.push_back(pickup);
 }
 
-void LevelState::Destroy(GameObject &object)
+/*void LevelState::Destroy(GameObject &object)
 {
 	if(object.destroyed == false)
 	{
 		object.DestroyBody();
 		object.destroyed = true;
 	}
-}
+}*/

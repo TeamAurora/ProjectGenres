@@ -8,8 +8,8 @@
 #include "game_object.h"
 #include "Player.h"
 #include "enemy.h"
-#include "pickup.h"
 #include "blade.h"
+#include "pickup.h"
 #include "bullet.h"
 
 #include "CollisionTile.h"
@@ -75,10 +75,9 @@ protected:
 	b2World* world_;
 
 	// Spawn functions
-	void SpawnSpike(b2Vec2 spawn_position, b2Vec2 dimensions);
 	void SpawnPickup(b2Vec2 spawn_position,  b2Vec2 dimensions, PickUp::PICKUPTYPE type);
 
-	void Destroy(GameObject &object); //will destroy non-destroyed body thats been passed in
+	//void Destroy(GameObject &object); //will destroy non-destroyed body thats been passed in
 
 	// Pickup Textures
 	abfw::Texture* red_pickup_texture_;
@@ -89,9 +88,6 @@ protected:
 	// Plant Textures
 	abfw::Texture* plant_wall_texture_;
 	abfw::Texture* plant_block_texture_;
-
-	// Spike Texture
-	abfw::Texture* spike_texture_;
 
 	// Player Textures
 		// normal level
@@ -125,7 +121,6 @@ protected:
 	std::vector<Enemy> enemies_;
 	std::vector<Bullet> bullets_;
 	std::vector<LivingObject> plants_;
-	std::vector<GameObject> spikes_;
 	Player player_;
 	Blade blade_;
 	Sprite arrow_; //arrow showing where player wants to jump
@@ -135,7 +130,8 @@ protected:
 	int max_score_;
 	int collectables_;
 	int max_collectable_count_;
-	float time_;
+	std::clock_t start_time_;
+	double time_;
 	bool gameOver_;		// Track current level status
 	float attackTime;	// Amount of time between when attack can be pressed
 	float reloadTime;	// Time between shots from the enemy

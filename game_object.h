@@ -54,12 +54,11 @@ public:
 	b2Body* body_; // pointer to a box2d body
 
 /////John// 
-	void CreateStaticBody(b2World* world_, float x , float y, float width, float height);//create Static body at (x,y) with that width & height
+	//void CreateStaticBody(b2World* world_, float x , float y, float width, float height);//create Static body at (x,y) with that width & height
 	void Knockback(b2Vec2, b2Vec2);//knock object back when they take damage
-	void setAnimation();//set up plants for death animation
+	//void setAnimation();//set up plants for death animation
 
 	bool dead;//flag for killing
-	bool destroyed;// to check if object has removed from game
 
 	//animation
 	bool deadAnim;//has the death animation been played

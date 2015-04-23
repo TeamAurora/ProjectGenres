@@ -90,9 +90,6 @@
     <ClCompile Include="sprite.cpp">
       <Filter>Application\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="pickup.cpp">
-      <Filter>Application\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="level_3.cpp">
       <Filter>Application\States\Levels</Filter>
     </ClCompile>
@@ -173,11 +170,11 @@
     <ClInclude Include="sprite.h">
       <Filter>Application\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="pickup.h">
-      <Filter>Application\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="level_3.h">
       <Filter>Application\States\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="pickup.h">
+      <Filter>Application\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

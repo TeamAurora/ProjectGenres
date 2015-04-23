@@ -3,7 +3,6 @@
 Blade::Blade()
 {
 	type_ = BLADE;
-	created = false;
 	armLength = 100.0f;
 }
 
@@ -11,7 +10,6 @@ void Blade::Create(b2World* world_,const Player &player)
 {
 	//varaibles that need reset if player has been killed
 	dead = false;
-	destroyed = false;
 
 	alignFace(player);
 
@@ -27,7 +25,7 @@ void Blade::Create(b2World* world_,const Player &player)
 	bodyDef.position.x = bodyInitialPosition.x;
 	bodyDef.position.y = bodyInitialPosition.y;
 	bodyDef.fixedRotation = true;//stops body rotating 
-	this->AddBody(world_, bodyDef);
+	AddBody(world_, bodyDef);
 
 	b2PolygonShape dynamicBox;
 	dynamicBox.SetAsBox(body_half_width, body_half_height);
@@ -36,10 +34,7 @@ void Blade::Create(b2World* world_,const Player &player)
 	fixtureDef.isSensor = true;
 	fixtureDef.shape = &dynamicBox;
 	body_->ResetMassData();//it only sets new value after this is called
-	
-	this->AddFixture(fixtureDef);
-
-	body_->SetUserData(this);
+	AddFixture(fixtureDef);
 
 	//set sprite size to match body
 	set_width(BOX2D_GFX_SIZE(2*body_half_width));
@@ -47,20 +42,32 @@ void Blade::Create(b2World* world_,const Player &player)
 
 	set_colour(0xffff0000);
 	
-	created = true;
 	disabled = false;
+}
+
+void Blade::Activate()
+{
+	disabled = false;
+	body_->SetActive(true);
 }
 
 void Blade::Update(float ticks,const Player &player)
 {
-	alignFace(player);
+	if(disabled)
+	{
+		body_->SetActive(false);
+	}
 
-	//update sprite position to match body
-	float new_x = player.position().x + xOffset;
-	float new_y = player.position().y + yOffset;
+	if(!disabled)
+	{
+		alignFace(player);
 
-	set_position(abfw::Vector3(new_x,new_y,0.f));
-	set_rotation(-body_->GetAngle());
+		//update sprite position to match body
+		float new_x = player.position().x + xOffset;
+		float new_y = player.position().y + yOffset;
+
+		MoveTo(new_x, new_y);
+	}
 }
 
 void Blade::alignFace(const Player &player)

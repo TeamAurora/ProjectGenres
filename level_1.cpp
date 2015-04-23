@@ -24,22 +24,14 @@ void Level_1::LoadAssets()
 	rotPlayerDeath = application_->LoadTextureFromPNG("player_death_rotated.png");
 	playerJump = application_->LoadTextureFromPNG("player_jump.png");
 	rotPlayerJump = application_->LoadTextureFromPNG("player_jump_rotated.png");
+	playerAttack = application_->LoadTextureFromPNG("player_attack.png");
+	rotPlayerAttack = application_->LoadTextureFromPNG("player_attack_rotated.png");
 
 	////pickups
 	red_pickup_texture_ = application_->LoadTextureFromPNG("pickup_red.png");
 	blue_pickup_texture_ = application_->LoadTextureFromPNG("pickup_blue.png");
 	yellow_pickup_texture_ = application_->LoadTextureFromPNG("pickup_yellow.png");
 	green_pickup_texture_ = application_->LoadTextureFromPNG("pickup_green.png");
-
-	// textures not used for this level
-	playerFlying = NULL;
-	plant_wall_texture_ = NULL;
-	plant_block_texture_ = NULL;
-	enemyMove = NULL;
-	enemyDeath = NULL;
-	enemyAttack = NULL;
-	enemyHit = NULL;
-	enemyIdle = NULL;
 }
 
 APPSTATE Level_1::InputLoop(const abfw::SonyController* controller)
@@ -64,6 +56,13 @@ void Level_1::CreateObjects()
 	arrow_.set_texture(playerArrow);
 	arrow_.set_width(1024.0f);
 	arrow_.set_height(1024.0f);
+	blade_.Create(world_, player_);
+
+	for(std::vector<PickUp>::iterator iter = pickups_.begin(); iter != pickups_.end(); ++iter)
+	{
+		iter->body_->SetActive(true);
+		iter->dead = false;
+	}
 }
 
 void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
@@ -87,21 +86,21 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	//create and update blade
 	if(player_.attacking == true)
 	{
-		if(blade_.created == false)
+		if(blade_.disabled == true)
 		{
-			blade_.Create(world_, player_);
+			blade_.Activate();
 			attackTime = 0;
 		}
 	}
-	else if (blade_.destroyed == false && blade_.created == true && attackTime > 20)//destroy blade after a certain time
+	else if (blade_.disabled == false && attackTime > 20)//destroy blade after a certain time
 	{
 		blade_.body_->SetActive(false);
-		blade_.created = false;
+		blade_.disabled = true;
 	}
 	
-	if(blade_.created == true)
+	blade_.Update(ticks_,player_);
+	if(attackTime < 20)
 	{
-		blade_.Update(ticks_,player_);
 		attackTime += (ticks_*20);
 	}
 
@@ -118,7 +117,7 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 				player_.set_texture(rotPlayerTex);
 				break;			 
 			case Player::ATTACKING:
-
+				player_.set_texture(rotPlayerAttack);
 				break;
 			case Player::DEAD:
 				player_.set_texture(rotPlayerDeath);
@@ -140,7 +139,7 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 				player_.set_texture(playerTex);
 				break;			 
 			case Player::ATTACKING:
-
+				player_.set_texture(playerAttack);
 				break;
 			case Player::DEAD:
 				player_.set_texture(playerDeath);
@@ -161,16 +160,15 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 void Level_1::Restart()
 {
 	//destroy objects
-	Destroy(player_);//player
+	player_.DestroyBody();
+	blade_.DestroyBody();
 
 	//destroy pickups
 	for ( int pickupindex = 0; pickupindex < pickups_.size(); pickupindex++)
 	{
 		//reset for another play
 		pickups_[pickupindex].dead = true;
-		pickups_[pickupindex].spawned = false;
-
-		Destroy(pickups_[pickupindex]);
+		pickups_[pickupindex].body_->SetActive(false);
 	}
 
 	score_ = 0;
