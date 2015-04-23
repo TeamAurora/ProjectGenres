@@ -18,4 +18,3 @@ private:
 	void CreateObjects();
 	void Restart();
 };
-

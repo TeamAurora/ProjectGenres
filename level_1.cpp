@@ -32,6 +32,7 @@ void Level_1::LoadAssets()
 	green_pickup_texture_ = application_->LoadTextureFromPNG("pickup_green.png");
 
 	// textures not used for this level
+	playerFlying = NULL;
 	plant_wall_texture_ = NULL;
 	plant_block_texture_ = NULL;
 	enemyMove = NULL;

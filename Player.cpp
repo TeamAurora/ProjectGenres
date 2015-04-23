@@ -147,7 +147,6 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	if(flying_ == false)
 	{
-
 		//flip facing back the right way after jump has landed
 		if(prevState == INAIR &&  state_ != INAIR)
 		{
@@ -169,7 +168,6 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 				moveUp = true;
 			}
 		}
-
 	}
 
 	//set up animations for each state
@@ -193,9 +191,8 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 				break;
 			case FLYING:
 				break;
-		};
+		}
 	}
-
 		
 	// play the animation
 	if(horizontal == true)
@@ -207,21 +204,6 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 		result = Animate(ticks, moveUp);
 	}
 
-	//change state
-	if (attacking == true)
-	{
-		state_ = ATTACKING;
-	}
-	else if(dead == true && attacking == false)
-	{
-		state_ = DEAD;
-		body_->SetLinearVelocity(b2Vec2(0,0));//stop all movement
-	}
-	else
-	{
-		state_ = FLYING;
-	}
-
 	//check for animations that play once
 	if(state_ == DEAD)
 	{
@@ -229,7 +211,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 	}
 
 	//jump animation has played
-	if(state_ == JUMPING && result == true)
+	if (state_ == JUMPING && result == true)
 	{
 		state_ = INAIR;
 	}
@@ -269,7 +251,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 
 	// check we have a valid controller object (one that isn't NULL)
 	if (controller)
-	{	
+	{
 ////Rebecca//////////
 		// Sets current gravity manipulation via player input
 		//jetpack flight
@@ -482,25 +464,43 @@ void Player::setGravity(Direction direction)
 	gDir = direction;
 }
 
-//change state
 void Player::changeState()
 {
-	if(move == true && dead == false && state_ != INAIR)//only run when on a surface
+	if (flying_)
 	{
-		state_ = RUNNING;
+		if (attacking == true)
+		{
+			state_ = ATTACKING;
+		}
+		else if (dead == true && attacking == false)
+		{
+			state_ = DEAD;
+			body_->SetLinearVelocity(b2Vec2(0, 0));//stop all movement
+		}
+		else
+		{
+			state_ = FLYING;
+		}
 	}
-	else if (attacking == true && state_ != INAIR)//no mid air attack
+	else
 	{
-		state_ = ATTACKING;
-	}
-	else if(dead == true)
-	{
-		state_ = DEAD;
-		body_->SetLinearVelocity(b2Vec2(0.0f,0.0f));//stop all movement
-	}
-	else if (state_ != INAIR && state_ != JUMPING && attacking != true)//state stays as INAIR until a surface is touched
-	{
-		state_ = IDLE;
+		if (move == true && dead == false && state_ != INAIR && state_ != JUMPING)//only run when on a surface
+		{
+			state_ = RUNNING;
+		}
+		else if (attacking == true && state_ != INAIR)//no mid air attack
+		{
+			state_ = ATTACKING;
+		}
+		else if (dead == true)
+		{
+			state_ = DEAD;
+			body_->SetLinearVelocity(b2Vec2(0.0f, 0.0f));//stop all movement
+		}
+		else if (state_ != INAIR && state_ != JUMPING && attacking != true)//state stays as INAIR until a surface is touched
+		{
+			state_ = IDLE;
+		}
 	}
 }
 

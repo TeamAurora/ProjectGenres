@@ -51,6 +51,13 @@ private:
 	};
 	LevelMap level_map_;
 
+	std::array<Sprite, 4> UI_corners_;
+	Sprite player_icon_;
+	Sprite timer_icon_;
+	abfw::Texture* UI_corner_texture_;
+	abfw::Texture* player_icon_texture_;
+	abfw::Texture* timer_icon_texture_;
+
 	Sprite pause_background_;
 	abfw::Texture* pause_background_texture_;
 	std::array<Button*, 3> pause_buttons_;
@@ -87,18 +94,21 @@ protected:
 	abfw::Texture* spike_texture_;
 
 	// Player Textures
-	abfw::Texture* playerArrow;
-	abfw::Texture* playerTex;
-	abfw::Texture* rotPlayerTex;
-	abfw::Texture* playerIdle;
-	abfw::Texture* rotPlayerIdle;
-	abfw::Texture* playerDeath;
-	abfw::Texture* rotPlayerDeath;
-	abfw::Texture* playerJump;
-	abfw::Texture* rotPlayerJump;
-	abfw::Texture* playerAttack;
-	abfw::Texture* rotPlayerAttack;
-	abfw::Texture* playerFlying;
+		// normal level
+		abfw::Texture* playerArrow;
+		abfw::Texture* playerTex;
+		abfw::Texture* rotPlayerTex;
+		abfw::Texture* playerIdle;
+		abfw::Texture* rotPlayerIdle;
+		abfw::Texture* playerJump;
+		abfw::Texture* rotPlayerJump;
+		// flying level
+		abfw::Texture* playerFlying;
+		// both
+		abfw::Texture* playerDeath;
+		abfw::Texture* rotPlayerDeath;
+		abfw::Texture* playerAttack;
+		abfw::Texture* rotPlayerAttack;
 
 	// Enemy Textures
 	abfw::Texture* enemyMove;
