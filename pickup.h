@@ -6,4 +6,6 @@ class PickUp : public GameObject
 public:
 	enum PICKUPTYPE { RED, BLUE, YELLOW, GREEN };
 	PICKUPTYPE pickup_type_;
-}
+
+	bool collided;
+};

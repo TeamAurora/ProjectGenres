@@ -18,7 +18,7 @@ class GameObject : public Sprite
 {	// Physics based game object
 public:
 
-	enum TYPE { PLAYER, COLLISIONTILE, ENEMY, PICKUP, PLANT, SPIKE, BLADE, BULLET }; // used for specific collision response - objects type
+	enum TYPE { PLAYER, COLLISIONTILE, ENEMY, PICKUP, PLANT, BLADE, BULLET }; // used for specific collision response - objects type
 
 	GameObject();		// Default constructor for default gameobjects
 	virtual ~GameObject();
@@ -42,6 +42,7 @@ public:
 	void MoveBy(const float x, const float y);
 	void AccelerateTo(const abfw::Vector2& velocity);			// Modifies body velocity directly if the object is using box2d physics
 	void AccelerateBy(const abfw::Vector2& deltavelocity);
+	inline abfw::Vector2 velocity() const { return velocity_; }
 	
 	// Box2D Physics Functions
 	void AddBody(b2World* world, const b2BodyDef body_def);			// adds a body to this gameobject and changes physicsengine_ to box2d

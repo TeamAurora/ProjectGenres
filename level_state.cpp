@@ -14,7 +14,9 @@ LevelState::LevelState(abfw::Platform& platform, const GameApplication* applicat
 	current_state_(state),
 	pause_selection_(RESUME),
 	score_(0),
-	max_score_(100),
+	max_score_(0),
+	collectables_(0),
+	max_collectable_count_(0),
 	gameOver_(false),
 	reloadTime(0)
 {
@@ -40,8 +42,13 @@ LevelState::LevelState(abfw::Platform& platform, const GameApplication* applicat
 
 	pause_buttons_[0]->Select(true);
 
-	UI_corner_texture_ = application_->LoadTextureFromPNG("UI_corner.png");
+	red_pickup_texture_ = application_->LoadTextureFromPNG("pickup_red.png");
+	blue_pickup_texture_ = application_->LoadTextureFromPNG("pickup_blue.png");
+	yellow_pickup_texture_ = application_->LoadTextureFromPNG("pickup_yellow.png");
+	green_pickup_texture_ = application_->LoadTextureFromPNG("pickup_green.png");
 
+	// UI corners
+	UI_corner_texture_ = application_->LoadTextureFromPNG("UI_corner.png");
 	for (int corner = 0; corner < UI_corners_.size(); ++corner)
 	{
 		UI_corners_[corner].set_texture(UI_corner_texture_);
@@ -61,13 +68,14 @@ LevelState::LevelState(abfw::Platform& platform, const GameApplication* applicat
 	UI_corners_[3].set_position(128.0f, platform_.height() - 32.0f, 0.0f);
 	UI_corners_[3].set_uv_height(-1.0f);
 
+	// UI icons
 	player_icon_texture_ = application_->LoadTextureFromPNG("UI_player.png");
-
-	player_icon_.InitSprite(64.0f, 32.0f, abfw::Vector3(32.0f, 16.0f, 0.0f), player_icon_texture_);
+	player_icon_.InitSprite(128.0f, 64.0f, abfw::Vector3(32.0f, 16.0f, 0.0f), player_icon_texture_);
 
 	timer_icon_texture_ = application_->LoadTextureFromPNG("UI_timer.png");
+	timer_icon_.InitSprite(64.0f, 64.0f, abfw::Vector3(platform_.width() - 128.0f, platform_.height() - 16.0f, 0.0f), timer_icon_texture_);
 
-	timer_icon_.InitSprite(32.0f, 32.0f, abfw::Vector3(platform_.width() - 128.0f, platform_.height() - 16.0f, 0.0f), timer_icon_texture_);
+	collectable_icon_.InitSprite(64.0f, 64.0f, abfw::Vector3(16.0f, platform_.height() - 16.0f, 0.0f), green_pickup_texture_);
 
 	// Init all the level_specific textures to NULL
 	playerArrow = NULL;
@@ -201,7 +209,7 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 
 		time_ = ( std::clock() - start_time_ ) / (double) CLOCKS_PER_SEC;
 
-		application_->player_camera_->TendTowards(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)), 15.0f);
+		application_->player_camera_->TendTowards(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)), 1.0f);
 		application_->player_camera_->UpdateCamera(ticks_);
 	}
 
@@ -257,14 +265,11 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 		}
 	}
 
-	if(!enemies_.empty())
+	for(int enemyindex = 0; enemyindex < enemies_.size(); enemyindex++)
 	{
-		for(int enemyindex = 0; enemyindex < enemies_.size(); enemyindex++)
+		if(enemies_[enemyindex].deadAnim == false)
 		{
-			if(enemies_[enemyindex].deadAnim == false)
-			{
-				sprite_renderer_->DrawSprite(enemies_[enemyindex]);
-			}
+			sprite_renderer_->DrawSprite(enemies_[enemyindex]);
 		}
 	}
 
@@ -709,7 +714,7 @@ void LevelState::LoadMap(const char* map_filename)
 			auto object = group->objects[objectsindex];
 
 			// get associated tile for this object
-			NLTmxMapTile* tile = tiles_[object->gid];
+			NLTmxMapTile* tile = tiles_[object->gid-1];
 
 			switch(objectgroup_type)
 			{
@@ -721,7 +726,7 @@ void LevelState::LoadMap(const char* map_filename)
 				else if(tile->filename == "pickup_yellow.png") { type = PickUp::YELLOW; }
 				else if(tile->filename == "pickup_green.png") { type = PickUp::GREEN; }
 
-				SpawnPickup(b2Vec2(object->x, object->y), b2Vec2(object->width, object->height), type);
+				SpawnPickup(b2Vec2(object->x, object->y), b2Vec2(tile->width, tile->height), type);
 				break;
 			}
 		}
@@ -773,6 +778,7 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 		max_score_ += 90;
 		break;
 	case PickUp::GREEN:
+		max_score_ += 120;
 		texture = green_pickup_texture_;
 		break;
 	}
@@ -783,6 +789,7 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 	pickup.setType(GameObject::PICKUP);
 	pickup.set_visibility(true);
 	pickup.dead = false;
+	pickup.collided = false;
 	max_collectable_count_++;
 
 	pickups_.push_back(pickup);

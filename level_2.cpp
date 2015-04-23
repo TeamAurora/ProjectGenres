@@ -55,7 +55,7 @@ void Level_2::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	// Any per-frame or per-tick updating for game objects should be done here
 	
 	//update player if alive
-	if(player_.dead != true)
+	/*if(player_.dead != true)
 	{
 		player_.Update(ticks_, gameOver_, true);
 	}

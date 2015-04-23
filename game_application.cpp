@@ -52,17 +52,17 @@ void GameApplication::Init()
 	loading_.InitSprite(platform_.width(), platform_.height(), abfw::Vector3(platform_.width() / 2.0f, platform_.height() / 2.0f, 0.0f), loading_texture_);
 	audio_manager_->LoadMusic("Main_Menu_Music.wav", platform_);
 	audio_manager_->PlayMusic();
-	menu_move_ = audio_manager_->LoadSample("UI_move.wav", platform_);
+	menu_move_ = audio_manager_->LoadSample("menu_move.wav", platform_);
 	if (menu_move_ == -1)
 	{
 		std::cout << "menu_move failed to load." << std::endl;
 	}
-	menu_back_ = audio_manager_->LoadSample("UI_back.wav", platform_);
+	menu_back_ = audio_manager_->LoadSample("menu_back.wav", platform_);
 	if (menu_back_ == -1)
 	{
 		std::cout << "menu_back failed to load." << std::endl;
 	}
-	menu_select_ = audio_manager_->LoadSample("UI_select.wav", platform_);
+	menu_select_ = audio_manager_->LoadSample("menu_select.wav", platform_);
 	if (menu_select_ == -1)
 	{
 		std::cout << "menu_select failed to load." << std::endl;
@@ -154,7 +154,7 @@ void GameApplication::Render()
 		pCurrentState->Render(frame_rate_, font_, sprite_renderer_); // else do state-specific rendering
 	}
 
-	font_.RenderText(sprite_renderer_, abfw::Vector3(850.0f, 510.0f, 0.0f), 1.0f, 0xff00ffff, abfw::TJ_LEFT, "FPS: %.1f", frame_rate_);
+	font_.RenderText(sprite_renderer_, abfw::Vector3(850.0f, 510.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "FPS: %.1f", frame_rate_);
 
 	// tell sprite renderer that all sprites have been drawn
 	sprite_renderer_->End();

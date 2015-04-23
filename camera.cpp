@@ -74,13 +74,12 @@ void Camera::UpdateCamera(const float& ticks)
 	if (tracking_ == true)
 	{
 		abfw::Vector2 direction = target_ - translation_;
-		if(direction.Length() < (velocity_ * 1.5f)) // defines a cutoff distance at which the camera reaches target (else it will never be exactly equal)
+		if(direction.Length() < (velocity_ * 1.0f)) // defines a cutoff distance at which the camera reaches target (else it will never be exactly equal)
 		{
 			MoveTo(target_);
 		}
 		else
 		{
-			direction.Normalise();
 			direction.x *= velocity_;
 			direction.y *= velocity_;
 			MoveBy(direction);

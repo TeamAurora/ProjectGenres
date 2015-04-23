@@ -28,7 +28,6 @@ void Enemy::Create_Enemy(b2World* world_,float x , float y)
 {
 	//values that need set each time an enemy is spawned
 	dead = false;
-	destroyed = false;
 	moveTimer_ = 0;
 	move = true;
 	deadAnim = false;
@@ -46,8 +45,7 @@ void Enemy::Create_Enemy(b2World* world_,float x , float y)
 	enemy_bodyDef.type = b2_dynamicBody;
 	enemy_bodyDef.position.x = bodyInitialPosition.x;
 	enemy_bodyDef.position.y = bodyInitialPosition.y;
-	body_ = world_->CreateBody(&enemy_bodyDef);
-	physicsengine_ = BOX2D;			// changes to box2d physics for this object
+	AddBody(world_, enemy_bodyDef);
 
 	b2PolygonShape enemy_Box;
 	enemy_Box.SetAsBox(body_half_width, body_half_height);
@@ -57,9 +55,7 @@ void Enemy::Create_Enemy(b2World* world_,float x , float y)
 	enemy_fixtureDef.density = 1.0f;
 	enemy_fixtureDef.friction = 0.5f;
 	enemy_fixtureDef.restitution = 0.1f; // bouncieness
-	body_->CreateFixture(&enemy_fixtureDef);
-
-	body_->SetUserData(this);
+	AddFixture(enemy_fixtureDef);
 
 	//Sprite set up
 	//set size to match body
@@ -70,22 +66,11 @@ void Enemy::Create_Enemy(b2World* world_,float x , float y)
 	set_uv_height(uv_height);
 	set_uv_width(uv_width);
 	set_uv_position(abfw::Vector2(uv_x, uv_y));
-
-	//set_colour(0xff0000ff);//red
 }
 
 void Enemy::Update_Enemy(float ticks, b2Vec2 playerPos, bool meleeEnemy)
 {
-	//update sprite position to match body
-	float enemy_new_x = BOX2D_GFX_POS_X(body_->GetPosition().x);
-	float enemy_new_y = BOX2D_GFX_POS_Y(body_->GetPosition().y);
-
-	set_position(abfw::Vector3(enemy_new_x,enemy_new_y,0.f));
-	set_rotation(-body_->GetAngle());
-
-	//gives position - used for spawning bullets
-	x = enemy_new_x;
-	y = enemy_new_y;
+	UpdatePosition();
 
 	if(meleeEnemy)//update for melee enemies
 	{
@@ -111,7 +96,7 @@ void Enemy::MeleeUpdate(float ticks, b2Vec2 playerPos)
 	{
 		patrol_ = true;
 		meleeState_ = MOVING;
-		Advance(playerPos, x, y);//move enemy to hurt player if in range
+		Advance(playerPos, position().x, position().y);//move enemy to hurt player if in range
 	}	
 	else if(attack_ == true)
 	{

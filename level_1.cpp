@@ -26,12 +26,6 @@ void Level_1::LoadAssets()
 	rotPlayerJump = application_->LoadTextureFromPNG("player_jump_rotated.png");
 	playerAttack = application_->LoadTextureFromPNG("player_attack.png");
 	rotPlayerAttack = application_->LoadTextureFromPNG("player_attack_rotated.png");
-
-	////pickups
-	red_pickup_texture_ = application_->LoadTextureFromPNG("pickup_red.png");
-	blue_pickup_texture_ = application_->LoadTextureFromPNG("pickup_blue.png");
-	yellow_pickup_texture_ = application_->LoadTextureFromPNG("pickup_yellow.png");
-	green_pickup_texture_ = application_->LoadTextureFromPNG("pickup_green.png");
 }
 
 APPSTATE Level_1::InputLoop(const abfw::SonyController* controller)
@@ -62,7 +56,10 @@ void Level_1::CreateObjects()
 	{
 		iter->body_->SetActive(true);
 		iter->dead = false;
+		iter->collided = false;
 	}
+
+	start_time_ = std::clock();
 }
 
 void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
@@ -83,7 +80,7 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 		Restart();
 	}
 	
-	//create and update blade
+	// update blade
 	if(player_.attacking == true)
 	{
 		if(blade_.disabled == true)
@@ -150,10 +147,34 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 		}
 	}
 
-	//win condition
-	if(score_ >= max_score_)
+	
+	for( std::vector<PickUp>::iterator iter = pickups_.begin(); iter != pickups_.end(); ++iter)
 	{
-		gameOver_ = true;
+		if(iter->collided == true)
+		{
+			switch(iter->pickup_type_)
+			{
+			case PickUp::RED:
+				score_ += 30;
+				collectables_++;
+				break;
+			case PickUp::BLUE:
+				score_ += 60;
+				collectables_++;
+				break;
+			case PickUp::YELLOW:
+				score_ += 90;
+				collectables_++;
+				break;
+			case PickUp::GREEN:
+				score_ += 120;
+				collectables_++;
+				gameOver_ = true;
+				break;
+			}
+			iter->body_->SetActive(false);
+			iter->collided = false;
+		}
 	}
 }
 
@@ -167,11 +188,14 @@ void Level_1::Restart()
 	for ( int pickupindex = 0; pickupindex < pickups_.size(); pickupindex++)
 	{
 		//reset for another play
-		pickups_[pickupindex].dead = true;
-		pickups_[pickupindex].body_->SetActive(false);
+		if(pickups_[pickupindex].dead == true)
+		{
+			pickups_[pickupindex].body_->SetActive(false);
+		}
 	}
 
 	score_ = 0;
+	collectables_ = 0;
 
 	//create new versions at starting position
 	CreateObjects();

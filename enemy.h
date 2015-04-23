@@ -14,7 +14,6 @@ class Enemy : public GameObject
 		void Patrol(float ticks);
 
 		b2Vec2 gravity;//keep the enemy on a surface
-		float x,y;
 
 		// Enumerated states enemy can be in
 		enum OBJECTSTATE {IDLE, MOVING, ATTACKING, DEAD, SHOOTING };

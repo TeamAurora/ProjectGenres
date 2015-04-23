@@ -25,7 +25,6 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		{
 			((Player *)game_object)->hurting = true;
 			((Player *)game_object)->Knockback(((Player *)game_object)->body_->GetPosition(),((Enemy *)game_object_b)->body_->GetPosition());
-			//((Enemy* )game_object_b)->meleeState_ = Enemy::ATTACKING;
 			((Enemy* )game_object_b)->attack_ = true;
 		}
 		else if (game_object->getType() == GameObject::ENEMY && game_object_b->getType() == GameObject::PLAYER && ((Player *)game_object_b)->attacking == false)
@@ -33,7 +32,6 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 			((Player *)game_object_b)->hurting = true;			
 			((Player *)game_object_b)->Knockback(((Player *)game_object_b)->body_->GetPosition(), ((Enemy *)game_object)->body_->GetPosition());
 			((Enemy* )game_object)->attack_ = true;
-			//((Enemy* )game_object)->meleeState_ = Enemy::ATTACKING;
 		}
 
 		//attack enemies
@@ -56,37 +54,17 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 			((GameObject* )game_object)->dead = true;
 		}
 
-		//player death on spikes
-		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::SPIKE)
-		{
-			((Player* )game_object)->dead = true;
-		}
-		else if (game_object->getType() == GameObject::SPIKE && game_object_b->getType() == GameObject::PLAYER)
-		{
-			((Player* )game_object_b)->dead = true;
-		}
-
 //////////Pick Ups/////////////////////////
-		//pickup points
 		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::PICKUP)
 		{
 			((PickUp *)game_object_b)->dead = true;
+			((PickUp *)game_object_b)->collided = true;
 		}
 
 		if (game_object->getType() == GameObject::PICKUP && game_object_b->getType() == GameObject::PLAYER)
 		{
 			((PickUp *)game_object)->dead = true;
-		}
-
-		//stops the blade pushing the pickup away 
-		if (game_object->getType() == GameObject::BLADE && game_object_b->getType() == GameObject::PICKUP)
-		{
-			((PickUp *)game_object_b)->dead = true;
-		}
-
-		if (game_object->getType() == GameObject::PICKUP && game_object_b->getType() == GameObject::BLADE)
-		{
-			((PickUp *)game_object)->dead = true;
+			((PickUp *)game_object)->collided = true;
 		}
 
 ///////////Platform check///// Craig
@@ -101,7 +79,7 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		}
 	
 //////////Bullets///////////////////////
-		//destroy bullets if it hits platfrom
+		//destroy bullets if it hits walls
 		if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::COLLISIONTILE)
 		{
 			((Bullet* )game_object)->dead = true;
@@ -117,16 +95,6 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 			((Bullet* )game_object)->dead = true;
 		}
 		else if (game_object->getType() == GameObject::PICKUP && game_object_b->getType() == GameObject::BULLET)
-		{
-			((Bullet* )game_object_b)->dead = true;
-		}
-
-		//destroy bullets if it hits spikes
-		if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::SPIKE)
-		{
-			((Bullet* )game_object)->dead = true;
-		}
-		else if (game_object->getType() == GameObject::SPIKE && game_object_b->getType() == GameObject::BULLET)
 		{
 			((Bullet* )game_object_b)->dead = true;
 		}

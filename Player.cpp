@@ -301,20 +301,28 @@ void Player::Player_Input(const abfw::SonyController* controller)
 				switch(gDir)
 				{
 				case DOWN:
-					if (angle.y > 0)
+					if (angle.y < 0)
+					{
 						jump_possible = false;
+					}
 					break;
 				case UP:
-					if (angle.y < 0)
+					if (angle.y > 0)
+					{
 						jump_possible = false;
+					}
 					break;
 				case LEFT:
 					if (angle.x < 0)
+					{
 						jump_possible = false;
+					}
 					break;
 				case RIGHT:
 					if (angle.x > 0)
+					{
 						jump_possible = false;
+					}
 					break;
 				}
 
@@ -324,8 +332,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 					//calls to set up animtaion for the jump
 					state_ = JUMPING;
 					jumpAnimation(xaxisval, yaxisval);
-					AccelerateTo(abfw::Vector2(impulse.x, impulse.y));
-					//body_->ApplyLinearImpulse(impulse, body_->GetWorldCenter());
+					body_->ApplyLinearImpulse(impulse, body_->GetWorldCenter());
 				}
 			}
 		}
@@ -434,7 +441,8 @@ void Player::ResolveCollisionTile(CollisionTile* collisiontile)
 						result = true;
 						direction = LEFT;
 					}
-					std::cout << "Collision tile orientation error." << std::endl;
+					if(!result)
+						std::cout << "Collision tile orientation error." << std::endl;
 				}
 				setGravity(direction);
 				break;

@@ -24,15 +24,9 @@ void Level_3::LoadAssets()
 	playerAttack = application_->LoadTextureFromPNG("player_floating_attack.png");
 
 	//enemy
-	shooterAttack = application_->LoadTextureFromPNG("enemy_ranged_firing.png");
+	//shooterAttack = application_->LoadTextureFromPNG("enemy_ranged_firing.png");
 	shooterDeath = application_->LoadTextureFromPNG("enemy_ranged_death.png");
 	shooterProjectile = application_->LoadTextureFromPNG("enemy_projectile.png");
-
-	////pickups
-	red_pickup_texture_ = application_->LoadTextureFromPNG("pickup_red.png");
-	blue_pickup_texture_ = application_->LoadTextureFromPNG("pickup_blue.png");
-	yellow_pickup_texture_ = application_->LoadTextureFromPNG("pickup_yellow.png");
-	green_pickup_texture_ = application_->LoadTextureFromPNG("pickup_green.png");
 }
 
 APPSTATE Level_3::InputLoop(const abfw::SonyController* controller)
@@ -72,7 +66,7 @@ void Level_3::CreateObjects()
 
 void Level_3::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 {
-	// Any per-frame or per-tick updating for game objects should be done here
+	/*// Any per-frame or per-tick updating for game objects should be done here
 	
 	//update player if alive
 	if(player_.dead != true)
@@ -152,7 +146,7 @@ void Level_3::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 		{
 			Destroy(plant_[g]);
 		}
-	}*/
+	}
 
 	//change sprite for horizontal or vertical movement
 	if (player_.horizontal == false)
@@ -224,7 +218,7 @@ void Level_3::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 void Level_3::Restart()
 {
 	//destroy objects
-	Destroy(player_);//player
+	//Destroy(player_);//player
 	//Destroy(enemy_);//enemy
 
 	//destroy pickups
@@ -232,15 +226,15 @@ void Level_3::Restart()
 	{
 		//reset for another play
 		pickups_[pickupindex].dead = true;
-		pickups_[pickupindex].spawned = false;
+		//pickups_[pickupindex].spawned = false;
 
-		Destroy(pickups_[pickupindex]);
+		//Destroy(pickups_[pickupindex]);
 	}
 
 	for(int plantsindex = 0; plantsindex < plants_.size(); plantsindex++)
 	{
 		//destroy plants
-		Destroy(plants_[plantsindex]);
+		//Destroy(plants_[plantsindex]);
 	}
 
 	score_ = 0;

@@ -54,6 +54,7 @@ private:
 	std::array<Sprite, 4> UI_corners_;
 	Sprite player_icon_;
 	Sprite timer_icon_;
+	Sprite collectable_icon_;
 	abfw::Texture* UI_corner_texture_;
 	abfw::Texture* player_icon_texture_;
 	abfw::Texture* timer_icon_texture_;
