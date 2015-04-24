@@ -13,7 +13,7 @@ Player::Player()
 	state_ = IDLE;
 
 	//set values for variables
-	move_v = 30;
+	move_v = 25;
 	damage = 1.25;
 
 	//texture coords
@@ -78,6 +78,7 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	bodyDef.type = b2_dynamicBody;
 	bodyDef.position.x = bodyInitialPosition.x;
 	bodyDef.position.y = bodyInitialPosition.y;
+	//bodyDef.linearDamping = 0.05f;
 	bodyDef.fixedRotation = true;//stops body rotating 
 	this->AddBody(world_, bodyDef);
 
@@ -258,31 +259,27 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			gDir = DOWN;
 			if (controller->right_stick_y_axis() < -jumpCutOff)//up
 			{
-				AccelerateTo(abfw::Vector2(0.0f, 20.0f));
+				MoveBy(0.0f, 3.0f);
 				state_ = FLYING;
 				flyAnimation();
 			}
 			else if (controller->right_stick_x_axis() > jumpCutOff)//right
 			{
-				AccelerateTo(abfw::Vector2(20.0f, 0.0f));
+				MoveBy(3.0f, 0.0f);
 				state_ = FLYING;
 				flyAnimation();
 			}
 			else if (controller->right_stick_x_axis() < -jumpCutOff)//left
 			{
-				AccelerateTo(abfw::Vector2(-20.0f, 0.0f));
+				MoveBy(-3.0f, 0.0f);
 				state_ = FLYING;
 				flyAnimation();
 			}
 			else if (controller->right_stick_y_axis() > jumpCutOff)//down
 			{
-				AccelerateTo(abfw::Vector2(0.0f, -20.0f));
+				MoveBy(0.0f, -3.0f);
 				state_ = FLYING;
 				flyAnimation();
-			}
-			else
-			{
-				AccelerateTo(abfw::Vector2(0.0f,0.0f));
 			}
 		}
 		else//wall jump
@@ -350,18 +347,18 @@ void Player::Player_Input(const abfw::SonyController* controller)
 					{
 						move = true;
 						move_right = true;
-						AccelerateTo(abfw::Vector2(move_v, 0.0f));
+						force.Set(move_v, 0.0f);
 					}
 					else if (controller->left_stick_x_axis() < -moveCutOff)//left
 					{
 						move = true;
 						move_right = false;
-						AccelerateTo(abfw::Vector2(-move_v, 0.0f));
+						force.Set(-move_v, 0.0f);
 					}
 					else
 					{
 						move = false;
-						AccelerateTo(abfw::Vector2(0.0f,0.0f));
+						force.SetZero();
 					}
 				}
 				else if (gDir == RIGHT || gDir == LEFT)
@@ -370,18 +367,18 @@ void Player::Player_Input(const abfw::SonyController* controller)
 					{
 						move = true;
 						moveUp = false;
-						AccelerateTo(abfw::Vector2(0.0f, -move_v));
+						force.Set(0.0f, -move_v);
 					}
 					else if (controller->left_stick_y_axis() < -moveCutOff) // up
 					{
 						move = true;
 						moveUp = true;
-						AccelerateTo(abfw::Vector2(0.0f, move_v));
+						force.Set(0.0f, move_v);
 					}
 					else
 					{
 						move = false;
-						AccelerateTo(abfw::Vector2(0.0f,0.0f));
+						force.SetZero();
 					}
 				}
 			}

@@ -144,6 +144,7 @@
     </ClCompile>
     <ClCompile Include="menu_state.cpp" />
     <ClCompile Include="NLTmxMap.cpp" />
+    <ClCompile Include="pickup.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="sprite.cpp" />
   </ItemGroup>

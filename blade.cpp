@@ -4,6 +4,7 @@ Blade::Blade()
 {
 	type_ = BLADE;
 	armLength = 100.0f;
+	disabled = true;
 }
 
 void Blade::Create(b2World* world_,const Player &player)
@@ -31,7 +32,7 @@ void Blade::Create(b2World* world_,const Player &player)
 	dynamicBox.SetAsBox(body_half_width, body_half_height);
 
 	b2FixtureDef fixtureDef;
-	fixtureDef.isSensor = true;
+	//fixtureDef.isSensor = true;
 	fixtureDef.shape = &dynamicBox;
 	body_->ResetMassData();//it only sets new value after this is called
 	AddFixture(fixtureDef);
@@ -45,19 +46,8 @@ void Blade::Create(b2World* world_,const Player &player)
 	disabled = false;
 }
 
-void Blade::Activate()
-{
-	disabled = false;
-	body_->SetActive(true);
-}
-
 void Blade::Update(float ticks,const Player &player)
 {
-	if(disabled)
-	{
-		body_->SetActive(false);
-	}
-
 	if(!disabled)
 	{
 		alignFace(player);

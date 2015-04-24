@@ -48,15 +48,17 @@ void Level_1::CreateObjects()
 	//set game objects' textures
 	player_.set_texture(playerTex);
 	arrow_.set_texture(playerArrow);
-	arrow_.set_width(1024.0f);
-	arrow_.set_height(1024.0f);
+	arrow_.set_width(512.0f);
+	arrow_.set_height(512.0f);
 	blade_.Create(world_, player_);
 
-	for(std::vector<PickUp>::iterator iter = pickups_.begin(); iter != pickups_.end(); ++iter)
+	for(int pickup = 0; pickup < pickups_.size(); pickup++)
 	{
-		iter->body_->SetActive(true);
-		iter->dead = false;
-		iter->collided = false;
+		// check if there is no body before recreation
+		if(pickups_[pickup].body_ == NULL)
+		{
+			pickups_[pickup].RecreateBody(world_);
+		}
 	}
 
 	start_time_ = std::clock();
@@ -81,23 +83,19 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	}
 	
 	// update blade
-	if(player_.attacking == true)
+	if(player_.attacking == true && blade_.disabled == true)
 	{
-		if(blade_.disabled == true)
-		{
-			blade_.Activate();
-			attackTime = 0;
-		}
+		blade_.Create(world_, player_);
+		attackTime = 0;
 	}
 	else if (blade_.disabled == false && attackTime > 20)//destroy blade after a certain time
 	{
-		blade_.body_->SetActive(false);
+		blade_.DestroyBody();
 		blade_.disabled = true;
 	}
-	
-	blade_.Update(ticks_,player_);
-	if(attackTime < 20)
+	else if(attackTime < 20)
 	{
+		blade_.Update(ticks_,player_);
 		attackTime += (ticks_*20);
 	}
 
@@ -148,32 +146,30 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 	}
 
 	
-	for( std::vector<PickUp>::iterator iter = pickups_.begin(); iter != pickups_.end(); ++iter)
+	for(int pickup = 0; pickup < pickups_.size(); pickup++)
 	{
-		if(iter->collided == true)
+		pickups_[pickup].UpdatePosition();
+		if(pickups_[pickup].collided == true)
 		{
-			switch(iter->pickup_type_)
+			switch(pickups_[pickup].pickup_type_)
 			{
 			case PickUp::RED:
 				score_ += 30;
-				collectables_++;
 				break;
 			case PickUp::BLUE:
 				score_ += 60;
-				collectables_++;
 				break;
 			case PickUp::YELLOW:
 				score_ += 90;
-				collectables_++;
 				break;
 			case PickUp::GREEN:
 				score_ += 120;
-				collectables_++;
 				gameOver_ = true;
 				break;
 			}
-			iter->body_->SetActive(false);
-			iter->collided = false;
+			collectables_++;
+			pickups_[pickup].DestroyBody();
+			pickups_[pickup].collided = false;
 		}
 	}
 }
@@ -190,7 +186,7 @@ void Level_1::Restart()
 		//reset for another play
 		if(pickups_[pickupindex].dead == true)
 		{
-			pickups_[pickupindex].body_->SetActive(false);
+			pickups_[pickupindex].DestroyBody();
 		}
 	}
 

@@ -13,6 +13,7 @@ GameObject::GameObject() :
 	dead(true),
 	knockback_(false)
 {
+	position_.z = 0.0f;
 }
 
 GameObject::~GameObject()
@@ -60,9 +61,14 @@ void GameObject::UpdatePosition()
 		position_.y += velocity_.y;
 		break;
 	case BOX2D:
-		position_.x = BOX2D_GFX_POS_X(body_->GetPosition().x);
-		position_.y = BOX2D_GFX_POS_Y(body_->GetPosition().y);
-		rotation_ = abfw::RadToDeg(body_->GetAngle()); // also get rotation from box2d body
+		if(body_ != NULL)
+		{
+			position_.x = BOX2D_GFX_POS_X(body_->GetPosition().x);
+			position_.y = BOX2D_GFX_POS_Y(body_->GetPosition().y);
+			velocity_.x = GFX_BOX2D_SIZE(body_->GetLinearVelocity().x);
+			velocity_.y = GFX_BOX2D_SIZE(-(body_->GetLinearVelocity().y));
+			rotation_ = abfw::RadToDeg(body_->GetAngle()); // also get rotation from box2d body
+		}
 		break;
 	}
 }
@@ -176,7 +182,10 @@ void GameObject::AddBody(b2World* world, const b2BodyDef body_def)
 
 void GameObject::DestroyBody()
 {
-	world_->DestroyBody(body_);	// destroys the box2d body of this object
+	if(body_ != NULL)
+	{
+		world_->DestroyBody(body_);	// destroys the box2d body of this object
+	}
 	body_ = NULL;
 	physicsengine_ = BOX2D;		// changes back to default physics engine for this object
 	world_ = NULL;			// sets world pointer to null
@@ -224,7 +233,7 @@ void GameObject::Knockback(b2Vec2 pos1, b2Vec2 pos2)
 }
 
 //John//////////////////////////
-/*void GameObject::CreateStaticBody(b2World* world_, float x , float y, float width, float height)
+void GameObject::CreateStaticBody(b2World* world_, float x , float y, float width, float height)
 {
 	//reset all variable for removing object
 	dead = false;
@@ -262,9 +271,8 @@ void GameObject::Knockback(b2Vec2 pos1, b2Vec2 pos2)
 	//set sprite position
 	MoveTo(BOX2D_GFX_POS_X(body_->GetPosition().x), BOX2D_GFX_POS_Y(body_->GetPosition().y));
 	UpdatePosition();
+}
 
-	body_->SetUserData(this);
-}*/
 /*void GameObject::setAnimation()
 {
 	// depending on objects orientation

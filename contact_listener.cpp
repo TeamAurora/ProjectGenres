@@ -19,6 +19,12 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		   
 	if(game_object && game_object_b)//check user data is not null
 	{
+
+		if(game_object->getType() == GameObject::PICKUP || game_object_b->getType() == GameObject::PICKUP)
+		{
+			int bla = 5;
+		}
+
 ////////Combat//////////////
 		//health decrease 
 		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::ENEMY && ((Player *)game_object)->attacking == false)
@@ -35,11 +41,11 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		}
 
 		//attack enemies
-		if (game_object->getType() == GameObject::BLADE && game_object_b->getType() == GameObject::ENEMY)
+		if (game_object->getType() == GameObject::BLADE && game_object_b->getType() == GameObject::COLLISIONTILE)
 		{
 			((Enemy* )game_object_b)->dead = true;
 		}
-		else if (game_object->getType() == GameObject::ENEMY && game_object_b->getType() == GameObject::BLADE)
+		else if (game_object->getType() == GameObject::COLLISIONTILE && game_object_b->getType() == GameObject::BLADE)
 		{
 			((Enemy* )game_object)->dead = true;
 		}
@@ -60,8 +66,7 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 			((PickUp *)game_object_b)->dead = true;
 			((PickUp *)game_object_b)->collided = true;
 		}
-
-		if (game_object->getType() == GameObject::PICKUP && game_object_b->getType() == GameObject::PLAYER)
+		else if (game_object->getType() == GameObject::PICKUP && game_object_b->getType() == GameObject::PLAYER)
 		{
 			((PickUp *)game_object)->dead = true;
 			((PickUp *)game_object)->collided = true;
@@ -73,7 +78,7 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 			static_cast<Player*>(game_object)->ResolveCollisionTile(static_cast<CollisionTile*>(game_object_b));
 		}
 
-		if (game_object->getType() == GameObject::COLLISIONTILE && game_object_b->getType() == GameObject::PLAYER)
+		if ((game_object->getType() == GameObject::COLLISIONTILE) && (game_object_b->getType() == GameObject::PLAYER))
 		{
 			static_cast<Player*>(game_object_b)->ResolveCollisionTile(static_cast<CollisionTile*>(game_object));
 		}

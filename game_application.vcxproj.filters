@@ -93,6 +93,9 @@
     <ClCompile Include="level_3.cpp">
       <Filter>Application\States\Levels</Filter>
     </ClCompile>
+    <ClCompile Include="pickup.cpp">
+      <Filter>Application\GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="living_object.h">

@@ -8,6 +8,7 @@
 #include <Box2D/Box2D.h>
 #include <input/vita/sony_controller_input_manager_vita.h>
 #include "box2d_helpers.h"
+#include "Contact_listener.h"
 
 namespace abfw
 {
@@ -55,7 +56,7 @@ public:
 	b2Body* body_; // pointer to a box2d body
 
 /////John// 
-	//void CreateStaticBody(b2World* world_, float x , float y, float width, float height);//create Static body at (x,y) with that width & height
+	void CreateStaticBody(b2World* world_, float x , float y, float width, float height);//create Static body at (x,y) with that width & height
 	void Knockback(b2Vec2, b2Vec2);//knock object back when they take damage
 	//void setAnimation();//set up plants for death animation
 

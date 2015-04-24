@@ -11,7 +11,6 @@ class Blade : public GameObject
 		void Create(b2World* world_, const Player &player);
 		void Update(float ticks, const Player &player);
 		void alignFace(const Player &player);
-		void Activate();
 
 		bool disabled;
 

@@ -80,6 +80,7 @@ void Camera::UpdateCamera(const float& ticks)
 		}
 		else
 		{
+			direction.Normalise();
 			direction.x *= velocity_;
 			direction.y *= velocity_;
 			MoveBy(direction);

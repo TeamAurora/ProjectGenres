@@ -35,10 +35,12 @@ LevelState::LevelState(abfw::Platform& platform, const GameApplication* applicat
 
 	for (int buttonindex = 0; buttonindex < pause_buttons_.size(); buttonindex++)
 	{
-		pause_buttons_[buttonindex]->set_width(256.0f);
 		pause_buttons_[buttonindex]->set_height(64.0f);
 		pause_buttons_[buttonindex]->set_position(470.0f, (platform_.height() / (pause_buttons_.size() + 1)) * (buttonindex + 1), 0.0f);
 	}
+	pause_buttons_[0]->set_width(256.0f);
+	pause_buttons_[1]->set_width(512.0f);
+	pause_buttons_[2]->set_width(128.0f);
 
 	pause_buttons_[0]->Select(true);
 
@@ -52,30 +54,30 @@ LevelState::LevelState(abfw::Platform& platform, const GameApplication* applicat
 	for (int corner = 0; corner < UI_corners_.size(); ++corner)
 	{
 		UI_corners_[corner].set_texture(UI_corner_texture_);
-		UI_corners_[corner].set_width(256.0f);
-		UI_corners_[corner].set_height(64.0f);
+		UI_corners_[corner].set_width(512.0f);
+		UI_corners_[corner].set_height(128.0f);
 	}
 	// Top left corner
-	UI_corners_[0].set_position(128.0f, 32.0f, 0.0f);
+	UI_corners_[0].set_position(256.0f, 64.0f, 0.0f);
 	// Top right corner
-	UI_corners_[1].set_position(platform_.width() - 128.0f, 32.0f, 0.0f);
+	UI_corners_[1].set_position(platform_.width() - 256.0f, 64.0f, 0.0f);
 	UI_corners_[1].set_uv_width(-1.0f);
 	// Bottom right corner
-	UI_corners_[2].set_position(platform_.width() - 128.0f, platform_.height() - 32.0f, 0.0f);
+	UI_corners_[2].set_position(platform_.width() - 256.0f, platform_.height() - 64.0f, 0.0f);
 	UI_corners_[2].set_uv_width(-1.0f);
 	UI_corners_[2].set_uv_height(-1.0f);
 	// Bottom left corner
-	UI_corners_[3].set_position(128.0f, platform_.height() - 32.0f, 0.0f);
+	UI_corners_[3].set_position(256.0f, platform_.height() - 64.0f, 0.0f);
 	UI_corners_[3].set_uv_height(-1.0f);
 
 	// UI icons
 	player_icon_texture_ = application_->LoadTextureFromPNG("UI_player.png");
-	player_icon_.InitSprite(128.0f, 64.0f, abfw::Vector3(32.0f, 16.0f, 0.0f), player_icon_texture_);
+	player_icon_.InitSprite(128.0f, 64.0f, abfw::Vector3(32.0f, 32.0f, 0.0f), player_icon_texture_);
 
 	timer_icon_texture_ = application_->LoadTextureFromPNG("UI_timer.png");
-	timer_icon_.InitSprite(64.0f, 64.0f, abfw::Vector3(platform_.width() - 128.0f, platform_.height() - 16.0f, 0.0f), timer_icon_texture_);
+	timer_icon_.InitSprite(64.0f, 64.0f, abfw::Vector3(platform_.width() - 192.0f, platform_.height() - 32.0f, 0.0f), timer_icon_texture_);
 
-	collectable_icon_.InitSprite(64.0f, 64.0f, abfw::Vector3(16.0f, platform_.height() - 16.0f, 0.0f), green_pickup_texture_);
+	collectable_icon_.InitSprite(64.0f, 64.0f, abfw::Vector3(32.0f, platform_.height() - 32.0f, 0.0f), green_pickup_texture_);
 
 	// Init all the level_specific textures to NULL
 	playerArrow = NULL;
@@ -209,7 +211,7 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 
 		time_ = ( std::clock() - start_time_ ) / (double) CLOCKS_PER_SEC;
 
-		application_->player_camera_->TendTowards(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)), 1.0f);
+		application_->player_camera_->TendTowards(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)), 25.0f /*player_.velocity().Length() * 0.75f + 1.0f*/);
 		application_->player_camera_->UpdateCamera(ticks_);
 	}
 
@@ -294,20 +296,13 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 		sprite_renderer_->DrawSprite(level_map_.high_layer[tile]);
 	}
 
+	for(int tile = 0; tile < level_map_.collision_layer.size(); tile++)
+	{
+		sprite_renderer_->DrawSprite(*level_map_.collision_layer[tile]);
+	}
+
 	// Use static camera at the origin to draw overlay
 	application_->main_camera_->SetActiveCamera();
-
-	// UI
-	for ( int corner = 0; corner < UI_corners_.size(); ++corner)
-	{
-		sprite_renderer_->DrawSprite(UI_corners_[corner]);
-	}
-	sprite_renderer_->DrawSprite(player_icon_);
-	sprite_renderer_->DrawSprite(timer_icon_);
-	font_.RenderText(sprite_renderer_, abfw::Vector3(16.0f, 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "HP: %.0f", player_.health());
-	font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() - 128.0f, 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "Score: %.0f", score_);
-	font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() - 128.0f, platform_.height() - 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "%.0fs", time_);
-	font_.RenderText(sprite_renderer_, abfw::Vector3(16.0f, platform_.height() - 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "%i/%i", collectables_, max_collectable_count_);
 
 	if (paused_)
 	{
@@ -317,6 +312,19 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 			sprite_renderer_->DrawSprite(*pause_buttons_[button]);
 		}
 	}
+
+	// UI
+	for ( int corner = 0; corner < UI_corners_.size(); ++corner)
+	{
+		sprite_renderer_->DrawSprite(UI_corners_[corner]);
+	}
+	sprite_renderer_->DrawSprite(player_icon_);
+	sprite_renderer_->DrawSprite(timer_icon_);
+	sprite_renderer_->DrawSprite(collectable_icon_);
+	font_.RenderText(sprite_renderer_, abfw::Vector3(64.0f, 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "HP: %.0f", player_.health());
+	font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() - 192.0f, 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "Score: %i", score_);
+	font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() - 128.0f, platform_.height() - 48.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "%.0f-s", time_);
+	font_.RenderText(sprite_renderer_, abfw::Vector3(64.0f, platform_.height() - 48.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "%i/%i", collectables_, max_collectable_count_);
 }
 
 APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
@@ -654,9 +662,6 @@ void LevelState::LoadMap(const char* map_filename)
 						break;
 					}
 
-					// flags type as COLLISIONTILE
-					tile->setType(GameObject::COLLISIONTILE);
-
 					// Define and add box2d body
 					b2BodyDef body;
 					body.type = b2_staticBody;
@@ -683,11 +688,21 @@ void LevelState::LoadMap(const char* map_filename)
 					// complete the shape definition and add fixture
 					fixture.shape = &shape;
 					fixture.density = 0.0f;
+					fixture.friction = 0.1f;
 					tile->AddFixture(fixture);
 
-					tile->UpdatePosition();
-					tile->set_height(tile_size);
+					NLTmxMapTile* maptile = tiles_[*dataindex-1];
+					if(level_map_.textures[*dataindex-1] == NULL)
+					{
+						level_map_.textures[*dataindex-1] = application_->LoadTextureFromPNG(maptile->filename.c_str());
+					}
+
 					tile->set_width(tile_size);
+					tile->set_height(tile_size);
+					tile->set_texture(level_map_.textures[*dataindex-1]);
+					tile->UpdatePosition();
+					
+					//tile->InitSprite(tile_size, tile_size, abfw::Vector3(x_pos, y_pos, 0.0f), level_map_.textures[*dataindex-1]);
 
 					// push completed tile to collision layer
 					level_map_.collision_layer.push_back(tile);
@@ -726,7 +741,7 @@ void LevelState::LoadMap(const char* map_filename)
 				else if(tile->filename == "pickup_yellow.png") { type = PickUp::YELLOW; }
 				else if(tile->filename == "pickup_green.png") { type = PickUp::GREEN; }
 
-				SpawnPickup(b2Vec2(object->x, object->y), b2Vec2(tile->width, tile->height), type);
+				SpawnPickup(b2Vec2(object->x, object->y - 128.0f), b2Vec2(tile->width, tile->height), type);
 				break;
 			}
 		}
@@ -744,7 +759,7 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 	float width = _dimensions.x;
 	float height = _dimensions.y;
 
-	PickUp pickup = PickUp();
+	PickUp pickup;
 
 	// Define and add box2d body
 	b2BodyDef body;
@@ -758,6 +773,7 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 	b2PolygonShape shape;
 	shape.SetAsBox(GFX_BOX2D_SIZE(width/2.0f), GFX_BOX2D_SIZE(height/2.0f));
 	fixture.shape = &shape;
+	//fixture.isSensor = true;
 	fixture.density = 0.0f;
 	pickup.AddFixture(fixture);
 
@@ -784,10 +800,12 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 	}
 
 	// Initialize all the gameobject related things for this pickup
-	pickup.InitSprite(width, height, abfw::Vector3(x_pos, y_pos, 0.0f), texture); // init sprite properties
+	pickup.set_width(width);
+	pickup.set_height(height);
+	pickup.set_texture(texture);
+	pickup.UpdatePosition();
 	pickup.pickup_type_ = _pickup_type;
-	pickup.setType(GameObject::PICKUP);
-	pickup.set_visibility(true);
+	
 	pickup.dead = false;
 	pickup.collided = false;
 	max_collectable_count_++;

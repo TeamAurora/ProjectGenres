@@ -6,6 +6,7 @@ LivingObject::LivingObject() :
 	health_(100.0f),
 	max_health_(100.0f)
 {
+	updateHealthPercent();
 }
 
 LivingObject::~LivingObject()
