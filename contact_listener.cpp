@@ -20,11 +20,6 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 	if(game_object && game_object_b)//check user data is not null
 	{
 
-		if(game_object->getType() == GameObject::PICKUP || game_object_b->getType() == GameObject::PICKUP)
-		{
-			int bla = 5;
-		}
-
 ////////Combat//////////////
 		//health decrease 
 		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::ENEMY && ((Player *)game_object)->attacking == false)

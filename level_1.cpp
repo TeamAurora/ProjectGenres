@@ -57,7 +57,7 @@ void Level_1::CreateObjects()
 		// check if there is no body before recreation
 		if(pickups_[pickup].body_ == NULL)
 		{
-			pickups_[pickup].RecreateBody(world_);
+			pickups_[pickup].CreateBody(world_);
 		}
 	}
 

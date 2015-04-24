@@ -5,23 +5,24 @@ PickUp::PickUp()
 	type_ = PICKUP;
 }
 
-void PickUp::RecreateBody(b2World* world_)
+void PickUp::CreateBody(b2World* world_)
 {
 	//reset all variable for removing object
 	dead = false;
 	collided = false;
 	
-	body_half_width = width();
-	body_half_height = height();
+	body_half_width = width() / 2.0f;
+	body_half_height = height() / 2.0f;
 
 	//set position
-	bodyInitialPosition.x = GFX_BOX2D_POS_X(position().x);
-	bodyInitialPosition.y = GFX_BOX2D_POS_Y(position().y);
+	spawn_position.x = position().x;
+	spawn_position.y = position().y;
 
 	// setup the ground definition
 	b2BodyDef body_def;
-	body_def.position.x = bodyInitialPosition.x;
-	body_def.position.y = bodyInitialPosition.y;
+	body_def.position.x = GFX_BOX2D_POS_X(spawn_position.x);
+	body_def.position.y = GFX_BOX2D_POS_Y(spawn_position.y);
+	body_def.fixedRotation = true;
 	AddBody(world_, body_def);
 
 	// set the shape for the object
@@ -30,14 +31,11 @@ void PickUp::RecreateBody(b2World* world_)
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &shape;
+	fixtureDef.density = 0.1f;
 	fixtureDef.friction = 0.1f;
-	//fixtureDef.isSensor = true;
+	fixtureDef.isSensor = true;
 	// bind the shape to the body
 	AddFixture(fixtureDef);
-
-	//set ground sprite size
-	set_width(2*body_half_width);
-	set_height(2*body_half_height);
 
 	//set sprite position
 	UpdatePosition();

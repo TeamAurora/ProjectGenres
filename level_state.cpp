@@ -753,29 +753,13 @@ void LevelState::LoadMap(const char* map_filename)
 
 void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp::PICKUPTYPE _pickup_type)
 {
+	PickUp pickup;
+
 	float x_pos = _spawn_position.x;
 	float y_pos = _spawn_position.y;
 
 	float width = _dimensions.x;
 	float height = _dimensions.y;
-
-	PickUp pickup;
-
-	// Define and add box2d body
-	b2BodyDef body;
-	body.type = b2_dynamicBody;
-	body.position = b2Vec2(GFX_BOX2D_POS_X(x_pos), GFX_BOX2D_POS_Y(y_pos));
-	body.fixedRotation = true;
-	pickup.AddBody(world_, body); // this also changes this object to use box2d physics in all its functions
-
-	// Define and add box2d fixture
-	b2FixtureDef fixture;
-	b2PolygonShape shape;
-	shape.SetAsBox(GFX_BOX2D_SIZE(width/2.0f), GFX_BOX2D_SIZE(height/2.0f));
-	fixture.shape = &shape;
-	//fixture.isSensor = true;
-	fixture.density = 0.0f;
-	pickup.AddFixture(fixture);
 
 	abfw::Texture* texture;
 	
@@ -798,17 +782,10 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 		texture = green_pickup_texture_;
 		break;
 	}
-
-	// Initialize all the gameobject related things for this pickup
-	pickup.set_width(width);
-	pickup.set_height(height);
-	pickup.set_texture(texture);
-	pickup.UpdatePosition();
-	pickup.pickup_type_ = _pickup_type;
-	
-	pickup.dead = false;
-	pickup.collided = false;
 	max_collectable_count_++;
+
+	pickup.InitSprite(width, height, abfw::Vector3(x_pos, y_pos, 0.0f), texture);
+	pickup.pickup_type_ = _pickup_type;
 
 	pickups_.push_back(pickup);
 }

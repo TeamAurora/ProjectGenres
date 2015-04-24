@@ -8,12 +8,14 @@ public:
 
 	PickUp();
 
-	void RecreateBody(b2World* _world);
+	void CreateBody(b2World* _world);
 
 	enum PICKUPTYPE { RED, BLUE, YELLOW, GREEN };
 	PICKUPTYPE pickup_type_;
 
 	bool collided;
+
+	abfw::Vector2 spawn_position;
 };
 
 #endif
