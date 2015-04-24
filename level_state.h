@@ -78,8 +78,6 @@ protected:
 	// Spawn functions
 	void SpawnPickup(b2Vec2 spawn_position,  b2Vec2 dimensions, PickUp::PICKUPTYPE type);
 
-	//void Destroy(GameObject &object); //will destroy non-destroyed body thats been passed in
-
 	// Pickup Textures
 	abfw::Texture* red_pickup_texture_;
 	abfw::Texture* blue_pickup_texture_;

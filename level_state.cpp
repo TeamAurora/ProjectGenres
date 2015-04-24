@@ -296,10 +296,11 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 		sprite_renderer_->DrawSprite(level_map_.high_layer[tile]);
 	}
 
-	for(int tile = 0; tile < level_map_.collision_layer.size(); tile++)
+	// DEBUG DRAW COLLISION LAYER
+	/*for(int tile = 0; tile < level_map_.collision_layer.size(); tile++)
 	{
 		sprite_renderer_->DrawSprite(*level_map_.collision_layer[tile]);
-	}
+	}*/
 
 	// Use static camera at the origin to draw overlay
 	application_->main_camera_->SetActiveCamera();
@@ -691,7 +692,8 @@ void LevelState::LoadMap(const char* map_filename)
 					fixture.friction = 0.1f;
 					tile->AddFixture(fixture);
 
-					NLTmxMapTile* maptile = tiles_[*dataindex-1];
+					// DEBUG TEXTURE COLLISION LAYER
+					/*NLTmxMapTile* maptile = tiles_[*dataindex-1];
 					if(level_map_.textures[*dataindex-1] == NULL)
 					{
 						level_map_.textures[*dataindex-1] = application_->LoadTextureFromPNG(maptile->filename.c_str());
@@ -699,10 +701,8 @@ void LevelState::LoadMap(const char* map_filename)
 
 					tile->set_width(tile_size);
 					tile->set_height(tile_size);
-					tile->set_texture(level_map_.textures[*dataindex-1]);
+					tile->set_texture(level_map_.textures[*dataindex-1]);*/
 					tile->UpdatePosition();
-					
-					//tile->InitSprite(tile_size, tile_size, abfw::Vector3(x_pos, y_pos, 0.0f), level_map_.textures[*dataindex-1]);
 
 					// push completed tile to collision layer
 					level_map_.collision_layer.push_back(tile);
@@ -789,12 +789,3 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 
 	pickups_.push_back(pickup);
 }
-
-/*void LevelState::Destroy(GameObject &object)
-{
-	if(object.destroyed == false)
-	{
-		object.DestroyBody();
-		object.destroyed = true;
-	}
-}*/

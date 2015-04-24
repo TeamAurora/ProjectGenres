@@ -18,8 +18,8 @@ void Blade::Create(b2World* world_,const Player &player)
 	bodyInitialPosition.x = GFX_BOX2D_POS_X(player.position().x + xOffset);
 	bodyInitialPosition.y = GFX_BOX2D_POS_Y(player.position().y + yOffset);
 
-	body_half_width = 0.35f;
-	body_half_height = 0.5f;
+	body_half_width = 0.25f;
+	body_half_height = 0.4f;
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
