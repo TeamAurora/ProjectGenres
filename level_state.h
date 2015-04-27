@@ -10,6 +10,7 @@
 #include "enemy.h"
 #include "blade.h"
 #include "pickup.h"
+#include "plant.h"
 #include "bullet.h"
 
 #include "CollisionTile.h"
@@ -76,7 +77,8 @@ protected:
 	b2World* world_;
 
 	// Spawn functions
-	void SpawnPickup(b2Vec2 spawn_position,  b2Vec2 dimensions, PickUp::PICKUPTYPE type);
+	void AppendPickupToVector(b2Vec2 spawn_position,  b2Vec2 dimensions, PickUp::PICKUPTYPE type);
+	void AppendPlantToVector(b2Vec2 spawn_position, float rotation, b2Vec2 dimensions, Plant::PLANTTYPE type);
 
 	// Pickup Textures
 	abfw::Texture* red_pickup_texture_;
@@ -117,11 +119,11 @@ protected:
 
 	// STATE-SPECIFIC Game/Living Objects
 	std::vector<PickUp> pickups_;
+	std::vector<Plant> plants_;
 	//std::vector<Enemy> enemies_;
 	//std::vector<Bullet> bullets_;
 	Enemy enemy_;
 	Bullet bullet_;
-	std::vector<LivingObject> plants_;
 	Player player_;
 	Blade blade_;
 	Sprite arrow_; //arrow showing where player wants to jump

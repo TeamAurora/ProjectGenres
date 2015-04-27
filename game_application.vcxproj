@@ -145,6 +145,7 @@
     <ClCompile Include="menu_state.cpp" />
     <ClCompile Include="NLTmxMap.cpp" />
     <ClCompile Include="pickup.cpp" />
+    <ClCompile Include="plant.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="sprite.cpp" />
   </ItemGroup>
@@ -170,6 +171,7 @@
     <ClInclude Include="menu_state.h" />
     <ClInclude Include="NLTmxMap.h" />
     <ClInclude Include="pickup.h" />
+    <ClInclude Include="plant.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="RapidXML\rapidxml.hpp" />
     <ClInclude Include="RapidXML\rapidxml_iterators.hpp" />

@@ -7,7 +7,7 @@ class Bullet : public GameObject
 {
 	public:
 		Bullet();
-		void CreateBullet(b2World* world_, float x, float y, b2Vec2 gravity, b2Vec2 &playerPos);
+		void CreateBullet(b2World* world_, float x, float y, b2Vec2 gravity, b2Vec2 playerPos);
 		void Update(float ticks);
 
 		bool created;

@@ -10,7 +10,7 @@ Bullet::Bullet()
 }
 
 
-void Bullet::CreateBullet(b2World* world_, float x, float y, b2Vec2 gravity, b2Vec2 &playerPos)
+void Bullet::CreateBullet(b2World* world_, float x, float y, b2Vec2 gravity, b2Vec2 playerPos)
 {
 	//start bools as false
 	dead = false;

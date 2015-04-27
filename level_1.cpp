@@ -64,6 +64,31 @@ void Level_1::CreateObjects()
 	start_time_ = std::clock();
 }
 
+void Level_1::Restart()
+{
+	//destroy objects
+	player_.DestroyBody();
+	blade_.DestroyBody();
+
+	//destroy pickups
+	for ( int pickupindex = 0; pickupindex < pickups_.size(); pickupindex++)
+	{
+		//reset for another play
+		if(pickups_[pickupindex].dead == true)
+		{
+			pickups_[pickupindex].DestroyBody();
+		}
+	}
+
+	score_ = 0;
+	collectables_ = 0;
+
+	//create new versions at starting position
+	CreateObjects();
+
+	gameOver_ = false;
+}
+
 void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 {
 	//update player if alive
@@ -144,7 +169,6 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 				break;
 		}
 	}
-
 	
 	for(int pickup = 0; pickup < pickups_.size(); pickup++)
 	{
@@ -172,29 +196,4 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 			pickups_[pickup].collided = false;
 		}
 	}
-}
-
-void Level_1::Restart()
-{
-	//destroy objects
-	player_.DestroyBody();
-	blade_.DestroyBody();
-
-	//destroy pickups
-	for ( int pickupindex = 0; pickupindex < pickups_.size(); pickupindex++)
-	{
-		//reset for another play
-		if(pickups_[pickupindex].dead == true)
-		{
-			pickups_[pickupindex].DestroyBody();
-		}
-	}
-
-	score_ = 0;
-	collectables_ = 0;
-
-	//create new versions at starting position
-	CreateObjects();
-
-	gameOver_ = false;
 }

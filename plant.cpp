@@ -1,11 +1,11 @@
-#include "pickup.h"
+#include "plant.h"
 
-PickUp::PickUp()
+Plant::Plant()
 {
-	type_ = PICKUP;
+	type_ = PLANT;
 }
 
-void PickUp::CreateBody(b2World* _world)
+void Plant::CreateBody(b2World* _world)
 {
 	//reset all variable for removing object
 	dead = false;
@@ -20,9 +20,9 @@ void PickUp::CreateBody(b2World* _world)
 
 	// setup the ground definition
 	b2BodyDef body_def;
+	body_def.type = b2_staticBody;
 	body_def.position.x = GFX_BOX2D_POS_X(spawn_position.x);
 	body_def.position.y = GFX_BOX2D_POS_Y(spawn_position.y);
-	body_def.fixedRotation = true;
 	AddBody(_world, body_def);
 
 	// set the shape for the object
@@ -33,7 +33,6 @@ void PickUp::CreateBody(b2World* _world)
 	fixtureDef.shape = &shape;
 	fixtureDef.density = 0.1f;
 	fixtureDef.friction = 0.1f;
-	fixtureDef.isSensor = true;
 	// bind the shape to the body
 	AddFixture(fixtureDef);
 

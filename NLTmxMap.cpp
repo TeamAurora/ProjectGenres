@@ -124,6 +124,11 @@ NLTmxMap* NLLoadTmxMap(const char* xml )
             }
             object->x = atoi( objectnode->first_attribute( "x" )->value() );
             object->y = atoi( objectnode->first_attribute( "y" )->value() );
+
+			auto rotattr = objectnode->first_attribute( "rotation" );
+            if ( rotattr ) {
+                object->rotation = atof( rotattr->value() );
+            }
             
             auto widthattr = objectnode->first_attribute( "width" );
             if ( widthattr ) {

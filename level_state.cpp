@@ -173,20 +173,22 @@ void LevelState::TerminateState()
 		pickups_[pickupindex].DestroyBody();
 	}
 
-	for (int enemiesindex = 0; enemiesindex < enemies_.size(); enemiesindex++)
+	/*for (int enemiesindex = 0; enemiesindex < enemies_.size(); enemiesindex++)
 	{
 		enemies_[enemiesindex].DestroyBody();
-	}
+	}*/
+	enemy_.DestroyBody();
 
 	for (int plantsindex = 0; plantsindex < plants_.size(); plantsindex++)
 	{
 		plants_[plantsindex].DestroyBody();
 	}
 
-	for (int bulletsindex = 0; bulletsindex < bullets_.size(); bulletsindex++)
+	/*for (int bulletsindex = 0; bulletsindex < bullets_.size(); bulletsindex++)
 	{
 		bullets_[bulletsindex].DestroyBody();
-	}
+	}*/
+	bullet_.DestroyBody();
 
 	DeleteNull(pause_background_texture_);
 	for (int buttonindex = 0; buttonindex < pause_buttons_.size(); buttonindex++)
@@ -272,12 +274,16 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 		}
 	}
 
-	for(int enemyindex = 0; enemyindex < enemies_.size(); enemyindex++)
+	/*for(int enemyindex = 0; enemyindex < enemies_.size(); enemyindex++)
 	{
 		if(enemies_[enemyindex].deadAnim == false)
 		{
 			sprite_renderer_->DrawSprite(enemies_[enemyindex]);
 		}
+	}*/
+	if(enemy_.deadAnim == false)
+	{
+		sprite_renderer_->DrawSprite(enemy_);
 	}
 
 	for(int pickupindex = 0; pickupindex < pickups_.size(); pickupindex++)
@@ -288,12 +294,16 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 		}
 	}
 
-	for(int bulletindex = 0; bulletindex < bullets_.size(); bulletindex++)
+	/*for(int bulletindex = 0; bulletindex < bullets_.size(); bulletindex++)
 	{
 		if(bullets_[bulletindex].dead == false)
 		{
 			sprite_renderer_->DrawSprite(bullets_[bulletindex]);
 		}
+	}*/
+	if(bullet_.dead == false)
+	{
+		sprite_renderer_->DrawSprite(bullet_);
 	}
 
 	for (int tile = 0 ; tile < level_map_.high_layer.size(); tile++)
@@ -400,7 +410,7 @@ APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
 		}
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 		{
-			//application_->PlayMenuBack();
+			application_->PlayMenuBack();
 			return MENU;
 		}
 		break;
@@ -559,6 +569,9 @@ void LevelState::LoadMap(const char* map_filename)
 					float tile_size = 128.0f;
 					float x_pos = x * tile_size;
 					float y_pos = y * tile_size;
+					//const int vertex_count = 3;
+					//b2Vec2 vertices[vertex_count];
+					b2PolygonShape shape;
 					
 					// Assumption that the data for the collision tiles is correct (collision tileset is the first loaded tileset and in right order)
 					switch (*dataindex)
@@ -601,30 +614,34 @@ void LevelState::LoadMap(const char* map_filename)
 						break;
 					case 6:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
-						tile->harmful_ = true;
+						tile->harmful_ = false;
 						x_pos += tile_size / 2.0f;
 						y_pos += tile_size / 2.0f;
+						//shape.SetAsTriangle(GFX_BOX2D_SIZE(tile_size / 2.0f) , GFX_BOX2D_SIZE(tile_size / 2.0f), b2Vec2(0.0f, 0.0f), 0.0f);
 						tile->diagonal_ = CollisionTile::BOTTOMRIGHT;
 						break;
 					case 7:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
-						tile->harmful_ = true;
+						tile->harmful_ = false;
 						x_pos -= tile_size / 2.0f;
 						y_pos += tile_size / 2.0f;
+						//shape.SetAsTriangle(GFX_BOX2D_SIZE(tile_size / 2.0f) , GFX_BOX2D_SIZE(tile_size / 2.0f), b2Vec2(0.0f, 0.0f), 270.0f);
 						tile->diagonal_ = CollisionTile::BOTTOMLEFT;
 						break;
 					case 8:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
-						tile->harmful_ = true;
+						tile->harmful_ = false;
 						x_pos += tile_size / 2.0f;
 						y_pos -= tile_size / 2.0f;
+						//shape.SetAsTriangle(GFX_BOX2D_SIZE(tile_size / 2.0f) , GFX_BOX2D_SIZE(tile_size / 2.0f), b2Vec2(0.0f, 0.0f), 00.0f);
 						tile->diagonal_ = CollisionTile::TOPRIGHT;
 						break;
 					case 9:
 						tile = new CollisionTile(CollisionTile::DIAGONAL);
-						tile->harmful_ = true;
+						tile->harmful_ = false;
 						x_pos -= tile_size / 2.0f;
 						y_pos -= tile_size / 2.0f;
+						//shape.SetAsTriangle(GFX_BOX2D_SIZE(tile_size / 2.0f) , GFX_BOX2D_SIZE(tile_size / 2.0f), b2Vec2(0.0f, 0.0f), 180.0f);
 						tile->diagonal_ = CollisionTile::TOPLEFT;
 						break;
 					case 10:
@@ -683,6 +700,74 @@ void LevelState::LoadMap(const char* map_filename)
 						tile->harmful_ = false;
 						tile->edges_.RIGHT = true;
 						break;
+					case 20:
+						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = true;
+						tile->edges_.DOWN = true;
+					case 21:
+						tile = new CollisionTile(CollisionTile::DIAGONAL);
+						tile->harmful_ = true;
+						x_pos -= tile_size / 2.0f;
+						y_pos += tile_size / 2.0f;
+						//shape.SetAsTriangle(GFX_BOX2D_SIZE(tile_size / 2.0f) , GFX_BOX2D_SIZE(tile_size / 2.0f), b2Vec2(0.0f, 0.0f), 270.0f);
+						tile->diagonal_ = CollisionTile::BOTTOMLEFT;
+						break;
+					case 22:
+						tile = new CollisionTile(CollisionTile::DIAGONAL);
+						tile->harmful_ = true;
+						x_pos += tile_size / 2.0f;
+						y_pos += tile_size / 2.0f;
+						//shape.SetAsTriangle(GFX_BOX2D_SIZE(tile_size / 2.0f) , GFX_BOX2D_SIZE(tile_size / 2.0f), b2Vec2(0.0f, 0.0f), 0.0f);
+						tile->diagonal_ = CollisionTile::BOTTOMRIGHT;
+						break;
+					case 23:
+						tile = new CollisionTile(CollisionTile::DIAGONAL);
+						tile->harmful_ = true;
+						x_pos -= tile_size / 2.0f;
+						y_pos -= tile_size / 2.0f;
+						//shape.SetAsTriangle(GFX_BOX2D_SIZE(tile_size / 2.0f) , GFX_BOX2D_SIZE(tile_size / 2.0f), b2Vec2(0.0f, 0.0f), 180.0f);
+						tile->diagonal_ = CollisionTile::TOPLEFT;
+						break;
+					case 24:
+						tile = new CollisionTile(CollisionTile::DIAGONAL);
+						tile->harmful_ = true;
+						x_pos += tile_size / 2.0f;
+						y_pos -= tile_size / 2.0f;
+						//shape.SetAsTriangle(GFX_BOX2D_SIZE(tile_size / 2.0f) , GFX_BOX2D_SIZE(tile_size / 2.0f), b2Vec2(0.0f, 0.0f), 90.0f);
+						tile->diagonal_ = CollisionTile::TOPRIGHT;
+						break;
+					case 25:
+						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = true;
+						tile->edges_.LEFT = true;
+					case 26:
+						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = true;
+						tile->edges_.RIGHT = true;
+					case 27:
+						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = true;
+						tile->edges_.UP = true;
+					case 28:
+						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = true;
+						tile->edges_.RIGHT = true;
+						tile->edges_.UP = true;
+					case 29:
+						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = true;
+						tile->edges_.LEFT = true;
+						tile->edges_.UP = true;
+					case 30:
+						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = true;
+						tile->edges_.DOWN = true;
+						tile->edges_.RIGHT = true;
+					case 31:
+						tile = new CollisionTile(CollisionTile::BOX);
+						tile->harmful_ = true;
+						tile->edges_.DOWN = true;
+						tile->edges_.LEFT = true;
 					}
 
 					// Define and add box2d body
@@ -693,7 +778,6 @@ void LevelState::LoadMap(const char* map_filename)
 
 					// Instantiate fixture and its shape
 					b2FixtureDef fixture;
-					b2PolygonShape shape;
 
 					// change fixture shape depending on the shapetype of tile
 					switch(tile->shapetype_)
@@ -746,7 +830,6 @@ void LevelState::LoadMap(const char* map_filename)
 		if(group->name == "Pickups") { objectgroup_type = PICKUPS; }
 		else if(group->name == "Plants") { objectgroup_type = PLANTS; }
 
-
 		for(int objectsindex = 0; objectsindex < group->objects.size(); objectsindex++)
 		{
 			auto object = group->objects[objectsindex];
@@ -757,24 +840,36 @@ void LevelState::LoadMap(const char* map_filename)
 			switch(objectgroup_type)
 			{
 			case PICKUPS:
-				PickUp::PICKUPTYPE type;
+				PickUp::PICKUPTYPE pickup_type;
 
-				if(tile->filename == "pickup_red.png") { type = PickUp::RED; }
-				else if(tile->filename == "pickup_blue.png") { type = PickUp::BLUE; }
-				else if(tile->filename == "pickup_yellow.png") { type = PickUp::YELLOW; }
-				else if(tile->filename == "pickup_green.png") { type = PickUp::GREEN; }
+				if(tile->filename == "pickup_red.png") { pickup_type = PickUp::RED; }
+				else if(tile->filename == "pickup_blue.png") { pickup_type = PickUp::BLUE; }
+				else if(tile->filename == "pickup_yellow.png") { pickup_type = PickUp::YELLOW; }
+				else if(tile->filename == "pickup_green.png") { pickup_type = PickUp::GREEN; }
 
-				SpawnPickup(b2Vec2(object->x, object->y - 128.0f), b2Vec2(tile->width, tile->height), type);
+				AppendPickupToVector(b2Vec2(object->x, object->y - 128.0f), b2Vec2(tile->width, tile->height), pickup_type);
+				break;
+			case PLANTS:
+				Plant::PLANTTYPE plant_type;
+
+				if(tile->filename == "plant_wall.png") { plant_type = Plant::WALL; }
+				else if(tile->filename == "plant_block.png") { plant_type = Plant::BLOCK; }
+
+				AppendPlantToVector(b2Vec2(object->x, object->y - 128.0f), object->rotation, b2Vec2(tile->width, tile->height), plant_type);
 				break;
 			}
 		}
 	}
 
-	// map 
+	// clean up resources
+	for(int i = 0; i < tiles_.size(); i++)
+	{
+		DeleteNull(tiles_[0]);
+	}
 	DeleteNull(map_);
 }
 
-void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp::PICKUPTYPE _pickup_type)
+void LevelState::AppendPickupToVector(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp::PICKUPTYPE _pickup_type)
 {
 	PickUp pickup;
 
@@ -811,4 +906,34 @@ void LevelState::SpawnPickup(b2Vec2 _spawn_position, b2Vec2 _dimensions, PickUp:
 	pickup.pickup_type_ = _pickup_type;
 
 	pickups_.push_back(pickup);
+}
+
+void LevelState::AppendPlantToVector(b2Vec2 _spawn_position, float _rotation, b2Vec2 _dimensions, Plant::PLANTTYPE _plant_type)
+{
+	Plant plant;
+
+	float x_pos = _spawn_position.x;
+	float y_pos = _spawn_position.y;
+
+	float width = _dimensions.x;
+	float height = _dimensions.y;
+
+	abfw::Texture* texture;
+	
+	switch(_plant_type)
+	{
+	case Plant::WALL:
+		texture = plant_wall_texture_;
+		break;
+	case Plant::BLOCK:
+		texture = plant_block_texture_;
+		break;
+	}
+	max_score_ += 90;
+
+	plant.InitSprite(width, height, abfw::Vector3(x_pos, y_pos, 0.0f), texture);
+	plant.set_rotation(_rotation);
+	plant.plant_type_ = _plant_type;
+
+	plants_.push_back(plant);
 }

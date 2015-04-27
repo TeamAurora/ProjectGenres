@@ -48,6 +48,7 @@ public:
     int y;
     int width;
     int height;
+	float rotation;
     vector<NLTmxMapObjectProperty*> properties;
     
 public:

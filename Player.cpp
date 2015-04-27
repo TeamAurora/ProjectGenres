@@ -89,7 +89,7 @@ void Player::Create_Player(b2World* world_, float x, float y)
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &shape;
-	fixtureDef.density = 2.0f;//set mass
+	fixtureDef.density = 1.0f;//set mass
 	body_->ResetMassData();//it only sets new value after this is called
 	fixtureDef.friction = 0.95f;
 	fixtureDef.restitution = 0.0f; // not bouncy
@@ -188,7 +188,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 			case DEAD:
 				deadAnimation();
 				break;
-			case JUMPING:	
+			case JUMPING:
 				break;
 			case FLYING:
 				break;
@@ -243,7 +243,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 	else
 	{		
 		//apply gravity
-		body_->ApplyForceToCenter(gravity);
+		//body_->ApplyForceToCenter(gravity);
 	}
 }
 
@@ -260,7 +260,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			gDir = DOWN;
 			if (controller->right_stick_y_axis() < -jumpCutOff)//up
 			{
-				MoveBy(0.0f, 3.0f);
+				MoveBy(0.0f, -3.0f);
 				state_ = FLYING;
 				flyAnimation();
 			}
@@ -278,7 +278,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			}
 			else if (controller->right_stick_y_axis() > jumpCutOff)//down
 			{
-				MoveBy(0.0f, -3.0f);
+				MoveBy(0.0f, 3.0f);
 				state_ = FLYING;
 				flyAnimation();
 			}
@@ -428,9 +428,9 @@ void Player::ResolveCollisionTile(CollisionTile* collisiontile)
 				//		NOTE: it's possible to be colliding with multiple edges
 				//		The else-if structure creates an edge-precedence order
 				bool result = false;
-				Direction direction;
-				while(!result)
-				{
+				Direction direction(DOWN);
+				//while(!result)
+				//{
 					if((collisiontile->edges_.DOWN == true) && (this->position().y > collisiontile->position().y + (collisiontile->height() / 2.0f)))
 					{
 						result = true;
@@ -452,8 +452,12 @@ void Player::ResolveCollisionTile(CollisionTile* collisiontile)
 						direction = LEFT;
 					}
 					if(!result)
-						std::cout << "Collision tile orientation error." << std::endl;
-				}
+					{
+						// colliding with a tile edge we shouldn't be, so just kill player to restart
+						this->dead = true;
+						//std::cout << "Collision tile orientation error." << std::endl;
+					}
+				//}
 				setGravity(direction);
 				break;
 			}

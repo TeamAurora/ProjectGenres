@@ -4,6 +4,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "pickup.h"
+#include "plant.h"
 #include "blade.h"
 #include "bullet.h"
 
@@ -36,11 +37,11 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		}
 
 		//attack enemies
-		if (game_object->getType() == GameObject::BLADE && game_object_b->getType() == GameObject::COLLISIONTILE)
+		if (game_object->getType() == GameObject::BLADE && game_object_b->getType() == GameObject::ENEMY)
 		{
 			((Enemy* )game_object_b)->dead = true;
 		}
-		else if (game_object->getType() == GameObject::COLLISIONTILE && game_object_b->getType() == GameObject::BLADE)
+		else if (game_object->getType() == GameObject::ENEMY && game_object_b->getType() == GameObject::BLADE)
 		{
 			((Enemy* )game_object)->dead = true;
 		}
@@ -49,10 +50,12 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		if (game_object->getType() == GameObject::BLADE && game_object_b->getType() == GameObject::PLANT)
 		{
 			((GameObject* )game_object_b)->dead = true;
+			((Plant *)game_object_b)->collided = true;
 		}
 		else if (game_object->getType() == GameObject::PLANT && game_object_b->getType() == GameObject::BLADE)
 		{
 			((GameObject* )game_object)->dead = true;
+			((Plant *)game_object)->collided = true;
 		}
 
 //////////Pick Ups/////////////////////////
@@ -70,6 +73,7 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 ///////////Platform check///// Craig
 		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::COLLISIONTILE)
 		{
+			
 			static_cast<Player*>(game_object)->ResolveCollisionTile(static_cast<CollisionTile*>(game_object_b));
 		}
 
@@ -90,14 +94,14 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		}
 
 		//destroy bullets if it hits collectible
-		if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::PICKUP)
+		/*if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::PICKUP)
 		{
 			((Bullet* )game_object)->dead = true;
 		}
 		else if (game_object->getType() == GameObject::PICKUP && game_object_b->getType() == GameObject::BULLET)
 		{
 			((Bullet* )game_object_b)->dead = true;
-		}
+		}*/
 
 		//kill player and destroy bullet
 		if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::PLAYER)
