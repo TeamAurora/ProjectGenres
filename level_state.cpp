@@ -211,7 +211,8 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 
 		time_ = ( std::clock() - start_time_ ) / (double) CLOCKS_PER_SEC;
 
-		application_->player_camera_->TendTowards(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)), 25.0f /*player_.velocity().Length() * 0.75f + 1.0f*/);
+		application_->player_camera_->MoveTo(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)));
+		//application_->player_camera_->TendTowards(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)), 25.0f /*player_.velocity().Length() * 0.75f + 1.0f*/);
 		application_->player_camera_->UpdateCamera(ticks_);
 	}
 
@@ -310,6 +311,10 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 		sprite_renderer_->DrawSprite(pause_background_);
 		for ( int button = 0 ; button < pause_buttons_.size(); button++)
 		{
+			if(button == 0 && gameOver_ == true) // dont draw first button when game is over
+			{
+				continue;
+			}
 			sprite_renderer_->DrawSprite(*pause_buttons_[button]);
 		}
 	}
@@ -322,6 +327,10 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 	sprite_renderer_->DrawSprite(player_icon_);
 	sprite_renderer_->DrawSprite(timer_icon_);
 	sprite_renderer_->DrawSprite(collectable_icon_);
+	if(gameOver_)
+	{
+		font_.RenderText(sprite_renderer_, abfw::Vector3(470.0f, (platform_.height() / (pause_buttons_.size() + 1)), 0.0f), 1.5f, 0xffffffff, abfw::TJ_CENTRE, "YOU WIN");
+	}
 	font_.RenderText(sprite_renderer_, abfw::Vector3(64.0f, 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "HP: %.0f", player_.health());
 	font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() - 192.0f, 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "Score: %i", score_);
 	font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() - 128.0f, platform_.height() - 48.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "%.0f-s", time_);
@@ -330,6 +339,12 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 
 APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
 {
+	if(gameOver_ == true && pause_selection_ == RESUME)
+	{
+		pause_selection_ = RESTART;
+		pause_buttons_[1]->Select(true);
+		pause_buttons_[0]->Select(false);
+	}
 	switch(pause_selection_)
 	{
 	case RESUME:
@@ -347,12 +362,15 @@ APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
 		}
 		break;
 	case RESTART:
-		if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
+		if(!gameOver_)
 		{
-			pause_selection_ = RESUME;
-			pause_buttons_[0]->Select(true);
-			pause_buttons_[1]->Select(false);
-			application_->PlayMenuMove();
+			if (controller->buttons_pressed() & ABFW_SONY_CTRL_UP)
+			{
+				pause_selection_ = RESUME;
+				pause_buttons_[0]->Select(true);
+				pause_buttons_[1]->Select(false);
+				application_->PlayMenuMove();
+			}
 		}
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 		{
@@ -378,7 +396,7 @@ APPSTATE LevelState::PauseInputLoop(const abfw::SonyController* controller)
 		}
 		if (controller->buttons_pressed() & ABFW_SONY_CTRL_CROSS)
 		{
-			application_->PlayMenuBack();
+			//application_->PlayMenuBack();
 			return MENU;
 		}
 		break;
@@ -697,11 +715,11 @@ void LevelState::LoadMap(const char* map_filename)
 					if(level_map_.textures[*dataindex-1] == NULL)
 					{
 						level_map_.textures[*dataindex-1] = application_->LoadTextureFromPNG(maptile->filename.c_str());
-					}
+					}*/
 
 					tile->set_width(tile_size);
 					tile->set_height(tile_size);
-					tile->set_texture(level_map_.textures[*dataindex-1]);*/
+					//tile->set_texture(level_map_.textures[*dataindex-1]);
 					tile->UpdatePosition();
 
 					// push completed tile to collision layer

@@ -117,8 +117,10 @@ protected:
 
 	// STATE-SPECIFIC Game/Living Objects
 	std::vector<PickUp> pickups_;
-	std::vector<Enemy> enemies_;
-	std::vector<Bullet> bullets_;
+	//std::vector<Enemy> enemies_;
+	//std::vector<Bullet> bullets_;
+	Enemy enemy_;
+	Bullet bullet_;
 	std::vector<LivingObject> plants_;
 	Player player_;
 	Blade blade_;

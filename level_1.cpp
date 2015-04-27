@@ -82,7 +82,7 @@ void Level_1::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 		Restart();
 	}
 	
-	// update blade
+	//create and update blade
 	if(player_.attacking == true && blade_.disabled == true)
 	{
 		blade_.Create(world_, player_);
