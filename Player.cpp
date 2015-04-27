@@ -344,6 +344,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			}
 		}
 
+////////John/////////
 		// checks what gravity is currently applied and dictates what movement
 		// can be used ie. x axis movement on ground/ceiling, y axis movement on
 		// walls
@@ -369,6 +370,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 					{
 						move = false;
 						force.SetZero();
+						AccelerateTo(abfw::Vector2(0.0f,0.0f));
 					}
 				}
 				else if (gDir == RIGHT || gDir == LEFT)
@@ -388,7 +390,8 @@ void Player::Player_Input(const abfw::SonyController* controller)
 					else
 					{
 						move = false;
-						force.SetZero();
+						force.SetZero();		
+						AccelerateTo(abfw::Vector2(0.0f,0.0f));
 					}
 				}
 			}
