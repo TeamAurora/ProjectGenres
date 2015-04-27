@@ -29,6 +29,7 @@ Player::Player()
 	horizontal = true;
 	moveUp = true;
 	deadAnim = false;//has death animation played
+	stickPushed = false;
 
 	//on stick axis
 	jumpCutOff = 0.8;
@@ -78,7 +79,7 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	bodyDef.type = b2_dynamicBody;
 	bodyDef.position.x = bodyInitialPosition.x;
 	bodyDef.position.y = bodyInitialPosition.y;
-	//bodyDef.linearDamping = 0.05f;
+	bodyDef.linearDamping = 0.05f;
 	bodyDef.fixedRotation = true;//stops body rotating 
 	this->AddBody(world_, bodyDef);
 
@@ -91,7 +92,7 @@ void Player::Create_Player(b2World* world_, float x, float y)
 	fixtureDef.density = 2.0f;//set mass
 	body_->ResetMassData();//it only sets new value after this is called
 	fixtureDef.friction = 0.95f;
-	fixtureDef.restitution = 0.1f; // not bouncy
+	fixtureDef.restitution = 0.0f; // not bouncy
 	this->AddFixture(fixtureDef);
 
 	UpdatePosition();
@@ -111,7 +112,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 
 	flying_ = flying;//check what animation should be done
 
-	if(setFlyingWidth == false && flying_ == true)
+	if(setFlyingWidth == false && flying_ == true)//set inital sprite width
 	{
 		set_uv_width(0.0625f);
 		set_uv_height(1);
@@ -285,15 +286,24 @@ void Player::Player_Input(const abfw::SonyController* controller)
 		else//wall jump
 		{
 			// change angle of projected jump
-			float xaxisval = controller->right_stick_x_axis();
-			float yaxisval = controller->right_stick_y_axis();
-			currentRayAngle = atan2(xaxisval, -yaxisval); //* FRAMEWORK_RAD_TO_DEG;
+			float xAxisVal = controller->right_stick_x_axis();
+			float yAxisVal = controller->right_stick_y_axis();
+			currentRayAngle = atan2(xAxisVal, -yAxisVal); //* FRAMEWORK_RAD_TO_DEG;
+			if(xAxisVal != 0 || yAxisVal != 0)
+			{
+				stickPushed = true;
+			}
+			else
+			{
+				stickPushed = false;
+			}
 
 			// jump mechanic
 			if ((controller->buttons_pressed() & ABFW_SONY_CTRL_R2) && (state_ != INAIR))
 			{
 				b2Vec2 angle = b2Vec2(sinf(currentRayAngle), cosf(currentRayAngle));
 
+				//Craig
 				bool jump_possible = true;
 				switch(gDir)
 				{
@@ -328,7 +338,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 					b2Vec2 impulse = b2Vec2(jumpStrength * angle);
 					//calls to set up animtaion for the jump
 					state_ = JUMPING;
-					jumpAnimation(xaxisval, yaxisval);
+					jumpAnimation(xAxisVal, yAxisVal);
 					body_->ApplyLinearImpulse(impulse, body_->GetWorldCenter());
 				}
 			}
@@ -471,6 +481,7 @@ void Player::setGravity(Direction direction)
 	gDir = direction;
 }
 
+//John
 void Player::changeState()
 {
 	if (flying_)
@@ -491,18 +502,18 @@ void Player::changeState()
 	}
 	else
 	{
-		if (move == true && dead == false && state_ != INAIR && state_ != JUMPING)//only run when on a surface
-		{
-			state_ = RUNNING;
-		}
-		else if (attacking == true && state_ != INAIR)//no mid air attack
-		{
-			state_ = ATTACKING;
-		}
-		else if (dead == true)
+		if (dead == true)
 		{
 			state_ = DEAD;
 			AccelerateTo(abfw::Vector2(0.0f,0.0f));
+		}
+		else if (attacking == true && state_ != INAIR && state_ != JUMPING)//no mid air attack
+		{
+			state_ = ATTACKING;
+		}
+		else if (move == true && dead == false && state_ != INAIR && state_ != JUMPING && state_ != ATTACKING)//only run when on a surface
+		{
+			state_ = RUNNING;
 		}
 		else if (state_ != INAIR && state_ != JUMPING && attacking != true)//state stays as INAIR until a surface is touched
 		{
@@ -511,6 +522,7 @@ void Player::changeState()
 	}
 }
 
+//John
 void Player::runningAnimation()
 {
 	//flip for gravity
@@ -602,6 +614,7 @@ void Player::runningAnimation()
 	}	
 }
 
+//John
 void Player::idleAnimation()
 {
 	//flip for gravity
@@ -690,6 +703,7 @@ void Player::idleAnimation()
 	}
 }
 
+//John
 void Player::deadAnimation()
 {
 	//flip for gravity
@@ -778,6 +792,7 @@ void Player::deadAnimation()
 	}
 }
 
+//John
 void Player::jumpAnimation(float xAxis, float yAxis)
 {
 	//flip for gravity
@@ -886,6 +901,7 @@ void Player::jumpAnimation(float xAxis, float yAxis)
 	}
 }
 
+//John
 void Player::attackAnimation()
 {
 	//attack sprite is bigger so must be resized to match other sprites
@@ -905,11 +921,11 @@ void Player::attackAnimation()
 		}
 		else if (gDir == RIGHT)
 		{
-			set_uv_width(1);
+			set_uv_width(-1);
 		}
 		else if (gDir == LEFT)
 		{
-			set_uv_width(-1);
+			set_uv_width(1);
 		}
 	}
 		
@@ -982,6 +998,7 @@ void Player::attackAnimation()
 	}
 }
 
+//John
 void Player::flyAnimation()
 {
 	if (move_right == true)

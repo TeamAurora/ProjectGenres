@@ -18,7 +18,8 @@ LevelState::LevelState(abfw::Platform& platform, const GameApplication* applicat
 	collectables_(0),
 	max_collectable_count_(0),
 	gameOver_(false),
-	reloadTime(0)
+	reloadTime(0),
+	attackTime(0)
 {
 	world_ = new b2World(b2Vec2_zero);
 	world_->SetAllowSleeping(true);
@@ -261,7 +262,10 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 	if(player_.deadAnim == false)
 	{
 		sprite_renderer_->DrawSprite(player_);
-		sprite_renderer_->DrawSprite(arrow_);
+		if((current_state_ == LEVEL_1 || current_state_ == LEVEL_2) && player_.stickPushed == true)
+		{
+			sprite_renderer_->DrawSprite(arrow_);
+		}
 		if(blade_.disabled == false)
 		{
 			sprite_renderer_->DrawSprite(blade_);
@@ -332,7 +336,7 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 		font_.RenderText(sprite_renderer_, abfw::Vector3(470.0f, (platform_.height() / (pause_buttons_.size() + 1)), 0.0f), 1.5f, 0xffffffff, abfw::TJ_CENTRE, "YOU WIN");
 	}
 	font_.RenderText(sprite_renderer_, abfw::Vector3(64.0f, 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "HP: %.0f", player_.health());
-	font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() - 192.0f, 16.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "Score: %i", score_);
+	font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() - 192.0f, 16.0f, 0.0f), 0.85f, 0xffffffff, abfw::TJ_LEFT, "Score: %i", score_);
 	font_.RenderText(sprite_renderer_, abfw::Vector3(platform_.width() - 128.0f, platform_.height() - 48.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "%.0f-s", time_);
 	font_.RenderText(sprite_renderer_, abfw::Vector3(64.0f, platform_.height() - 48.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "%i/%i", collectables_, max_collectable_count_);
 }
@@ -707,7 +711,8 @@ void LevelState::LoadMap(const char* map_filename)
 					// complete the shape definition and add fixture
 					fixture.shape = &shape;
 					fixture.density = 0.0f;
-					fixture.friction = 0.1f;
+					fixture.friction = 1.0f;
+					fixture.restitution = 0.0f; // not bouncy
 					tile->AddFixture(fixture);
 
 					// DEBUG TEXTURE COLLISION LAYER

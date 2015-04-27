@@ -27,6 +27,7 @@ public:
 	bool move_right, moveUp;//flag for telling player direction used to change animation/place blade
 
 	float currentRayAngle; // angle of raycast line displayed on screen
+	bool stickPushed;
 
 	/////// Enumerated states player can be in - use these to do logic & for sprite animation
 	/*enum PLAYERSTATE { DEAD, IDLE, INAIR, RUNNING, ATTACKING };

@@ -32,7 +32,7 @@ void Level_2::LoadAssets()
 	enemyMove = application_->LoadTextureFromPNG("enemy_melee_move.png");
 	enemyDeath = application_->LoadTextureFromPNG("enemy_melee_death.png");
 	enemyAttack = application_->LoadTextureFromPNG("enemy_melee_attack.png");
-	plantWallTex = application_->LoadTextureFromPNG("plant_wall_death.png");
+	//plantWallTex = application_->LoadTextureFromPNG("plant_wall_death.png");
 }
 
 APPSTATE Level_2::InputLoop(const abfw::SonyController* controller)
