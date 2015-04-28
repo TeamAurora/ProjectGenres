@@ -273,7 +273,7 @@ void GameObject::CreateStaticBody(b2World* world_, float x , float y, float widt
 	UpdatePosition();
 }
 
-/*void GameObject::setAnimation()
+void GameObject::setAnimation()
 {
 	// depending on objects orientation
 	if(rotated)
