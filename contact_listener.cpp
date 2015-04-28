@@ -92,7 +92,7 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 			((Bullet* )game_object_b)->dead = true;
 		}
 
-		//destroy bullets if it hits collectible
+		//destroy bullets if it hits blade
 		if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::BLADE)
 		{
 			((Bullet* )game_object)->dead = true;

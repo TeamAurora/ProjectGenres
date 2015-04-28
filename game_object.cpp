@@ -31,7 +31,10 @@ void GameObject::MoveTo(const float x, const float y)
 	case BOX2D:
 		position_.x = x;
 		position_.y = y;
-		body_->SetTransform(b2Vec2(GFX_BOX2D_POS_X(position_.x), GFX_BOX2D_POS_Y(position_.y)), body_->GetAngle()); // sets body location after calculating new location
+		if(body_ != NULL)
+		{
+			body_->SetTransform(b2Vec2(GFX_BOX2D_POS_X(position_.x), GFX_BOX2D_POS_Y(position_.y)), body_->GetAngle()); // sets body location after calculating new location
+		}
 		break;
 	}
 }

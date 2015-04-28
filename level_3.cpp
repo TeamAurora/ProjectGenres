@@ -2,7 +2,7 @@
 #include "game_application.h"
 
 Level_3::Level_3(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager) :
-	LevelState(platform, application, audio_manager, LEVEL_1)
+	LevelState(platform, application, audio_manager, LEVEL_3)
 {
 }
 
@@ -40,8 +40,8 @@ void Level_3::CreateObjects()
 	//make moving objects
 	player_.Create_Player(world_, GFX_BOX2D_POS_X(2880.0f),GFX_BOX2D_POS_Y(5312.0f));
 
-	enemy_.Create_Enemy(world_, GFX_BOX2D_POS_X(3300.0f),GFX_BOX2D_POS_Y(5250.0f));
-	enemy_.gravity = b2Vec2(0,-10);
+	enemy_.Create_Enemy(world_, GFX_BOX2D_POS_X(14336.0f),GFX_BOX2D_POS_Y(3968.0f));
+	enemy_.gravity = b2Vec2(0,10);
 
 	//set game objects' textures
 	player_.set_texture(playerFlying);
@@ -50,7 +50,6 @@ void Level_3::CreateObjects()
 	arrow_.set_texture(playerArrow);
 	arrow_.set_width(512.0f);
 	arrow_.set_height(512.0f);
-	//blade_.Create(world_, player_);
 
 	for(int pickup = 0; pickup < pickups_.size(); pickup++)
 	{

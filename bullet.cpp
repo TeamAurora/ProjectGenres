@@ -6,7 +6,7 @@ Bullet::Bullet()
 	move_v = 1;
 	created = false;
 	offsetAmount = 30;
-	slowAmount = 2000;
+	slowAmount = 5.0f;
 }
 
 
@@ -50,8 +50,8 @@ void Bullet::CreateBullet(b2World* world_, float x, float y, b2Vec2 gravity, b2V
 	bodyInitialPosition.y = GFX_BOX2D_POS_Y(y + offset.y);
 	
 	//size
-	body_half_width = 0.075f;
-	body_half_height = 0.075f;
+	body_half_width = 0.15f;
+	body_half_height = 0.15f;
 
 	//assigning values to body
 	b2BodyDef bodyDef;
@@ -85,9 +85,12 @@ void Bullet::Update(float ticks)
 
 	//get vector between player's current and bullet start position
 	b2Vec2 aimVector;
-	aimVector.x = (target_.x - position().x)/slowAmount;
-	aimVector.y = -(target_.y - position().y)/slowAmount;//negative due to screen's y-axis
-	
+	aimVector.x = (target_.x - position().x);
+	aimVector.y = -(target_.y - position().y);//negative due to screen's y-axis
+	aimVector.Normalize();
+	aimVector.x = aimVector.x*slowAmount;
+	aimVector.y = aimVector.y*slowAmount;
+
 	//assign as force
 	force = aimVector;
 
