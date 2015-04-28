@@ -9,7 +9,7 @@ GameObject::GameObject() :
 	world_(NULL),
 	body_(NULL),
 	physicsengine_(DEFAULT),
-	magnitude_(60),
+	magnitude_(80),
 	dead(true),
 	knockback_(false)
 {
@@ -135,8 +135,8 @@ void GameObject::RotateTo(const float degrees)
 		rotation_ = abfw::DegToRad(degrees);
 		break;
 	case BOX2D:
-		rotation_ = abfw::DegToRad(degrees);
-		body_->SetTransform(body_->GetPosition(), rotation_); // rotates the box2d body also
+		rotation_ = degrees;
+		body_->SetTransform(body_->GetPosition(), abfw::DegToRad(rotation_)); // rotates the box2d body also
 		break;
 	}
 }
@@ -176,8 +176,11 @@ void GameObject::AddBody(b2World* world, const b2BodyDef body_def)
 {
 	world_ = world;					// sets world pointer for box2d
 	physicsengine_ = BOX2D;			// changes to box2d physics for this object
-	body_ = world_->CreateBody(&body_def);
-	body_->SetUserData(this);
+	if(world != NULL)
+	{
+		body_ = world_->CreateBody(&body_def);
+		body_->SetUserData(this);
+	}
 }
 
 void GameObject::DestroyBody()
@@ -211,6 +214,7 @@ void GameObject::LinearImpulse(const b2Vec2& impulse, const b2Vec2& point)
 	body_->ApplyLinearImpulse(impulse, point);
 }
 
+////John
 void GameObject::Knockback(b2Vec2 pos1, b2Vec2 pos2)
 {
 	if(pos1.x - pos2.x <= 0)//push to left
@@ -275,25 +279,12 @@ void GameObject::CreateStaticBody(b2World* world_, float x , float y, float widt
 
 void GameObject::setAnimation()
 {
-	// depending on objects orientation
-	if(rotated)
-	{		
-		//set uv width and height
-		//set_uv_position(abfw::Vector2(0,0.975));
-		set_uv_width(1.0f);
-		set_uv_height(0.125f);
+	//set uv width and height
+	set_uv_position(abfw::Vector2(0,0));
+	set_uv_width(0.125f);
+	set_uv_height(1.0f);
 
-		//set up animation
-		InitSpriteAnimation(0.07,8,false,SCROLL_Y,0,0);
-	}
-	else
-	{		
-		//set uv width and height
-		set_uv_position(abfw::Vector2(0,0));
-		set_uv_width(0.125f);
-		set_uv_height(1.0f);
-
-		//set up animation
-		InitSpriteAnimation(0.07,8,false,SCROLL_X,0,0);
-	}
+	//set up animation
+	InitSpriteAnimation(0.07,8,false,SCROLL_X,0,0);
+	
 }

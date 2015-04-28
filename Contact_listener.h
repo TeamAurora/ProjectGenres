@@ -4,7 +4,8 @@
 
 #include <Box2D\Box2D.h>
 #include <iostream>
-
+//John
+//Minor editing by Craig
 class Contact_Listener : public b2ContactListener
 {
 	public:

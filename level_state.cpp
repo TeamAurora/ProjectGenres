@@ -8,6 +8,8 @@
 #include "box2d_helpers.h"
 #include "NLTmxMap.h"
 
+
+//Craig
 LevelState::LevelState(abfw::Platform& platform, const GameApplication* application, abfw::AudioManager* audio_manager, APPSTATE state) :
 	AppState(platform, application, audio_manager),
 	paused_(false),
@@ -201,6 +203,11 @@ void LevelState::TerminateState()
 
 APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
 {
+	if(gameOver_)
+	{
+		paused_ = true;
+	}
+
 	if (!paused_)
 	{
 		// Step box2d world - add if box2d is enabled conditional
@@ -296,7 +303,7 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 
 	for(int plantsindex = 0; plantsindex < plants_.size(); plantsindex++)
 	{
-		if(plants_[plantsindex].dead == false)
+		if(plants_[plantsindex].deadAnim == false)
 		{
 			sprite_renderer_->DrawSprite(plants_[plantsindex]);
 		}
@@ -863,7 +870,15 @@ void LevelState::LoadMap(const char* map_filename)
 				if(tile->filename == "plant_wall.png") { plant_type = Plant::WALL; }
 				else if(tile->filename == "plant_block.png") { plant_type = Plant::BLOCK; }
 
-				AppendPlantToVector(b2Vec2(object->x, object->y - 128.0f), object->rotation, b2Vec2(tile->width, tile->height), plant_type);
+				switch((int)tile->width)
+				{
+				case 128:
+					AppendPlantToVector(b2Vec2(object->x, object->y - 192.0f), object->rotation, b2Vec2(tile->width, tile->height), plant_type);
+					break;
+				case 256:
+					AppendPlantToVector(b2Vec2(object->x, object->y - 320.0f), object->rotation, b2Vec2(tile->width, tile->height), plant_type);
+					break;
+				}
 				break;
 			}
 		}
@@ -940,7 +955,7 @@ void LevelState::AppendPlantToVector(b2Vec2 _spawn_position, float _rotation, b2
 	max_score_ += 90;
 
 	plant.InitSprite(width, height, abfw::Vector3(x_pos, y_pos, 0.0f), texture);
-	plant.set_rotation(_rotation);
+	plant.RotateTo(_rotation);
 	plant.plant_type_ = _plant_type;
 
 	plants_.push_back(plant);

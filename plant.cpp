@@ -10,6 +10,7 @@ void Plant::CreateBody(b2World* _world)
 	//reset all variable for removing object
 	dead = false;
 	collided = false;
+	deadAnim = false;
 	
 	body_half_width = width() / 2.0f;
 	body_half_height = height() / 2.0f;
@@ -24,6 +25,8 @@ void Plant::CreateBody(b2World* _world)
 	body_def.position.x = GFX_BOX2D_POS_X(spawn_position.x);
 	body_def.position.y = GFX_BOX2D_POS_Y(spawn_position.y);
 	AddBody(_world, body_def);
+
+	body_->SetTransform(body_->GetPosition(), rotation_);
 
 	// set the shape for the object
 	b2PolygonShape shape;

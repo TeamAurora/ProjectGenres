@@ -3,7 +3,7 @@
 #define ENEMY_H
 
 #include "game_object.h"
-
+//John
 class Enemy : public GameObject
 {
 	public:

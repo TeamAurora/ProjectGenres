@@ -14,7 +14,7 @@ namespace abfw
 {
 	class Platform;
 }
-
+//Craig
 class GameObject : public Sprite
 {	// Physics based game object
 public:
@@ -64,7 +64,6 @@ public:
 
 	//animation
 	bool deadAnim;//has the death animation been played
-	bool rotated;//are the plants rotated
 //////////
 protected:
 	enum PHYSICSENGINE { DEFAULT, BOX2D }; // used to keep same functions being usable independent of physics engine (switch statement in each function handles switching between functionality)

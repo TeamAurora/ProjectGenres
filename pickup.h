@@ -1,7 +1,7 @@
 #ifndef PICKUP_H
 #define PICKUP_H
 #include "game_object.h"
-
+//John and Craig
 class PickUp : public GameObject
 {
 public:

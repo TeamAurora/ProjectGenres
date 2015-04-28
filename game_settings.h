@@ -1,5 +1,5 @@
 #pragma once
-
+//Craig
 struct GameSettings
 {
 	GameSettings(bool music = true, bool sound_effects_ = true) :

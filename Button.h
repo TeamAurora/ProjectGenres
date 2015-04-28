@@ -1,7 +1,7 @@
 #pragma once
 #include "sprite.h"
 #include <input/vita/sony_controller_input_manager_vita.h>
-
+//Craig
 class Button : public Sprite
 {
 public:

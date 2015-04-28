@@ -15,7 +15,7 @@ namespace abfw
 class GameApplication;
 
 enum APPSTATE { INTRO, MENU, LEVEL_1, LEVEL_2, LEVEL_3 }; // possible gamestates (globally scoped so that the application class and every state can utilize the type)
-
+//Craig 
 class AppState
 {
 public:

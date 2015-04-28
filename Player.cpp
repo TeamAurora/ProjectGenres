@@ -253,7 +253,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 	// check we have a valid controller object (one that isn't NULL)
 	if (controller)
 	{
-////Rebecca//////////
+////John & Rebecca//////////
 		// Sets current gravity manipulation via player input
 		//jetpack flight
 		if(flying_ == true)
@@ -310,7 +310,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			{
 				b2Vec2 angle = b2Vec2(sinf(currentRayAngle), cosf(currentRayAngle));
 
-				//Craig
+			///////Craig
 				bool jump_possible = true;
 				switch(gDir)
 				{
@@ -404,7 +404,6 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			}
 		}
 
-///////John///////////////////
 		//attack
 		if ((controller->buttons_pressed() & ABFW_SONY_CTRL_L2) && (attacking == false))
 		{
@@ -498,7 +497,7 @@ void Player::setGravity(Direction direction)
 	gDir = direction;
 }
 
-//John
+//////John////////////////
 void Player::changeState()
 {
 	if (flying_)
@@ -539,7 +538,6 @@ void Player::changeState()
 	}
 }
 
-//John
 void Player::runningAnimation()
 {
 	//flip for gravity
@@ -631,7 +629,6 @@ void Player::runningAnimation()
 	}	
 }
 
-//John
 void Player::idleAnimation()
 {
 	//flip for gravity
@@ -720,7 +717,6 @@ void Player::idleAnimation()
 	}
 }
 
-//John
 void Player::deadAnimation()
 {
 	//flip for gravity
@@ -809,7 +805,6 @@ void Player::deadAnimation()
 	}
 }
 
-//John
 void Player::jumpAnimation(float xAxis, float yAxis)
 {
 	//flip for gravity
@@ -918,7 +913,6 @@ void Player::jumpAnimation(float xAxis, float yAxis)
 	}
 }
 
-//John
 void Player::attackAnimation()
 {
 	//attack sprite is bigger so must be resized to match other sprites
@@ -1015,7 +1009,6 @@ void Player::attackAnimation()
 	}
 }
 
-//John
 void Player::flyAnimation()
 {
 	if (move_right == true)

@@ -3,7 +3,7 @@
 
 #include "game_object.h"
 #include "player.h"
-
+//John
 class Blade : public GameObject
 {
 	public:

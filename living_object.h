@@ -8,7 +8,7 @@ namespace abfw
 	class SpriteRenderer;
 	class Font;
 }
-
+//Craig
 class LivingObject : public GameObject
 { // Game object considered to be a living entity(has health, not necessarily alive e.g. machine or undead still derives from this class)
 public:

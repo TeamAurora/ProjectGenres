@@ -2,7 +2,7 @@
 #define BULLET_H
 
 #include "game_object.h"
-
+//John
 class Bullet : public GameObject
 {
 	public:

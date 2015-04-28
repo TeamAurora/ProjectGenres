@@ -8,7 +8,7 @@ namespace abfw
 	class Platform;
 }
 
-
+//Craig
 class Camera
 {
 public:

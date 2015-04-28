@@ -1,7 +1,7 @@
 #pragma once
 #include "appstate.h"
 #include "game_object.h"
-
+//Craig
 class IntroState :
 	public AppState
 {

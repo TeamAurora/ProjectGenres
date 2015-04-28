@@ -63,7 +63,6 @@ void Level_2::CreateObjects()
 	arrow_.set_texture(playerArrow);
 	arrow_.set_width(512.0f);
 	arrow_.set_height(512.0f);
-	//blade_.Create(world_, player_);
 
 	for(int pickup = 0; pickup < pickups_.size(); pickup++)
 	{
@@ -268,6 +267,11 @@ void Level_2::UpdateGameObjects(const float& ticks_, const int& frame_counter_)
 			score_ += 90;
 			plants_[plant].DestroyBody();
 			plants_[plant].collided = false;
+		}
+
+		if(plants_[plant].dead == true && plants_[plant].deadAnim == false)
+		{
+			plants_[plant].deadAnim = plants_[plant].Animate(ticks_,true);
 		}
 	}
 }

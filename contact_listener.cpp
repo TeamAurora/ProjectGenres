@@ -93,14 +93,14 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 		}
 
 		//destroy bullets if it hits collectible
-		/*if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::PICKUP)
+		if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::BLADE)
 		{
 			((Bullet* )game_object)->dead = true;
 		}
-		else if (game_object->getType() == GameObject::PICKUP && game_object_b->getType() == GameObject::BULLET)
+		else if (game_object->getType() == GameObject::BLADE && game_object_b->getType() == GameObject::BULLET)
 		{
 			((Bullet* )game_object_b)->dead = true;
-		}*/
+		}
 
 		//kill player and destroy bullet
 		if (game_object->getType() == GameObject::BULLET && game_object_b->getType() == GameObject::PLAYER)

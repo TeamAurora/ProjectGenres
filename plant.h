@@ -1,7 +1,7 @@
 #ifndef PLANT_H
 #define PLANT_H
 #include "game_object.h"
-
+//John and Craig
 class Plant : public GameObject
 {
 public:

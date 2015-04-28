@@ -4,7 +4,8 @@
 #include <vector>
 
 using namespace std;
-
+//Source: https://github.com/catnapgames/TestNLTmxMap
+//Edited by Craig
 class NLTmxMapTile {
 public:
 	string id;

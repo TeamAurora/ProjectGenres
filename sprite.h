@@ -1,14 +1,15 @@
 #pragma once
 #include <graphics/sprite.h>
-
+//Craig
 class Sprite : public abfw::Sprite
 {
 public:
 	Sprite();
 	virtual ~Sprite();
 	enum SHEETTYPE { SCROLL_Y, SCROLL_X, SCROLL_XY, SCROLL_YX }; // scrolls down y, scrolls across x, scrolls x then y, scrolls y then x
-	
+////Edited by John
 	const bool Animate(float ticks, bool facing); // returns whether or not animation has finished, faacing is true when facing right or up
+////
 	void ResetAnimation();
 	void InitSprite(const float width, const float height, const abfw::Vector3 position, const abfw::Texture* texture);
 	void InitSpriteAnimation(const float frame_duration, const int frame_count, const bool looping, const SHEETTYPE sheettype, const int x_frame_count, const int y_frame_count); // x and y frame count required for XY and YX spritesheet types only
