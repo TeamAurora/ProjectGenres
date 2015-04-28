@@ -1,6 +1,6 @@
 #include "enemy.h"
 
-
+///John
 Enemy::Enemy()
 {
 	//set object type
@@ -8,9 +8,9 @@ Enemy::Enemy()
 	
 	//initalise values
 	move_v = 20;
-	threshold_ = 20;
-	range_ = 150;
-	patrolTime_ = 60;
+	threshold_ = 50;
+	range_ = 300;
+	patrolTime_ = 40;
 
 	//texture coords
 	uv_x = 0.0f;
@@ -31,6 +31,7 @@ void Enemy::Create_Enemy(b2World* world_,float x , float y)
 	moveTimer_ = 0;
 	move = true;
 	deadAnim = false;
+	attack_ = false;
 
 	//starting position
 	bodyInitialPosition.x = x;
@@ -98,16 +99,18 @@ void Enemy::MeleeUpdate(float ticks, b2Vec2 playerPos)
 		patrol_ = false;
 		meleeState_ = DEAD;
 	}
+	else if(attack_ == true)
+	{
+		meleeState_ = ATTACKING;		
+		AccelerateTo(abfw::Vector2(0.0f,0.0f));
+	}
 	else if(attack_ == false)
 	{
 		patrol_ = true;
 		meleeState_ = MOVING;
 		Advance(playerPos, position().x, position().y);//move enemy to hurt player if in range
 	}	
-	else if(attack_ == true)
-	{
-		meleeState_ = ATTACKING;
-	}
+	
 
 	//set to moving back and forth
 	if(patrol_ == true)
@@ -169,8 +172,16 @@ void Enemy::ShooterUpdate(float ticks)
 	{
 		uv_width = 0.03125f;
 		set_uv_width(uv_width);
-		set_uv_height(-uv_height);	
-		set_uv_position(abfw::Vector2 (0.0f,1.0f));
+		if(gravity.y > 0)
+		{
+			set_uv_height(-uv_height);
+			set_uv_position(abfw::Vector2 (0.0f,1.0f));
+		}
+		else if (gravity.y < 0)
+		{
+			set_uv_height(uv_height);
+			set_uv_position(abfw::Vector2 (0.0f,0.0f));
+		}
 	}
 
 	//change state
@@ -331,11 +342,11 @@ void Enemy::moveAnimation()
 
 void Enemy::shootAnimation()
 {
-	set_uv_width(uv_width);
-	set_uv_height(-uv_height);
+	//set_uv_width(uv_width);
+	//set_uv_height(-uv_height);
 
-	//make sure sprites starts from first frame
-	set_uv_position(abfw::Vector2 (0.0f,1.0f));
+	////make sure sprites starts from first frame
+	//set_uv_position(abfw::Vector2 (0.0f,1.0f));
 
 	InitSpriteAnimation(0.0125,32,false,SCROLL_X,0,0);
 }

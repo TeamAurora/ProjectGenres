@@ -73,7 +73,6 @@ void Contact_Listener::BeginContact(b2Contact* contact)
 ///////////Platform check///// Craig
 		if (game_object->getType() == GameObject::PLAYER && game_object_b->getType() == GameObject::COLLISIONTILE)
 		{
-			
 			static_cast<Player*>(game_object)->ResolveCollisionTile(static_cast<CollisionTile*>(game_object_b));
 		}
 

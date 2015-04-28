@@ -51,11 +51,11 @@ APPSTATE Level_2::InputLoop(const abfw::SonyController* controller)
 void Level_2::CreateObjects()
 {
 	//make moving objects
-	//player_.Create_Player(world_, GFX_BOX2D_POS_X(4800.0f),GFX_BOX2D_POS_Y(11712.0f));
-	player_.Create_Player(world_, GFX_BOX2D_POS_X(16200.0f),GFX_BOX2D_POS_Y(4288.0f));
+	player_.Create_Player(world_, GFX_BOX2D_POS_X(4800.0f),GFX_BOX2D_POS_Y(11712.0f));
+	//player_.Create_Player(world_, GFX_BOX2D_POS_X(16200.0f),GFX_BOX2D_POS_Y(4288.0f));
 	application_->player_camera_->MoveTo(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)));
 
-	enemy_.Create_Enemy(world_, GFX_BOX2D_POS_X(15808.0f),GFX_BOX2D_POS_Y(4288.0f));
+	enemy_.Create_Enemy(world_, GFX_BOX2D_POS_X(15608.0f),GFX_BOX2D_POS_Y(4288.0f));
 	enemy_.gravity = b2Vec2(0,-20);
 
 	//set game objects' textures

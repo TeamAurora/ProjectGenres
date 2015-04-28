@@ -296,4 +296,4 @@ void GameObject::setAnimation()
 		//set up animation
 		InitSpriteAnimation(0.07,8,false,SCROLL_X,0,0);
 	}
-}*/
+}

@@ -32,7 +32,7 @@ void Blade::Create(b2World* world_,const Player &player)
 	dynamicBox.SetAsBox(body_half_width, body_half_height);
 
 	b2FixtureDef fixtureDef;
-	//fixtureDef.isSensor = true;
+	fixtureDef.isSensor = true;
 	fixtureDef.shape = &dynamicBox;
 	body_->ResetMassData();//it only sets new value after this is called
 	AddFixture(fixtureDef);

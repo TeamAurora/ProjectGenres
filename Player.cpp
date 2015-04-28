@@ -14,7 +14,7 @@ Player::Player()
 
 	//set values for variables
 	move_v = 25;
-	damage = 25;
+	damage = 12.5;
 
 	//texture coords
 	uv_x = 0.0f;
@@ -30,6 +30,7 @@ Player::Player()
 	moveUp = true;
 	deadAnim = false;//has death animation played
 	stickPushed = false;
+	touchingPlatform = false;
 
 	//on stick axis
 	jumpCutOff = 0.8;
@@ -416,7 +417,10 @@ void Player::Player_Input(const abfw::SonyController* controller)
 //// Craig
 void Player::ResolveCollisionTile(CollisionTile* collisiontile)
 {
-	state_ = GROUNDED;
+	if(state_ == INAIR || state_ == JUMPING)
+	{
+		state_ = GROUNDED;
+	}
 
 	if(collisiontile->harmful_ == true)
 	{

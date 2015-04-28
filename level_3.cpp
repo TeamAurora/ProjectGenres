@@ -37,18 +37,20 @@ APPSTATE Level_3::InputLoop(const abfw::SonyController* controller)
 
 void Level_3::CreateObjects()
 {
-	//enemy_.Create_Enemy(world_, GFX_BOX2D_POS_X(),GFX_BOX2D_POS_Y(platform_.height()*0.1));
-	//enemy_.gravity = b2Vec2(0,10);
-
 	//make moving objects
 	player_.Create_Player(world_, GFX_BOX2D_POS_X(2880.0f),GFX_BOX2D_POS_Y(5312.0f));
 
+	enemy_.Create_Enemy(world_, GFX_BOX2D_POS_X(3300.0f),GFX_BOX2D_POS_Y(5250.0f));
+	enemy_.gravity = b2Vec2(0,-10);
+
 	//set game objects' textures
 	player_.set_texture(playerFlying);
+	enemy_.set_texture(shooterFiring);
+	bullet_.set_texture(shooterProjectile);
 	arrow_.set_texture(playerArrow);
 	arrow_.set_width(512.0f);
 	arrow_.set_height(512.0f);
-	blade_.Create(world_, player_);
+	//blade_.Create(world_, player_);
 
 	for(int pickup = 0; pickup < pickups_.size(); pickup++)
 	{
