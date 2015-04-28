@@ -58,7 +58,7 @@ public:
 /////John// 
 	void CreateStaticBody(b2World* world_, float x , float y, float width, float height);//create Static body at (x,y) with that width & height
 	void Knockback(b2Vec2, b2Vec2);//knock object back when they take damage
-	//void setAnimation();//set up plants for death animation
+	void setAnimation();//set up plants for death animation
 
 	bool dead;//flag for killing
 

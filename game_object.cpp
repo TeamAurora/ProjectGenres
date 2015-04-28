@@ -9,7 +9,7 @@ GameObject::GameObject() :
 	world_(NULL),
 	body_(NULL),
 	physicsengine_(DEFAULT),
-	magnitude_(15),
+	magnitude_(60),
 	dead(true),
 	knockback_(false)
 {

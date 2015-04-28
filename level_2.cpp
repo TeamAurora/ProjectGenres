@@ -29,7 +29,7 @@ void Level_2::LoadAssets()
 	rotPlayerAttack = application_->LoadTextureFromPNG("player_attack_rotated.png");
 
 	////enemy
-	enemyMove = application_->LoadTextureFromPNG("enemy_melee_move.png");
+	enemyMove = application_->LoadTextureFromPNG("enemy_melee_walk.png");
 	enemyDeath = application_->LoadTextureFromPNG("enemy_melee_death.png");
 	enemyAttack = application_->LoadTextureFromPNG("enemy_melee_attack.png");
 
@@ -50,20 +50,20 @@ APPSTATE Level_2::InputLoop(const abfw::SonyController* controller)
 
 void Level_2::CreateObjects()
 {
-	enemy_.Create_Enemy(world_, GFX_BOX2D_POS_X(15808.0f),GFX_BOX2D_POS_Y(4288.0f));
-	enemy_.gravity = b2Vec2(0,-10);
-
 	//make moving objects
 	//player_.Create_Player(world_, GFX_BOX2D_POS_X(4800.0f),GFX_BOX2D_POS_Y(11712.0f));
 	player_.Create_Player(world_, GFX_BOX2D_POS_X(16200.0f),GFX_BOX2D_POS_Y(4288.0f));
 	application_->player_camera_->MoveTo(abfw::Vector2(player_.position().x - (platform_.width() / 2.0f), player_.position().y - (platform_.height() / 2.0f)));
+
+	enemy_.Create_Enemy(world_, GFX_BOX2D_POS_X(15808.0f),GFX_BOX2D_POS_Y(4288.0f));
+	enemy_.gravity = b2Vec2(0,-20);
 
 	//set game objects' textures
 	player_.set_texture(playerTex);
 	arrow_.set_texture(playerArrow);
 	arrow_.set_width(512.0f);
 	arrow_.set_height(512.0f);
-	blade_.Create(world_, player_);
+	//blade_.Create(world_, player_);
 
 	for(int pickup = 0; pickup < pickups_.size(); pickup++)
 	{
@@ -80,6 +80,8 @@ void Level_2::CreateObjects()
 		if(plants_[plant].body_ == NULL)
 		{
 			plants_[plant].CreateBody(world_);
+			plants_[plant].set_texture(plant_wall_texture_);
+			plants_[plant].setAnimation();//set up for death animation
 		}
 	}
 
@@ -103,7 +105,7 @@ void Level_2::Restart()
 		}
 	}
 
-	//destroy pickups
+	//destroy plants
 	for ( int plantindex = 0; plantindex < plants_.size(); plantindex++)
 	{
 		//reset for another play

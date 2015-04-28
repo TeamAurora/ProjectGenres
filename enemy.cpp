@@ -7,10 +7,10 @@ Enemy::Enemy()
 	type_ = ENEMY;
 	
 	//initalise values
-	move_v = 4;
+	move_v = 20;
 	threshold_ = 20;
 	range_ = 150;
-	patrolTime_ = 20;
+	patrolTime_ = 60;
 
 	//texture coords
 	uv_x = 0.0f;
@@ -37,14 +37,15 @@ void Enemy::Create_Enemy(b2World* world_,float x , float y)
 	bodyInitialPosition.y = y;
 
 	//size
-	body_half_width = 0.4f;
-	body_half_height = 0.4f;
+	body_half_width = 1.0f;
+	body_half_height = 1.0f;
 
 	//assigning values to body
 	b2BodyDef enemy_bodyDef;
 	enemy_bodyDef.type = b2_dynamicBody;
 	enemy_bodyDef.position.x = bodyInitialPosition.x;
 	enemy_bodyDef.position.y = bodyInitialPosition.y;
+	enemy_bodyDef.fixedRotation = true;//stops body rotating 
 	AddBody(world_, enemy_bodyDef);
 
 	b2PolygonShape enemy_Box;
@@ -92,7 +93,12 @@ void Enemy::MeleeUpdate(float ticks, b2Vec2 playerPos)
 	//change state
 	OBJECTSTATE prevState = meleeState_;
 
-	if(dead == false && attack_ == false)
+	if (dead == true)
+	{
+		patrol_ = false;
+		meleeState_ = DEAD;
+	}
+	else if(attack_ == false)
 	{
 		patrol_ = true;
 		meleeState_ = MOVING;
@@ -101,11 +107,6 @@ void Enemy::MeleeUpdate(float ticks, b2Vec2 playerPos)
 	else if(attack_ == true)
 	{
 		meleeState_ = ATTACKING;
-	}
-	else
-	{
-		patrol_ = false;
-		meleeState_ = DEAD;
 	}
 
 	//set to moving back and forth

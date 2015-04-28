@@ -14,7 +14,7 @@ Player::Player()
 
 	//set values for variables
 	move_v = 25;
-	damage = 1.25;
+	damage = 25;
 
 	//texture coords
 	uv_x = 0.0f;
@@ -243,7 +243,7 @@ void Player::Update(const float& ticks, bool gameOver, bool flying)
 	else
 	{		
 		//apply gravity
-		//body_->ApplyForceToCenter(gravity);
+		body_->ApplyForceToCenter(gravity);
 	}
 }
 
@@ -260,25 +260,31 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			gDir = DOWN;
 			if (controller->right_stick_y_axis() < -jumpCutOff)//up
 			{
-				MoveBy(0.0f, -3.0f);
+				//MoveBy(0.0f, -3.0f);
+				gravity = b2Vec2(0.0f, 10.0f);
 				state_ = FLYING;
 				flyAnimation();
 			}
 			else if (controller->right_stick_x_axis() > jumpCutOff)//right
 			{
-				MoveBy(3.0f, 0.0f);
+				//MoveBy(3.0f, 0.0f);
+				move_right = true;
+				gravity = b2Vec2(10.0f, 00.0f);
 				state_ = FLYING;
 				flyAnimation();
 			}
 			else if (controller->right_stick_x_axis() < -jumpCutOff)//left
 			{
-				MoveBy(-3.0f, 0.0f);
+				//MoveBy(-3.0f, 0.0f);
+				move_right = false;
+				gravity = b2Vec2(-10.0f, 0.0f);
 				state_ = FLYING;
 				flyAnimation();
 			}
 			else if (controller->right_stick_y_axis() > jumpCutOff)//down
 			{
-				MoveBy(0.0f, 3.0f);
+				//MoveBy(0.0f, 3.0f);
+				gravity = b2Vec2(0.0f, -10.0f);
 				state_ = FLYING;
 				flyAnimation();
 			}

@@ -294,6 +294,14 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 		}
 	}
 
+	for(int plantsindex = 0; plantsindex < plants_.size(); plantsindex++)
+	{
+		if(plants_[plantsindex].dead == false)
+		{
+			sprite_renderer_->DrawSprite(plants_[plantsindex]);
+		}
+	}
+
 	/*for(int bulletindex = 0; bulletindex < bullets_.size(); bulletindex++)
 	{
 		if(bullets_[bulletindex].dead == false)
