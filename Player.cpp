@@ -263,31 +263,43 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			{
 				//MoveBy(0.0f, -3.0f);
 				gravity = b2Vec2(0.0f, 10.0f);
-				state_ = FLYING;
-				flyAnimation();
+				if(attacking != true)
+				{
+					state_ = FLYING;
+					flyAnimation();
+				}
 			}
 			else if (controller->right_stick_x_axis() > jumpCutOff)//right
 			{
 				//MoveBy(3.0f, 0.0f);
 				move_right = true;
 				gravity = b2Vec2(10.0f, 00.0f);
-				state_ = FLYING;
-				flyAnimation();
+				if(attacking != true)
+				{
+					state_ = FLYING;
+					flyAnimation();
+				}
 			}
 			else if (controller->right_stick_x_axis() < -jumpCutOff)//left
 			{
 				//MoveBy(-3.0f, 0.0f);
 				move_right = false;
 				gravity = b2Vec2(-10.0f, 0.0f);
-				state_ = FLYING;
-				flyAnimation();
+				if(attacking != true)
+				{
+					state_ = FLYING;
+					flyAnimation();
+				}
 			}
 			else if (controller->right_stick_y_axis() > jumpCutOff)//down
 			{
 				//MoveBy(0.0f, 3.0f);
 				gravity = b2Vec2(0.0f, -10.0f);
-				state_ = FLYING;
-				flyAnimation();
+				if(attacking != true)
+				{
+					state_ = FLYING;
+					flyAnimation();
+				}
 			}
 		}
 		else//wall jump
@@ -410,6 +422,7 @@ void Player::Player_Input(const abfw::SonyController* controller)
 			attacking = true;
 		}
 	}
+
 	body_->ApplyForceToCenter(force);
 }
 

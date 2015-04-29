@@ -87,9 +87,7 @@ void Bullet::Update(float ticks)
 	b2Vec2 aimVector;
 	aimVector.x = (target_.x - position().x);
 	aimVector.y = -(target_.y - position().y);//negative due to screen's y-axis
-	aimVector.Normalize();
-	aimVector.x = aimVector.x*slowAmount;
-	aimVector.y = aimVector.y*slowAmount;
+	aimVector.Normalize();//make speed uniform
 
 	//assign as force
 	force = aimVector;

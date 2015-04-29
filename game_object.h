@@ -14,7 +14,8 @@ namespace abfw
 {
 	class Platform;
 }
-//Craig
+//Craig 
+//Added to by John
 class GameObject : public Sprite
 {	// Physics based game object
 public:

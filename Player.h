@@ -3,7 +3,7 @@
 #include "living_object.h"
 #include "CollisionTile.h"
 //John
-//Minor editing by Craigs
+//Minor editing by Craig
 class Player :
 	public LivingObject
 {
