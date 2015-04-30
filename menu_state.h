@@ -31,8 +31,10 @@ private:
 	void LoadTextures();
 	abfw::Texture* menu_background_texture_;
 	abfw::Texture* main_menu_overlay_texture_;
+	abfw::Texture* help_overlay_texture_;
 	Sprite background_;
 	Sprite main_menu_overlay_;
+	Sprite help_overlay_;
 	Button* start_button_;
 	Button* help_button_;
 	Button* options_button_;

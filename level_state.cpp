@@ -239,7 +239,7 @@ APPSTATE LevelState::Update(const float& ticks_, const int& frame_counter_, cons
 			paused_ = true;
 			return current_state_;
 		}
-		else if (!paused_) // do input loop for state if we aren't returning to menustate
+		else if (!paused_) // do input loop for state if we aren't paused or pausing
 		{
 			return InputLoop(controller);
 		}

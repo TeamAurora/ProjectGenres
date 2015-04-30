@@ -90,12 +90,16 @@ void MenuState::InitializeState()
 
 	main_menu_overlay_ = Sprite();
 	main_menu_overlay_.InitSprite(platform_.width(), platform_.height(), screen_centre, main_menu_overlay_texture_);
+
+	help_overlay_ = Sprite();
+	help_overlay_.InitSprite(platform_.width(), platform_.height(), screen_centre, help_overlay_texture_);
 }
 
 void MenuState::TerminateState()
 {
 	DeleteNull(menu_background_texture_);
 	DeleteNull(main_menu_overlay_texture_);
+	DeleteNull(help_overlay_texture_);
 }
 
 APPSTATE MenuState::Update(const float& ticks_, const int& frame_counter_, const abfw::SonyControllerInputManager& controller_manager_)
@@ -295,6 +299,9 @@ void MenuState::Render(const float frame_rate_, abfw::Font& font_, abfw::SpriteR
 		sprite_renderer_->DrawSprite(*music_display_);
 		sprite_renderer_->DrawSprite(*sfx_display_);
 		break;
+	case HELP:
+		sprite_renderer_->DrawSprite(help_overlay_);
+		break;
 	}
 }
 
@@ -302,4 +309,5 @@ void MenuState::LoadTextures()
 {
 	menu_background_texture_ = application_->LoadTextureFromPNG("menu_background.png");
 	main_menu_overlay_texture_ = application_->LoadTextureFromPNG("main_menu_background.png");
+	help_overlay_texture_ = application_->LoadTextureFromPNG("help_overlay.png");
 }
