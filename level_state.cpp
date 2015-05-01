@@ -275,10 +275,10 @@ void LevelState::Render(const float frame_rate_, abfw::Font& font_, abfw::Sprite
 		{
 			sprite_renderer_->DrawSprite(arrow_);
 		}
-		if(blade_.disabled == false)
+		/*if(blade_.disabled == false)
 		{
 			sprite_renderer_->DrawSprite(blade_);
-		}
+		}*/
 	}
 
 	/*for(int enemyindex = 0; enemyindex < enemies_.size(); enemyindex++)

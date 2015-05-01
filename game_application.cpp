@@ -154,7 +154,7 @@ void GameApplication::Render()
 		pCurrentState->Render(frame_rate_, font_, sprite_renderer_); // else do state-specific rendering
 	}
 
-	font_.RenderText(sprite_renderer_, abfw::Vector3(480.0f, 510.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "FPS: %.1f", frame_rate_);
+	//font_.RenderText(sprite_renderer_, abfw::Vector3(480.0f, 510.0f, 0.0f), 1.0f, 0xffffffff, abfw::TJ_LEFT, "FPS: %.1f", frame_rate_);
 
 	// tell sprite renderer that all sprites have been drawn
 	sprite_renderer_->End();
